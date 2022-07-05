@@ -1,0 +1,7 @@
+package types;
+
+public enum BuffType {
+	STOP, SILENCE, STUN, GOD, DAMAGE, GARD, MISS, HEAL,
+	HEADCC, CC, POWERUP, POWERDOWN,
+	DEBUFF, BUFF
+}

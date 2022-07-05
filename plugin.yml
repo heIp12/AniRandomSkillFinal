@@ -1,0 +1,12 @@
+name: Gamerule
+main: ars.Rule
+version: 20-10-20-A
+website: https://blog.naver.com/dlwhrhks01
+authors: [heIp12]
+commands:
+  ars:
+    description: plugin help
+    usage: |
+           /<command> help
+           /<command> save <playername> <name>
+           /<command> load <playername> <name>

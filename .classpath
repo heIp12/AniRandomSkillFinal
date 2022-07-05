@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="org/apache/commons/net/bsd/|org/apache/commons/net/|org/apache/commons/|org/apache/|org/apache/commons/net/bsd/" kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/bukkitspawner/Spigot1122.jar"/>
+	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/ProtocolLib.jar"/>
+	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/MagicSpells-3.5-Release.jar"/>
+	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/CrazyAdvancementsAPI.jar"/>
+	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/TextManager.jar"/>
+	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/aliveblock.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
