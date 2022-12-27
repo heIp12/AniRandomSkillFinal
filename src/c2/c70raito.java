@@ -165,10 +165,12 @@ public class c70raito extends c00main{
 						delay(()->{
 							WinEvent event = new WinEvent(player);
 							Bukkit.getPluginManager().callEvent(event);
-							if(!event.isCancelled()) {
-								Skill.win(player);
-							}
-						},480);
+							delay(()-> { 
+								if(!event.isCancelled()) {
+									Skill.win(player);
+								}
+							},20);
+						},460);
 					}
 				}
 			}
