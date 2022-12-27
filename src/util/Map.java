@@ -38,7 +38,7 @@ public class Map {
 	
 	public static int maphuman = 10;
 	
-	public static String Version = "1.71";
+	public static String Version = "1.72";
 	public static MapType mapType = MapType.NORMAL;
 	public static World world = Bukkit.getWorld("world");
 	public static int lastplay = 0;
