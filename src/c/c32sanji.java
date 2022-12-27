@@ -23,6 +23,7 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Airborne;
+import buff.Silence;
 import event.Skill;
 import manager.AdvManager;
 import types.modes;
@@ -56,20 +57,21 @@ public class c32sanji extends c00main{
 		if(skill.equals("")) {
 			cooldownc[0] = cooldown[1];
 			skill("c32_s1");
-			player.setVelocity(player.getLocation().getDirection().multiply(1));
+			player.setVelocity(player.getLocation().getDirection().multiply(1.5));
 			count++;
 		}
 		else if(skill.equals("s3")) {
-			cooldownc[2] = 3;
-			cooldown[1] = 3;
+			cooldownc[2] = 2;
+			cooldown[1] = 2;
 			skill("c32_s3_1");
-			player.setVelocity(player.getLocation().getDirection().multiply(0.4));
+			player.setVelocity(player.getLocation().getDirection().multiply(0.8));
 			count++;
 		}
 		else if(skill.equals("s4")) {
 			cooldownc[5] = 5;
 			cooldown[1] = 5;
 			skill("c32_s4_1");
+			player.setVelocity(player.getLocation().getDirection().multiply(0.2));
 			count++;
 		}
 		return true;
@@ -85,16 +87,17 @@ public class c32sanji extends c00main{
 			
 		}
 		else if(skill.equals("s3")) {
-			cooldownc[3] = 3;
-			cooldown[2] = 3;
+			cooldownc[3] = 2;
+			cooldown[2] = 2;
 			skill("c32_s3_2");
-			player.setVelocity(player.getLocation().getDirection().multiply(0.4));
+			player.setVelocity(player.getLocation().getDirection().multiply(0.8));
 			count++;
 		}
 		else if(skill.equals("s4")) {
-			cooldownc[6] = 5;
-			cooldown[1] = 5;
+			cooldownc[6] = 3;
+			cooldown[1] = 3;
 			skill("c32_s4_2");
+			player.setVelocity(player.getLocation().getDirection().multiply(0.2));
 			count++;
 		}
 		return true;
@@ -117,8 +120,9 @@ public class c32sanji extends c00main{
 		}
 		else if(skill.equals("s4")) {
 			ARSystem.giveBuff(player, new Airborne(player), 14);
-			cooldownc[7] = 5;
-			cooldown[3] = 5;
+			cooldownc[7] = 3;
+			cooldown[3] = 3;
+			player.setVelocity(player.getLocation().getDirection().multiply(0.2));
 			skill("c32_s4_3");
 			count++;
 		}
@@ -142,10 +146,10 @@ public class c32sanji extends c00main{
 		}
 		else if(skill.equals("s3")) {
 			ARSystem.giveBuff(player, new Airborne(player), 14);
-			cooldownc[4] = 3;
-			cooldown[4] = 3;
+			cooldownc[4] = 2;
+			cooldown[4] = 2;
 			skill("c32_s3_3");
-			player.setVelocity(player.getLocation().getDirection().multiply(0.4));
+			player.setVelocity(player.getLocation().getDirection().multiply(0.8));
 			count++;
 		}
 		return true;
@@ -156,7 +160,7 @@ public class c32sanji extends c00main{
 		if(isps) {
 			skill("c32_sp");
 		}
-		if(!spben && !isps && ARSystem.AniRandomSkill !=null && ARSystem.AniRandomSkill.time <= 20 && count > 30) {
+		if(!isps && ARSystem.AniRandomSkill !=null && ARSystem.AniRandomSkill.time <= 20 && count > 30) {
 			spskillon();
 			spskillen();
 			skill("c32_e");
@@ -191,7 +195,8 @@ public class c32sanji extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(isps) {
-				e.setDamage(e.getDamage()+1);
+				e.setDamage(e.getDamage()+1.5);
+				ARSystem.addBuff((LivingEntity) e.getEntity(), new Silence((LivingEntity) e.getEntity()), 5);
 			}
 			float damage = 1;
 			if(!e.getDamager().isOnGround()) damage += 0.25;

@@ -65,6 +65,7 @@ import buff.Buff;
 import buff.Silence;
 import c.c00main;
 import event.Skill;
+import event.WinEvent;
 import manager.Holo;
 import types.box;
 import util.AMath;
@@ -91,6 +92,8 @@ public class Event
 	}
 	@EventHandler
 	public void join(PlayerJoinEvent e) {
+		if(Rule.isben(e.getPlayer())) e.getPlayer().kickPlayer("https://cafe.naver.com/helpgames");
+		
 		if(Bukkit.getOnlinePlayers().size() == 1) {
 			ARSystem.spellLocCast(e.getPlayer(), new Location(Map.world,-7,33.5,-108), "heIp");
 		}
@@ -108,6 +111,8 @@ public class Event
 			e.getPlayer().setHealth(20);
 			Map.playeTp(e.getPlayer());
 		}
+		Rule.isEvent(e.getPlayer());
+		
 	}
 	
 	@EventHandler
@@ -136,7 +141,7 @@ public class Event
 	public void quit(PlayerQuitEvent e) {
 		if(Rule.c.get(e.getPlayer()) != null) {
 			Rule.c.remove(e.getPlayer());
-			ARSystem.Stop();
+			if(ARSystem.AniRandomSkill != null) ARSystem.Stop();
 		}
 	}
 	
@@ -218,6 +223,7 @@ public class Event
 			if(t.equals("0-14")) s = "e";
 			if(t.equals("0-17")) s = "a";
 			if(t.equals("0-31")) s = "l";
+			if(t.equals("23-2")) s = "d";
 			
 			boolean chat = true;
 			for(Player p : Rule.c.keySet()) {
@@ -228,8 +234,11 @@ public class Event
 				}
 			}
 			if(chat) {
-			Bukkit.broadcastMessage(Rule.playerinfo.get(e.getPlayer()).name + " "+e.getPlayer().getName() +"§f :§"+s+" " +e.getMessage());
+				Bukkit.broadcastMessage(Rule.playerinfo.get(e.getPlayer()).name + " "+e.getPlayer().getName() +"§f :§"+s+" " +e.getMessage());
 			}
+		}
+		if(Main.GetText("general:skip").contentEquals(e.getMessage()) && ARSystem.AniRandomSkill != null) {
+			ARSystem.AniRandomSkill.skip(e.getPlayer());
 		}
 	}
 	  
@@ -277,6 +286,7 @@ public class Event
 	private boolean onEntityDamage(EntityDamageEvent e){
 		if(e.getCause() == DamageCause.VOID) e.setCancelled(true);
 		if(e.getCause() == DamageCause.SUFFOCATION) e.setCancelled(true);
+		if(e.getEntity() instanceof ArmorStand) e.setCancelled(true);
 		if(e.getCause() == DamageCause.FALL && !(e.getEntity() instanceof Player)) {
 			if(e.getEntity().getLocation().getY() < 10) {
 				((LivingEntity)e.getEntity()).teleport(Map.randomLoc());
@@ -300,8 +310,15 @@ public class Event
 
 			}
 		}
-		if(!e.isCancelled() && e.getFinalDamage() > 0&& e.getCause() != DamageCause.ENTITY_ATTACK&& e.getCause() != DamageCause.CUSTOM) {
+		if(!e.isCancelled() && e.getFinalDamage() > 0&& e.getCause() != DamageCause.ENTITY_ATTACK && e.getCause() != DamageCause.CUSTOM) {
 			damageText(e.getEntity().getLocation(),"§d§l⚕ ",e.getDamage());
+			if(Rule.c.get(e.getEntity()) != null && !e.isCancelled()) {
+				if(((LivingEntity)e.getEntity()).getHealth() - e.getDamage() < 1) {
+					e.setCancelled(true);
+					e.setDamage(0);
+					Skill.death(e.getEntity(), e.getEntity());
+				}
+			}
 		}
 		return true;
 	}
@@ -342,6 +359,15 @@ public class Event
 	}
 	
 	@EventHandler
+	private void WinEvent(WinEvent e) {
+		for(Player p : Rule.c.keySet()) {
+			if(!e.isCancelled()) {
+				Rule.c.get(p).WinEvent(e);
+			}
+		}
+	}
+	
+	@EventHandler
 	private boolean Deathevent(PlayerDeathEvent e){
 		if(Rule.buffmanager.getBuffs((LivingEntity) e.getEntity()) != null) {
 			for(Buff buff : Rule.buffmanager.getBuffs((LivingEntity) e.getEntity()).getBuff()) {
@@ -365,7 +391,12 @@ public class Event
 			e.setCancelled(true);
 			return true;
 		}
+		
 		if(ARSystem.isTarget(e.getEntity(), e.getDamager(), box.TARGET)) {
+			if(Rule.c.get(e.getDamager()) != null) {
+				Rule.c.get(e.getDamager()).setFrist_Damage(e, true);
+			}
+			
 			if(!e.isCancelled() &&  Rule.buffmanager.getBuffs((LivingEntity) e.getDamager()) != null) {
 				for(Buff buff : Rule.buffmanager.getBuffs((LivingEntity) e.getDamager()).getBuff()) {
 					if(e.getDamage() > 0 && buff != null) {
@@ -392,6 +423,9 @@ public class Event
 				if(!Rule.c.get(e.getEntity()).entitydamage(e,false)) {
 	
 				}
+			}
+			if(Rule.c.get(e.getEntity()) != null) {
+				Rule.c.get(e.getEntity()).setFrist_Damage(e, false);
 			}
 		}
 		if(e.getDamage() <= 0.001 || e.isCancelled()) {

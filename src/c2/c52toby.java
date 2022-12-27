@@ -52,6 +52,7 @@ public class c52toby extends c00main{
 	boolean sk2 = false;
 	int sk3 = 0;
 	boolean sk4 = false;
+	int count = 0;
 	
 	List<Entity> camui = null;
 	Location camuiloc = null;
@@ -130,8 +131,10 @@ public class c52toby extends c00main{
 		return true;
 	}
 	
+	int tick = 0;
 	@Override
 	public boolean skill4() {
+		
 		if(sk2) {
 			cooldown[4] = 0;
 			return false;
@@ -149,7 +152,7 @@ public class c52toby extends c00main{
 				ab.removeBlock(20);
 				aliveblock.Main.Aliveblock.remove(ab);
 			}
-			if(AMath.random(10) == 2 && skillCooldown(0)) {
+			if(AMath.random(100) <= count*5 && skillCooldown(0)) {
 				spskillen();
 				spskillon();
 				ARSystem.playSound((Entity)player, "c52sp");
@@ -221,6 +224,9 @@ public class c52toby extends c00main{
 
 	@Override
 	public boolean tick() {
+		tick++;
+		if(tick%400 == 0) count++;
+		
 		if(sk4) {
 			if(tk%40==0) {
 				for(Entity e : camui) {
@@ -238,7 +244,7 @@ public class c52toby extends c00main{
 			if(camui != null && camui.size() > 0) {
 				for(Entity e : camui) {
 					if(e.getLocation().distance(camuiloc) > 8) {
-						e.teleport(camuiloc);
+						e.teleport(camuiloc.clone().add(0,1,0));
 						if(e != player) {
 							((LivingEntity)e).setNoDamageTicks(0);
 							((LivingEntity)e).damage(8,player);
@@ -261,11 +267,11 @@ public class c52toby extends c00main{
 		if(tk%20 == 0) {
 			if(!sk2) {
 				if(ARSystem.gameMode == modes.ZOMBIE) {
-					mana+= 0.25 * (skillmult + sskillmult);
-					if(!sk4) mana2+= 0.2 * (skillmult + sskillmult);
+					mana+= 0.4 * (skillmult + sskillmult);
+					if(!sk4) mana2+= 0.3 * (skillmult + sskillmult);
 				} else {
-					mana+= 0.5 * (skillmult + sskillmult);
-					if(!sk4) mana2+= 0.4 * (skillmult + sskillmult);
+					mana+= 0.8 * (skillmult + sskillmult);
+					if(!sk4) mana2+= 0.6 * (skillmult + sskillmult);
 				}
 				if(mana > 30) mana = 30;
 				if(mana2 > 20) mana2 = 20;
@@ -284,6 +290,9 @@ public class c52toby extends c00main{
 			}
 			scoreBoardText.add("&c ["+Main.GetText("c52:t1")+ "] : "+ AMath.round(mana,1));
 			scoreBoardText.add("&c ["+Main.GetText("c52:t2")+ "] : "+ AMath.round(mana2,1));
+			if(psopen) {
+				scoreBoardText.add("&c ["+Main.GetText("c52:sk0")+ "] : "+ count*5 + "%");
+			}
 		}
 
 		return true;

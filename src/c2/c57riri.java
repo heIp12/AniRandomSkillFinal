@@ -78,6 +78,7 @@ public class c57riri extends c00main{
 	
 	@Override
 	public boolean skill3() {
+		float d = s_damage;
 		if(player.getMaxHealth() >= 3 && !isps) {
 			hp-=2;
 			player.setMaxHealth(player.getMaxHealth()-2);
@@ -87,7 +88,7 @@ public class c57riri extends c00main{
 			}
 			Cindaella sin = new Cindaella(player);
 			sin.save(this);
-			delay(()->{
+			tpsdelay(()->{
 				ARSystem.giveBuff(player, sin , 780);
 			},20);
 			while(j < 1000) {
@@ -95,6 +96,7 @@ public class c57riri extends c00main{
 				if(Main.GetText("c"+(i+1)+":tag").contains("tg3") && i != 56) {
 					Rule.c.put(player, GetChar.get(player,Rule.gamerule, ""+(i+1),this));
 					Rule.c.get(player).repset();
+					Rule.c.get(player).s_damage = d;
 					break;
 				}
 				j++;
@@ -103,7 +105,7 @@ public class c57riri extends c00main{
 			int i,j = 0;
 			Cindaella sin = new Cindaella(player);
 			sin.save(this);
-			delay(()->{
+			tpsdelay(()->{
 				ARSystem.giveBuff(player, sin , 580);
 			},20);
 			while(j < 1000) {
@@ -111,6 +113,7 @@ public class c57riri extends c00main{
 				if(Main.GetText("c"+(i+1)+":tag").contains("tg3") && i != 56) {
 					Rule.c.put(player, GetChar.get(player,Rule.gamerule, ""+(i+1),this));
 					Rule.c.get(player).repset();
+					Rule.c.get(player).s_damage = d;
 					break;
 				}
 				j++;
@@ -130,6 +133,7 @@ public class c57riri extends c00main{
 			player.setHealth(30);
 			setcooldown[2] = 2;
 			setcooldown[3] = 1;
+			cooldown[3] = 0;
 			Rule.playerinfo.get(player).tropy(57,1);
 			ARSystem.playSound((Entity)player, "c57sp");
 		}

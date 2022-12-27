@@ -21,6 +21,7 @@ import ars.Rule;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
+import types.box;
 import types.modes;
 import util.AMath;
 import util.MSUtil;
@@ -39,7 +40,7 @@ public class c09youmu extends c00main{
 		number = 9;
 		load();
 		text();
-		sk3count = 1;
+		sk3count = 3;
 	}
 	
 	@Override
@@ -96,7 +97,7 @@ public class c09youmu extends c00main{
 		if(tk%20 ==0) {
 			scoreBoardText.add("&c ["+Main.GetText("c9:sk2")+ "]&f : " + sk3count);
 		}
-		if(sk3count < 5 && s3c > 200) {
+		if(sk3count < 5 && s3c > 160) {
 			s3c = 0;
 			sk3count++;
 		}
@@ -112,7 +113,7 @@ public class c09youmu extends c00main{
 					sk3count++;
 				}
 			}
-			if(et.size() >= 3 && !spben) {
+			if(et.size() >= 3) {
 				spskillen();
 				ARSystem.playSoundAll("c9sp");
 				int i = 0;
@@ -120,19 +121,17 @@ public class c09youmu extends c00main{
 
 				
 				for(LivingEntity e : player.getWorld().getLivingEntities()) {
-					if (e != player) {
+					if (e != player && ARSystem.isTarget(e, player,box.TARGET)) {
 						i++;
 						ARSystem.giveBuff(e, new Stun(e), 20);
 						delay(new Runnable() {
 							LivingEntity entitys = e;
 							@Override
 							public void run() {
-								if(!e.isDead()) {
-									ARSystem.spellCast(player,entitys,"c9_sp");
-									ARSystem.giveBuff(player, new Silence(player), 10);
-									ARSystem.giveBuff(player, new Stun(player), 10);
-									ARSystem.giveBuff(player, new Nodamage(player), 10);
-								}
+								ARSystem.spellCast(player,entitys,"c9_sp");
+								ARSystem.giveBuff(player, new Silence(player), 10);
+								ARSystem.giveBuff(player, new Stun(player), 10);
+								ARSystem.giveBuff(player, new Nodamage(player), 10);
 							}
 						}, 1+(i*5));
 					}

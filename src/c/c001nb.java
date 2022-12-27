@@ -27,6 +27,7 @@ import util.MSUtil;
 import util.MagicSpellVar;
 
 public class c001nb extends c00main{
+	int time = 0;
 	
 	public c001nb(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -61,7 +62,16 @@ public class c001nb extends c00main{
 		return true;
 	}
 	@Override
+	public boolean skill5() {
+		Rule.c.put((Player) player, GetChar.get((Player) player, Rule.gamerule,""+ (AMath.random(10)+40)));
+		return true;
+	}
+	@Override
 	public boolean tick() {
+		time++;
+		if(time%300 == 0) {
+			ARSystem.playSound((Entity)player, "c-1db1");
+		}
 		player.setVelocity(new Vector(0,0,0));
 		return true;
 	}

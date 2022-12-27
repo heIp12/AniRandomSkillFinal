@@ -18,12 +18,13 @@ import org.bukkit.util.Vector;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
-import c2.c6800origami;
 import c2.c68origami;
+import ca.c6800origami;
 import event.Skill;
 import types.box;
 import util.AMath;
 import util.MSUtil;
+import util.Map;
 
 public class c20kurumi extends c00main{
 	int ticks = 0;
@@ -52,11 +53,11 @@ public class c20kurumi extends c00main{
 	public boolean skill1() {
 		if(tan == 0) skill("c"+number+"_s1");
 		if(tan == 1) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 400, 2));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 600, 2));
 			skill("c"+number+"_s_alrf");
 		}
 		if(tan == 2) {
-			ARSystem.heal(player,10);
+			ARSystem.heal(player,20);
 			skill("c"+number+"_s_dalret");
 		}
 		if(tan == 3) {skill("c"+number+"_s_zain");}
@@ -148,7 +149,7 @@ public class c20kurumi extends c00main{
 			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c20:sk0")+ "]&f : "+ Math.round(time) + " /20");
 		}
 		if(ticks%20==0) {
-			if(shdow < 10&&!spben) {
+			if(shdow < 10) {
 				time+= (1*skillmult);
 			} else {
 				time = 0;
@@ -159,17 +160,10 @@ public class c20kurumi extends c00main{
 				ARSystem.playSoundAll("c20sp");
 				spskillon();
 				spskillen();
-			}
-			if(isps) {
-				Entity e = ARSystem.boxRandom(player, new Vector(999,999,999),box.TARGET);
-				if(e != null) {
-					Location loc = e.getLocation().clone();
-					loc.setYaw(AMath.random(360));
-					ARSystem.spellLocCast(player, loc.add(0,1,0), "c20_shdow");
-					ARSystem.playSound(e, "c20sht");
+				for(int i=0; i<100; i++) {
+					ARSystem.spellLocCast(player, Map.randomLoc().add(0,1,0), "c20_shdow");
 				}
 			}
-			
 			shdow-= (1*skillmult);
 			if(shdow <= 0) {
 				Skill.death(player, player);

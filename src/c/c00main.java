@@ -2,6 +2,7 @@ package c;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -36,22 +37,25 @@ import buff.PlusHp;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
+import event.Skill;
+import event.WinEvent;
 import manager.AdvManager;
 import manager.BuffManager;
 import manager.Holo;
 import manager.ScoreBoard;
 import util.Text;
 import util.AMath;
+import util.BlockUtil;
 import util.InvSkill;
 import util.MSUtil;
 import util.Map;
+import util.NpcPlayer;
 
 public class c00main implements Listener {
 	public float hp = 20;
 	public int number = 0;
 	public Player player;
 	public String name = "";
-	public boolean spben = false;
 	
 	public boolean isps = false;
 	public boolean psopen = false;
@@ -87,8 +91,16 @@ public class c00main implements Listener {
 	
 	protected List<String> scoreBoardText = new ArrayList<String>();
 	
+	private HashMap<Runnable,Double> delayEvent = new HashMap<>();
+	
+	
+	protected float frist_damage = 1;
+	protected float frist_defence = 1;
+	
 	public void e(){
-		if(myhp < player.getHealth()) Holo.create(player.getLocation().clone().add(0.5-AMath.random(10)*0.1,0.5,AMath.random(10)*0.1-AMath.random(10)*0.1),"§a§l✞ "+ (Math.round((player.getHealth()-myhp)*100)/100.0),10,new Vector(0,-0.01,0));
+		if(player != null && myhp < player.getHealth()) {
+			Holo.create(player.getLocation().clone().add(0.5-AMath.random(10)*0.1,0.5,AMath.random(10)*0.1-AMath.random(10)*0.1),"§a§l✞ "+ (Math.round((player.getHealth()-myhp)*100)/100.0),10,new Vector(0,-0.01,0));
+		}
 		myhp = player.getHealth();
 	}
 	public c00main(Player p,Plugin pl,c00main ch){
@@ -99,23 +111,27 @@ public class c00main implements Listener {
 		if(Rule.buffmanager.getBuffs(p) != null) {
 			Rule.buffmanager.getBuffs(p).clear();
 		}
-		ARSystem.giveBuff(p, new PlusHp(p), 0);
-		ARSystem.giveBuff(p, new Barrier(p), 0);
-		ARSystem.giveBuff(p, new BuffAC(p), 0);
-		
-		plugin = pl;
-		player = p;
-		MSUtil.resetbuff(p);
-		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(1000);
-		p.setGameMode(GameMode.ADVENTURE);
-		if(ARSystem.AniRandomSkill != null) {
-			int i = -(ARSystem.AniRandomSkill.time/3);
-			ARSystem.giveBuff(p, new TimeStop(p), i*20);
-			ARSystem.giveBuff(p, new Silence(p), -(ARSystem.AniRandomSkill.time/3)*40);
-			ARSystem.giveBuff(p, new Nodamage(p), -(ARSystem.AniRandomSkill.time/3)*40);
+		if(p != null) {
+			ARSystem.giveBuff(p, new PlusHp(p), 0);
+			ARSystem.giveBuff(p, new Barrier(p), 0);
+			ARSystem.giveBuff(p, new BuffAC(p), 0);
+			
+			plugin = pl;
+			player = p;
+			MSUtil.resetbuff(p);
+			p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(1000);
+			p.setGameMode(GameMode.ADVENTURE);
+			if(ARSystem.AniRandomSkill != null) {
+				int i = -(ARSystem.AniRandomSkill.time/3);
+				ARSystem.giveBuff(p, new TimeStop(p), i*20);
+				ARSystem.giveBuff(p, new Silence(p), -(ARSystem.AniRandomSkill.time/3)*40);
+				ARSystem.giveBuff(p, new Nodamage(p), -(ARSystem.AniRandomSkill.time/3)*40);
+			}
+			s_score = 200;
+			player.setWalkSpeed(0.2f);
+		} else {
+			p = NpcPlayer.player;
 		}
-		s_score = 200;
-		player.setWalkSpeed(0.2f);
 	}
 	public void repset() {
 		s_score = c.s_score;
@@ -132,9 +148,16 @@ public class c00main implements Listener {
 		return this;
 	}
 	public void infoload() {
-		psopen = (boolean)Rule.Var.Load(player.getName()+".Sp.c"+(number%1000));
-		Rule.savePoint(player.getName(), (int) Rule.playerinfo.get(player).getcradit(), 0);
-		Rule.savePoint(player.getName(), (int) Rule.playerinfo.get(player).getScore(), 1);
+		if(player != null) {
+			psopen = (boolean)Rule.Var.Load(player.getName()+".Sp.c"+(number%1000));
+			Rule.savePoint(player.getName(), (int) Rule.playerinfo.get(player).getcradit(), 0);
+			Rule.savePoint(player.getName(), (int) Rule.playerinfo.get(player).getScore(), 1);
+			if(Main.GetText("general:spopen").equalsIgnoreCase("true")) psopen = true;
+		}
+		frist_damage = Float.parseFloat(Main.GetText("general:damage"));
+		frist_defence = Float.parseFloat(Main.GetText("general:defence"));
+		if(Main.GetText("c"+number+":damage") != null) frist_damage += Float.parseFloat(Main.GetText("c"+number+":damage"))-1.f;
+		if(Main.GetText("c"+number+":defence") != null) frist_defence += Float.parseFloat(Main.GetText("c"+number+":defence"))-1.f;
 	}
 	
 	public void info() {
@@ -163,64 +186,83 @@ public class c00main implements Listener {
 	
 	public void text() {
 		infoload();
-		player.sendMessage("§a§l§m|=-=-=-=-=-=-=-=-=-=-=-=-=-=|");
-		String name = "§e§l[No."+(number%1000)+"]§b"+Main.GetText("c"+number+":name1")+" "+Main.GetText("c"+number+":name2");
-		String lore = "§c§lName : §7" +Main.GetText("c"+number+":name1")+" "+Main.GetText("c"+number+":name2");
-		lore+="\n&e&lAni : &6"+Text.getAni(Main.GetText("c"+number+":ani"));
-		lore+="\n&4&lHp : &c" +Main.GetText("c"+number+":hp");
-		lore+="\n&7Tag:&8&l "+Text.getType(Main.GetText("c"+number+":type"));
-		player.spigot().sendMessage(Text.hover(player,name, lore));
-		player.sendMessage("§a§l§m|=-=-=-=-=-=-=-=-=-=-=-=-=-=|");
-		String ps = "";
-		
-		for(int j=0;j<100;j++) {
-			if(Main.GetText("c"+number+":ps_lore"+j)!=null) {
-				if(Main.GetText("c"+number+":ps_lore"+j).indexOf(":") != -1) {
-					ps+="&f&o"+Main.GetText("c"+number+":ps_lore"+j)+"\n";
+		if(player != null) {
+			player.sendMessage("§a§l§m|=-=-=-=-=-=-=-=-=-=-=-=-=-=|");
+			String name = "§e§l[No."+(number%1000)+"]§b"+Main.GetText("c"+number+":name1")+" "+Main.GetText("c"+number+":name2");
+			String lore = "§c§lName : §7" +Main.GetText("c"+number+":name1")+" "+Main.GetText("c"+number+":name2");
+			lore+="\n&e&lAni : &6"+Text.getAni(Main.GetText("c"+number+":ani"));
+			lore+="\n&4&lHp : &c" +Main.GetText("c"+number+":hp");
+			lore+="\n&f";
+			if(frist_damage < 1) {
+				lore+= Main.GetText("main:damage")+":§c§l "+ (int)AMath.round(frist_damage*100f,0)+"%";
+			} else {
+				lore+= Main.GetText("main:damage")+":§a§l "+ (int)AMath.round(frist_damage*100f,0)+"%";
+			}
+			lore+="&e&l | &f";
+			if(frist_defence <= 1) {
+				lore+= Main.GetText("main:defence")+":§a§l "+ (int)AMath.round(frist_defence*100f,0)+"%";
+			} else {
+				lore+= Main.GetText("main:defence")+":§c§l "+ (int)AMath.round(frist_defence*100f,0)+"%";
+			}
+			lore+="\n&7Tag:&8&l "+Text.getType(Main.GetText("c"+number+":type"));
+			player.spigot().sendMessage(Text.hover(player,name, lore));
+			player.sendMessage("§a§l§m|=-=-=-=-=-=-===-=-=-=-=-=-=|");
+			String ps = "";
+			
+			for(int j=1;j<100;j++) {
+				if(Main.GetText("c"+number+":ps_lore"+j)!=null) {
+					if(j != 1) ps+="\n";
+					if(Main.GetText("c"+number+":ps_lore"+j).indexOf(":") != -1) {
+						ps+="&f&o"+Main.GetText("c"+number+":ps_lore"+j);
+					} else {
+						ps+="&7"+Main.GetText("c"+number+":ps_lore"+j);
+					}
 				} else {
-					ps+="&7"+Main.GetText("c"+number+":ps_lore"+j)+"\n";
+					j = 100;
+					break;
 				}
 			}
-		}
-		ps+="&7Tag:&8&l "+Text.getType(Main.GetText("c"+number+":ps_type"));
-		player.spigot().sendMessage(Text.hover(player,"§d§lPassive: §f§l"+Main.GetText("c"+number+":ps"), ps));
-		for(int i=0;i<10;i++) {
-			if(Main.GetText("c"+number+":sk"+i)!=null) {
-				String text = "&e&lSkill : &f" + Main.GetText("c"+number+":sk"+i) + "\n";
-				text += "&a&lCooldown : &c" + setcooldown[i] + "\n";
-				for(int j=0;j<100;j++) {
-					if(Main.GetText("c"+number+":sk"+i+"_lore"+j)!=null) {
-						if(Main.GetText("c"+number+":sk"+i+"_lore"+j).indexOf(":") != -1) {
-							text+="&f&o"+Main.GetText("c"+number+":sk"+i+"_lore"+j)+"\n";
+			player.spigot().sendMessage(Text.hover(player,"§d§lPassive: §f§l"+Main.GetText("c"+number+":ps"), ps));
+			for(int i=0;i<10;i++) {
+				if(Main.GetText("c"+number+":sk"+i)!=null) {
+					String text = "&e&lSkill : &f" + Main.GetText("c"+number+":sk"+i) + "\n";
+					text += "&a&lCooldown : &c" + setcooldown[i] + "\n";
+					for(int j=1;j<100;j++) {
+						if(Main.GetText("c"+number+":sk"+i+"_lore"+j)!=null) {
+							if(j != 1) text+="\n";
+							if(Main.GetText("c"+number+":sk"+i+"_lore"+j).indexOf(":") != -1) {
+								text+="&f&o"+Main.GetText("c"+number+":sk"+i+"_lore"+j);
+							} else {
+								text+="&7"+Main.GetText("c"+number+":sk"+i+"_lore"+j);
+							}
 						} else {
-							text+="&7"+Main.GetText("c"+number+":sk"+i+"_lore"+j)+"\n";
+							j=100;
+							break;
 						}
 					}
-				}
-				text+="&7Tag:&8&l "+Text.getType(Main.GetText("c"+number+":sk"+i+"_type"));
-				if(i==0 && !psopen) {
-					String finaltext = "";
-					String texts[] = text.split("\n");
-					for(int texti=0;texti<texts.length;texti++) {
-						String ndt = "";
-						for(int textj=0;textj<texts[texti].length();textj++) {
-							ndt += "a";
+					if(i==0 && !psopen) {
+						String finaltext = "";
+						String texts[] = text.split("\n");
+						for(int texti=0;texti<texts.length;texti++) {
+							String ndt = "";
+							for(int textj=0;textj<texts[texti].length();textj++) {
+								ndt += "a";
+							}
+							finaltext += "&k"+ndt+"\n";
 						}
-						finaltext += "&k"+ndt+"\n";
+						finaltext += "&r&c"+Main.GetText("main:msg11")+"\n";
+						finaltext += "&r&c"+Main.GetText("main:msg12")+"\n";
+						text = finaltext;
 					}
-					finaltext += "&r&c"+Main.GetText("main:msg11")+"\n";
-					finaltext += "&r&c"+Main.GetText("main:msg12")+"\n";
-					text = finaltext;
-				}
-				
-				if(i==0) {
-					player.spigot().sendMessage(Text.hover(player,"§c§lSpecial Skill: §f§l"+Main.GetText("c"+number+":sk"+i), text));
-				} else {
-					player.spigot().sendMessage(Text.hover(player,"§6§lSkill"+i+": §f"+Main.GetText("c"+number+":sk"+i), text));
+					if(i==0) {
+						player.spigot().sendMessage(Text.hover(player,"§c§lSpecial Skill: §f§l"+Main.GetText("c"+number+":sk"+i), text));
+					} else {
+						player.spigot().sendMessage(Text.hover(player,"§6§lSkill"+i+": §f"+Main.GetText("c"+number+":sk"+i), text));
+					}
 				}
 			}
+			player.sendMessage("§a§l§m|=-=-=-=-=-=-=-=-=-=-=-=-=-=|");
 		}
-		player.sendMessage("§a§l§m|=-=-=-=-=-=-=-=-=-=-=-=-=-=|");
 	}
 	
 	public void cooldown() {
@@ -246,46 +288,12 @@ public class c00main implements Listener {
 		setcooldown[6] = 3;
 		setcooldown[9] = 2;
 		hp = Integer.parseInt(Main.GetText("c"+number+":hp"));
-		player.playSound(player.getLocation(), "c"+number+"select", 1, 1);
-		player.setMaxHealth(hp);
-		player.setHealth(hp);
-		Rule.playerinfo.get(player).playchar = number;
-		
-		if(ARSystem.AniRandomSkill != null && (boolean)Rule.Var.Load("System.info.score")) {
-			float sc = ARSystem.AniRandomSkill.gamescore;
-			float sc2 = Rule.playerinfo.get(player).getScore();
+		if(player != null) {
+			player.playSound(player.getLocation(), "c"+number+"select", 1, 1);
+			player.setMaxHealth(hp);
+			player.setHealth(hp);
+			Rule.playerinfo.get(player).playchar = number;
 			
-			float mu = sc2/sc;
-			mu = Math.round(mu*10)/10.f;
-
-			if(mu > 3) mu = 3;
-			if(mu < 0.1) mu = 0.1f;
-			
-			player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:info24")+" "+sc2 +" ("+(mu*100)+"%)");
-			if(sc2-sc > 30 || sc2-sc < -30 ) {
-				if(mu > 1.5) {
-					player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:info26")+" +"+(100+(mu/3*100)) +"%");
-					for(int j=0; j < setcooldown.length;j++) {
-						setcooldown[j] *= 1.0+(mu/3);
-						coolm = (float) (1.0+(mu/3));
-					}
-				}
-	
-				if(mu >= 1.9) {
-					player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:info27"));
-					spben = true;
-				} else {
-					spben = false;
-				}
-				
-				if(mu < 0.5) {
-					player.sendMessage("§a§l[ARSystem] : §a§l "+Main.GetText("main:info26")+" "+(50+(mu*50)) +"%");
-					for(int j=0; j < setcooldown.length;j++) {
-						setcooldown[j] *= 0.5+(mu/2);
-						coolm = (float) (0.5+(mu/2));
-					}
-				}
-			}
 		}
 	}
 	
@@ -312,12 +320,12 @@ public class c00main implements Listener {
 		player.performCommand("tm anitext "+player.getName()+" SUBTITLE true 40 "+na);
 	}
 	
-	protected boolean skill1(){ return true; }
-	protected boolean skill2(){ return true; }
-	protected boolean skill3(){ return true; }
-	protected boolean skill4(){ return true; }
-	protected boolean skill5(){ return false; }
-	protected boolean skill6(){
+	public boolean skill1(){ return true; }
+	public boolean skill2(){ return true; }
+	public boolean skill3(){ return true; }
+	public boolean skill4(){ return true; }
+	public boolean skill5(){ return false; }
+	public boolean skill6(){
 		if(player.isSneaking()) {
 			Rule.playerinfo.get(player).addcradit(-10,Main.GetText("main:msg105"));
 			ARSystem.Death(player,player);
@@ -326,7 +334,7 @@ public class c00main implements Listener {
 		}
 		return false;
 	}
-	protected boolean skill7(){
+	public boolean skill7(){
 		text();
 		return false;
 	}
@@ -336,7 +344,7 @@ public class c00main implements Listener {
 		return false;
 	}
 	protected void skill(String name) {
-		player.performCommand("c "+name);
+		ARSystem.spellCast(player, name);
 	}
 	protected boolean skillCooldown(int i) {
 		if(cooldown[i] <= 0) {
@@ -348,14 +356,16 @@ public class c00main implements Listener {
 	
 	public boolean key(PlayerItemHeldEvent e) {
 		PlayerSpellCast(e.getPlayer());
-		try{
-			for(Buff buff : Rule.buffmanager.getBuffs((LivingEntity) player).getBuff()) {
-				if(buff != null) {
-					buff.onSkill(e);
+		if(Rule.buffmanager!=null && Rule.buffmanager.getBuffs((LivingEntity) player) != null) {
+			try{
+				for(Buff buff : Rule.buffmanager.getBuffs((LivingEntity) player).getBuff()) {
+					if(buff != null) {
+						buff.onSkill(e);
+					}
 				}
+			} catch(ConcurrentModificationException ev) {
+		
 			}
-		} catch(ConcurrentModificationException ev) {
-	
 		}
 		if(!e.isCancelled()) {
 			if(e.getNewSlot() == 0 && skillCooldown(1)) skill1();
@@ -378,11 +388,12 @@ public class c00main implements Listener {
 		return true;
 	}
 	
-	protected void delay(Runnable event, int delay) {
-		BukkitScheduler scheduler = plugin.getServer().getScheduler();
-		scheduler.scheduleSyncDelayedTask(plugin, event, delay);
+	public void delay(Runnable event, int delay) {
+		delayEvent.put(event, (double)delay);
 	}
-	
+	public void tpsdelay(Runnable event, int delay) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, event, delay);
+	}
 	public boolean death(PlayerDeathEvent e) {
 		for(PotionEffect pe : player.getActivePotionEffects()) player.removePotionEffect(pe.getType());
 		MSUtil.resetbuff(player);
@@ -418,6 +429,9 @@ public class c00main implements Listener {
 	public boolean ticks() {
 		if(isscoreboard && tk%20==0) {
 			ScoreboardSet();
+			if(Rule.buffmanager.GetBuffTime(player, "plushp") == 0) ARSystem.giveBuff(player, new PlusHp(player), 0);
+			if(Rule.buffmanager.GetBuffTime(player, "barrier") == 0) ARSystem.giveBuff(player, new Barrier(player), 0);
+			if(Rule.buffmanager.GetBuffTime(player, "buffac") == 0) ARSystem.giveBuff(player, new BuffAC(player), 0);
 		}
 		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 0) {
 			tick();
@@ -425,13 +439,13 @@ public class c00main implements Listener {
 			tick();
 		}
 		
-		if(!Map.inMap(player) && player.getGameMode() != GameMode.SPECTATOR && ARSystem.AniRandomSkill != null) {
-			maptick++;
-		} else {
-			maptick = 0;
-		}
-		if(player.getLocation().getBlock().getTypeId() == 30 || player.getLocation().clone().add(0,-1,0).getBlock().getTypeId() == 30) {
-			skill("cloud");
+		if(player.getGameMode() != GameMode.SPECTATOR && ARSystem.AniRandomSkill != null) {
+			Map.UniqeMap(player);
+			if(!Map.inMap(player) || (!BlockUtil.isPathable(player.getLocation().add(0,1,0).getBlock().getType()) && !BlockUtil.isPathable(player.getLocation().getBlock().getType()))) {
+				maptick++;
+			} else {
+				maptick = 0;
+			}
 		}
 		if(player.getLocation().getBlock().getTypeId() == 165 || player.getLocation().clone().add(0,-1,0).getBlock().getTypeId() == 165) {
 			skill("slime");
@@ -479,6 +493,13 @@ public class c00main implements Listener {
 	}
 	
 	public boolean damage(EntityDamageEvent e) { return true; }
+	public void setFrist_Damage(EntityDamageByEntityEvent e,boolean isAttack) {
+		if(isAttack) {
+			e.setDamage(e.getDamage()*frist_damage);
+		} else {
+			e.setDamage(e.getDamage()*frist_defence);
+		}
+	}
 	public boolean entitydamage(EntityDamageByEntityEvent e,boolean isAttack) { return true; }
 	public void TargetSpell(SpellTargetEvent e,boolean mycaster) {
 		if (mycaster && e.getTarget() instanceof ArmorStand) {
@@ -489,6 +510,7 @@ public class c00main implements Listener {
 	public void PlayerSpCast(Player p) { return; }
 	public void PlayerDeath(Player p,Entity e) { return; }
 	public void SpellCastEvent(SpellCastEvent e) {}
+	public void WinEvent(WinEvent e) {}
 	
 	public boolean firsttick() { return false; }
 	public boolean tick() { return false; }
@@ -498,6 +520,16 @@ public class c00main implements Listener {
 	
 	public void setStack(float f) {
 		player.sendMessage("No Stack");
+	}
+	
+	public boolean hpCost(double d,boolean death) {
+		if(player.getHealth() - d < 1) {
+			if(death) Skill.remove(player, player);
+		} else {
+			player.setHealth(player.getHealth()-d);
+			return true;
+		}
+		return false;
 	}
 	
 	public int getScore() {
@@ -524,6 +556,17 @@ public class c00main implements Listener {
 	public boolean chat(PlayerChatEvent e) {
 
 		return true;
+	}
+	public void delayLoop(double time) {
+		ArrayList<Runnable> removes = new ArrayList<>();
+		for(Runnable run : delayEvent.keySet()) {
+			delayEvent.put(run, delayEvent.get(run)-time);
+			if(delayEvent.get(run) <= 0) removes.add(run);
+		}
+		for(Runnable run : removes) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, run);
+			delayEvent.remove(run);
+		}
 	}
 
 }

@@ -20,8 +20,8 @@ import buff.Silence;
 import buff.Stun;
 import c.c00main;
 import c.c15tina;
-import c2.c5600enju;
 import c2.c56enju;
+import ca.c5600enju;
 import manager.Bgm;
 import types.box;
 import types.modes;
@@ -159,7 +159,7 @@ public class h003rentaro extends c00main{
 		if(tk%20 == 0) {
 			String s = Bgm.bgmcode;
 			if(!s.equals("bc15")&& Bgm.rep) {
-				Bgm.setBgm("c997");
+				Bgm.setlockBgm("c997");
 			}
 		}
 		player.setFallDistance(0);

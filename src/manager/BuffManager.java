@@ -56,6 +56,13 @@ public class BuffManager {
 		}
 		buff.clear();
 	}
+	
+	public void run() {
+		for(LivingEntity e : buff.keySet()) {
+			if(buff.get(e) != null) buff.get(e).run();
+		}
+	}
+	
 	public Set<LivingEntity> getTarget() {
 		if(buff == null) {
 			return null;
@@ -77,7 +84,7 @@ public class BuffManager {
 	public Buff selectBuff(LivingEntity target, String name) {
 		if(buff.get(target) != null && buff.get(target).getBuff() != null) {
 			for(Buff buffs : buff.get(target).getBuff()) {
-				if(buffs.getName().toUpperCase().equals(name.toUpperCase())) {
+				if(buffs != null && buffs.getName() != null && buffs.getName().toUpperCase().equals(name.toUpperCase())) {
 					return buffs;
 				}
 			}

@@ -146,9 +146,9 @@ public class c76naohumi extends c00main{
 			}
 			if(d) {
 				if(ARSystem.gameMode == modes.LOBOTOMY) {
-					e.setDamage(e.getDamage()*0.2);
-				} else {
 					e.setDamage(e.getDamage()*0.5);
+				} else {
+					e.setDamage(e.getDamage()*0.1);
 				}
 				if(isps) skill("c76_p2");
 				if(!isps) skill("c76_p1");

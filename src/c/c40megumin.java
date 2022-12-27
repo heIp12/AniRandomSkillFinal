@@ -63,7 +63,7 @@ public class c40megumin extends c00main{
 			cooldown[1] = setcooldown[1];
 			cooldown[2] = setcooldown[2];
 			cooldown[3] = setcooldown[3];
-			if(damage >= 24 && c == 5 && !spben &&skillCooldown(0)) {
+			if(damage >= 24 && c == 5 &&skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				count+=5;

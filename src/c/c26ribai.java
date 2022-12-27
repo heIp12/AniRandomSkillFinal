@@ -97,7 +97,7 @@ public class c26ribai extends c00main{
 	
 	@Override
 	public void PlayerDeath(Player p,Entity e) {
-		if(timer > 0 && !isps && p != player&&!spben) {
+		if(timer > 0 && !isps && p != player) {
 			timer = 0;
 			spskillon();
 			spskillen();
@@ -125,11 +125,26 @@ public class c26ribai extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
+			Location lc = e.getEntity().getLocation().clone();
+			Location plc = e.getDamager().getLocation().clone();
+			lc.setPitch(0);
+			plc.setPitch(0);
+			
+			float targetFaceAngle = lc.clone().getDirection().angle(new Vector(1, 1, 1));
+			float diffAngle = lc.toVector().subtract(plc.toVector()).angle(new Vector(1, 1, 1));
+			float diff = Math.abs(targetFaceAngle - diffAngle);
+			if(diff <= 0.3) {
+				e.setDamage(e.getDamage() * 2);
+			}
+			
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*2);
 			double damage = player.getLocation().distance(e.getEntity().getLocation());
 			if(damage > 5) damage = 5;
 			e.setDamage(e.getDamage() * (2.5 - (damage * 0.4 )));
-			if(damage < 2) player.sendTitle("§4Critical!","§cDamage : " + (Math.round(e.getDamage()*10)/10.0) + " x"+(Math.round((2.5 - (damage * 0.4 ))*10)/10.0),10,10,20);
+			if(damage < 2) {
+				ARSystem.spellCast(player, e.getEntity(), "bload");
+				player.sendTitle("§4Critical!","§cDamage : " + (Math.round(e.getDamage()*10)/10.0) + " x"+(Math.round((2.5 - (damage * 0.4 ))*10)/10.0),10,10,20);
+			}
 		} else {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage() * 0.7);
 		}

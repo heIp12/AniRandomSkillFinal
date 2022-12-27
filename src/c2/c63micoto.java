@@ -49,7 +49,7 @@ import util.MSUtil;
 import util.Map;
 
 public class c63micoto extends c00main{
-	double l = 0;
+	double l = 50;
 	int s2= 0;
 	boolean s3 = false;
 	List<Entity> s1;
@@ -118,7 +118,7 @@ public class c63micoto extends c00main{
 	
 	@Override
 	public boolean skill2() {
-		if(l<200) l+=10;
+		if(l<200) l+=20;
 		s2 = 60;
 		ARSystem.playSound((Entity)player, "c63s2");
 		return true;
@@ -150,7 +150,7 @@ public class c63micoto extends c00main{
 		}
 		if(s3) {
 			if(tk%10 == 0) {
-				if(l<200) l++;
+				if(l<200) l+=1.5;
 				ARSystem.playSound((Entity)player, "c63l" + AMath.random(2));
 				skill("c63_s3e");
 				for(Entity e : ARSystem.box(player, new Vector(6,2,6), box.TARGET)) {
@@ -171,6 +171,10 @@ public class c63micoto extends c00main{
 		if(isAttack) {
 			e.setDamage(e.getDamage() + e.getDamage()*l*0.01);
 		} else {
+			if(Rule.c.get(e.getDamager()) != null && Rule.c.get(e.getDamager()) instanceof c98kanna) {
+				l += e.getDamage()*2;
+				e.setDamage(e.getDamage()* 0.1);
+			}
 			if(s2 > 0) {
 				e.setDamage(e.getDamage()*0.2);
 			}
@@ -189,10 +193,15 @@ public class c63micoto extends c00main{
 					is = "touma";
 					break;
 				}
+				if(Rule.c.get(e) instanceof c100kuroko) {
+					is = "kuroco";
+					break;
+				}
 			}
 		}
-		
-		if(is.equals("touma")) {
+		if(is.equals("kuroco")) {
+			ARSystem.playSound((Entity)player, "c100m2");
+		} else if(is.equals("touma")) {
 			ARSystem.playSound((Entity)player, "c63touma");
 		} else {
 			ARSystem.playSound((Entity)player, "c63db");

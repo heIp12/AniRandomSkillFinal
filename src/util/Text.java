@@ -18,6 +18,14 @@ public class Text {
         return mainComponent;
 	}
 	
+	static public String getAni(String text) {
+		String txt = Main.GetText("ani:"+text);
+		return txt;
+	}
+	
+	static public int getTextint(String s) {
+		return Integer.parseInt(Main.GetText(s));
+	}
 	static public String getType(String text) {
 		String txt = "";
 		String option[] = text.split(" ");
@@ -27,16 +35,6 @@ public class Text {
 		return txt.substring(0,txt.length()-2);
 
 	}
-	
-	static public String getAni(String text) {
-		String txt = Main.GetText("ani:"+text);
-		return txt;
-	}
-	
-	static public int getTextint(String s) {
-		return Integer.parseInt(Main.GetText(s));
-	}
-	
 	public static String bubble(String val) {
 		String retur ="";
 		char[] arr = val.toCharArray();

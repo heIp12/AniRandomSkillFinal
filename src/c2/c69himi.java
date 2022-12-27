@@ -71,10 +71,11 @@ public class c69himi extends c00main{
 		if(count > 60) {
 			Rule.playerinfo.get(player).tropy(69,1);
 		}
-		if(AMath.random(100) == 5 && !isps) {
+		if(AMath.random(100) <= 1 && !isps) {
 			spskillon();
 			spskillen();
 			ARSystem.playSoundAll("c69sp");
+			skillmult+=1;
 		}
 	}
 	@Override
@@ -137,7 +138,7 @@ public class c69himi extends c00main{
 		sp();
 		return true;
 	}
-	
+	int tick = 0;
 	
 	@Override
 	public boolean tick() {
@@ -147,13 +148,24 @@ public class c69himi extends c00main{
 			}
 		}
 		if(tk%20 == 0) {
-
 			scoreBoardText.add("&c ["+Main.GetText("c69:ps")+ "] : "+ (1+count/5));
-			
-			if(isps && tk%60 == 0) {
-				local.add(Map.randomLoc());
+		}
+		if(isps && AMath.random(10) == 3) {
+			if(AMath.random(2) == 2) {
+				Location loc = Map.randomLoc();
+				loc.setYaw(AMath.random(360));
+				ARSystem.spellLocCast(player, loc, "c69_s3");
+				ARSystem.spellLocCast(player, loc.add(0,1,0), "c69_s1_i1");
+			} else {
+				for(int i=0;i<AMath.random(3);i++) {
+					Location loc = Map.randomLoc();
+					loc.setYaw(AMath.random(360));
+					ARSystem.spellLocCast(player, loc, "c69_s3");
+					ARSystem.spellLocCast(player, loc.add(0,1,0), "c69_s2_i1");
+				}
 			}
 		}
+		tick++;
 		return true;
 	}
 	

@@ -15,7 +15,7 @@ import types.BuffType;
 import util.AMath;
 
 public class Airborne extends Buff{
-	Location loc;
+	double y;
 	public Airborne(LivingEntity target) {
 		super(target);
 		bufftype.add(BuffType.DEBUFF);
@@ -24,10 +24,17 @@ public class Airborne extends Buff{
 		color = "§f";
 		onlyone = true;
 		isText = true;
+		y = target.getLocation().getY();
 	}
 
 	public boolean onTicks() {
 		target.setVelocity(target.getVelocity().setY(0));
+		if(target.getLocation().getY() < y) {
+			target.setVelocity(target.getVelocity().setY(0.5));
+		}
+		if(y > target.getLocation().getY() + 1) {
+			y = target.getLocation().getY();
+		}
 		return false;
 	}
 	

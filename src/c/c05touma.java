@@ -9,6 +9,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
+import com.nisovin.magicspells.events.SpellTargetEvent;
+
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
@@ -59,6 +61,14 @@ public class c05touma extends c00main{
 			scoreBoardText.add("&c [Damage]&f : " + damage);
 		}
 		if(ctime > 0) ctime--;
+		
+		if(tk% 10 == 0) {
+			for(Entity e : ARSystem.box(player, new Vector(5, 5, 5), box.TARGET)) {
+				if(Rule.c.get(e).number == 25) {
+					Skill.remove(e, player);
+				}
+			}
+		}
 		return true;
 	}
 	
@@ -124,9 +134,9 @@ public class c05touma extends c00main{
 		delay(new Runnable(){@Override public void run() { skill("c"+number+"_p4");}}, 252);
 		for(int i=0; i<15;i++) {
 			delay(()-> {
-				ARSystem.spellLocCast(p, p.getLocation().clone().add(new Vector(4-AMath.random(400)*0.02,4-AMath.random(400)*0.02,2-AMath.random(400)*0.04)), "c5_sp0");
-				ARSystem.spellLocCast(p, p.getLocation().clone().add(new Vector(4-AMath.random(400)*0.02,4-AMath.random(400)*0.02,2-AMath.random(400)*0.04)), "c5_sp0");
-				ARSystem.spellLocCast(p, p.getLocation().clone().add(new Vector(4-AMath.random(400)*0.02,4-AMath.random(400)*0.02,2-AMath.random(400)*0.04)), "c5_sp0");
+				ARSystem.spellLocCast(p, p.getLocation().clone().add(new Vector(4-AMath.random(400)*0.02,2-AMath.random(400)*0.01,4-AMath.random(400)*0.02)), "c5_sp0");
+				ARSystem.spellLocCast(p, p.getLocation().clone().add(new Vector(4-AMath.random(400)*0.02,2-AMath.random(400)*0.01,4-AMath.random(400)*0.02)), "c5_sp0");
+				ARSystem.spellLocCast(p, p.getLocation().clone().add(new Vector(4-AMath.random(400)*0.02,2-AMath.random(400)*0.01,4-AMath.random(400)*0.02)), "c5_sp0");
 			}, 255+i);
 		}
 		delay(new Runnable(){@Override public void run() { 
@@ -136,7 +146,9 @@ public class c05touma extends c00main{
 			Rule.buffmanager.selectBuffTime(player, "timestop",0);
 			Skill.remove(e.getDamager(), e.getEntity());
 			for(Entity en : ARSystem.box(p, new Vector(6,3,6),box.TARGET)) {
-				Skill.remove(en, e.getEntity());
+				if(e.getDamager() != en) {
+					Skill.remove(en, e.getEntity());
+				}
 			}
 		}}, 260);
 		return true;
@@ -159,10 +171,10 @@ public class c05touma extends c00main{
 		if(!isAttack) {
 			bf = 1;
 			if(MSUtil.isbuff(player, "c5_s3_d")) {
-				bf = 2;
+				bf = 5;
 			}
 			damage = e.getDamage()*bf;
-			if(((LivingEntity)e.getEntity()).getMaxHealth() <= e.getDamage()*bf && !spben) {
+			if(((LivingEntity)e.getEntity()).getMaxHealth() <= e.getDamage()*bf) {
 				if(skillCooldown(0)) {
 					if(ARSystem.getPlayerCount() == 2) {
 						s_score+=10000;

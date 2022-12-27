@@ -12,6 +12,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import types.modes;
@@ -52,6 +53,9 @@ public class c15tina extends c00main{
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 2000, 1));
 			}
 		}
+		if(tk%20==0&&psopen) {
+			scoreBoardText.add("&c ["+Main.GetText("c15:sk0")+ "]&f : " +count +" / 3");
+		}
 		ticks%=20;
 		return false;
 	}
@@ -70,14 +74,14 @@ public class c15tina extends c00main{
 		skill("c"+number+"_s3");
 		count++;
 		if(ARSystem.gameMode == modes.LOBOTOMY) {
-			if(count > 10 && !spben) {
+			if(count > 10) {
 				count = 0;
 				spskillen();
 				spskillon();
 				skill("c"+number+"_sp");
 			}
 		} else {
-			if(count > 3 && !spben) {
+			if(count > 3 ) {
 				count = 0;
 				spskillen();
 				spskillon();

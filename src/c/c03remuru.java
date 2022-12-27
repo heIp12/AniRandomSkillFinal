@@ -9,6 +9,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
+import com.nisovin.magicspells.util.compat.EventUtil;
+
 import ars.ARSystem;
 import ars.Rule;
 import buff.Nodamage;
@@ -16,6 +18,8 @@ import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
 import event.Skill;
+import event.WinEvent;
+import manager.Bgm;
 import manager.Holo;
 import util.AMath;
 import util.MSUtil;
@@ -48,9 +52,9 @@ public class c03remuru extends c00main{
 			skill("c"+number+"_s1_e1");
 		} else if(Rule.buffmanager.GetBuffValue(player, "plushp") < 100) {
 			skill("c"+number+"_s1_e2");
-		} else if(Rule.buffmanager.GetBuffValue(player, "plushp") < 250) {
+		} else if(Rule.buffmanager.GetBuffValue(player, "plushp") < 150) {
 			skill("c"+number+"_s1_e3");
-		} else if(Rule.buffmanager.GetBuffValue(player, "plushp") < 500) {
+		} else if(Rule.buffmanager.GetBuffValue(player, "plushp") < 250) {
 			skill("c"+number+"_s1_e4");
 		} else {
 			skill("c"+number+"_s1_e4");
@@ -79,17 +83,21 @@ public class c03remuru extends c00main{
 		if(skillCooldown(0)) {
 			skill("c"+number+"_sps1");
 			Rule.buffmanager.selectBuffValue(player, "plushp",0);
-			s_score+= 50000000;
+			Bgm.setBgm("c3");
 			delay(new Runnable(){@Override public void run() {
 				ARSystem.giveBuff(player, new TimeStop(player), 1200);
 				}}, 20);
-			delay(new Runnable(){@Override public void run() { skill("c"+number+"_sps2");}}, 120);
-			delay(new Runnable(){@Override public void run() { skill("c"+number+"_spe_3");}}, 340);
-			delay(new Runnable(){@Override public void run() { skill("c"+number+"_spe_4");}}, 580);
-			delay(new Runnable(){@Override public void run() { skill("c"+number+"_spe_4");}}, 602);
-			delay(()->{ skill("c"+number+"_spe_4");}, 624);
-			delay(()->{ skill("c"+number+"_sps3");}, 840);
-			delay(()->{  skill("c"+number+"_sp_a");}, 1080);
+			delay(()-> { ARSystem.playSoundAll("c3g2");}, 120);
+			delay(()-> { 
+				WinEvent event = new WinEvent(player);
+				Bukkit.getPluginManager().callEvent(event);
+				if(!event.isCancelled()) {
+					skill("c"+number+"_sp_a");
+					delay(()-> { 
+						Skill.win(player);
+					}, 40);
+				}
+			}, 320);
 			 
 		}
 		return true;
@@ -112,42 +120,54 @@ public class c03remuru extends c00main{
 	}
 	
 	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			if(target.getHealth() - 4  < 1) {
+				boolean hs = false;
+	
+				if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) {
+					hs = true;
+				}
+				if(Rule.buffmanager.OnBuffTime(target, "timestop")) {
+					hs = true;
+				}
+				if(Rule.buffmanager.OnBuffTime(target, "nodamage")) {
+					hs = true;
+				}
+				
+	
+				if(!hs) {
+					player.sendTitle("","HP: "+Rule.buffmanager.GetBuffValue(player, "plushp")+"(+"+(target).getMaxHealth()/2.5+")",0,40,20);
+					Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) (target.getMaxHealth()/2.5));
+					Skill.remove(target, player);
+					ARSystem.playSound((Entity)player, "c3s2");
+				}
+			} else {
+				target.setNoDamageTicks(0);
+				target.damage(4,player);
+			}
+		}
+	}
+	
+	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
-		if(Rule.buffmanager.GetBuffValue(player, "plushp") >= 1000 && !spben) {
+		if(Rule.buffmanager.GetBuffValue(player, "plushp") >= 500) {
 			spskillon();
 			spskillen();
 			skill0(e);
 		}
+		
 		if(isAttack) {
 			if(((LivingEntity)e.getEntity()).getHealth() - e.getDamage() < 1) {
-				boolean hs = false;
 
-				if(e.getEntity() instanceof Player && ((Player)e.getEntity()).getGameMode() == GameMode.SPECTATOR) {
-					hs = true;
-				}
-				if(Rule.buffmanager.OnBuffTime(player, "timestop")) {
-					hs = true;
-				}
-				if(Rule.buffmanager.OnBuffTime(player, "nodamage")) {
-					hs = true;
-				}
-				
-
-				if(!hs) {
-					player.sendTitle("","HP: "+Rule.buffmanager.GetBuffValue(player, "plushp")+"(+"+((LivingEntity)e.getEntity()).getMaxHealth()/2+")",0,40,20);
-					Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) (((LivingEntity)e.getEntity()).getMaxHealth()/2));
-					Skill.remove(e.getEntity(), e.getDamager());
-					ARSystem.playSound((Entity)player, "c3s2");
-					e.setDamage(0);
-				}
 			}
 		}
 		if(!isAttack) {
 			if(s2 > 0) {
 				ARSystem.giveBuff(player, new Nodamage(player), 2);
 				skill("c3_sound3");
-				player.sendTitle("","HP: "+Rule.buffmanager.GetBuffValue(player, "plushp")+"(+"+e.getDamage()+")",0,30,10);
-				Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) e.getDamage());
+				player.sendTitle("","HP: "+Rule.buffmanager.GetBuffValue(player, "plushp")+"(+"+AMath.round(e.getDamage()*0.7f,2)+")",0,30,10);
+				Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) AMath.round(e.getDamage()*0.7f,2));
 				if(e.getDamage() >= 100) {
 					Rule.playerinfo.get(player).tropy(3,1);
 				}

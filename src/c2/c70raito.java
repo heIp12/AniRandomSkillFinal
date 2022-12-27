@@ -41,6 +41,7 @@ import buff.Wound;
 import c.c000humen;
 import c.c00main;
 import event.Skill;
+import event.WinEvent;
 import manager.AdvManager;
 import manager.Bgm;
 import manager.Holo;
@@ -75,7 +76,7 @@ public class c70raito extends c00main{
 				public void Start(String st) {
 					player.closeInventory();
 					if(Rule.c.get(Bukkit.getPlayer(st)) != null) {
-						players.put(Bukkit.getPlayer(st),50);
+						players.put(Bukkit.getPlayer(st),29+AMath.random(31));
 						Bukkit.getPlayer(st).sendTitle(Main.GetText("c70:t1"), "",5,1,5);
 					}
 				}
@@ -95,6 +96,8 @@ public class c70raito extends c00main{
 					}
 				}
 			},200);
+		} else {
+			cooldown[1] = 0;
 		}
 		return true;
 	}
@@ -102,18 +105,20 @@ public class c70raito extends c00main{
 	@Override
 	public boolean skill2() {
 		ARSystem.playSound((Entity)player, "c"+AMath.random(GetChar.getCount())+"db");
+		ARSystem.addBuff(player, new Nodamage(player), 14);
 		return true;
 	}
 	
 	@Override
 	public boolean skill3() {
-		ARSystem.potion((LivingEntity) player, 14, 60, 0);
+		ARSystem.potion((LivingEntity) player, 14, 120, 0);
+		ARSystem.potion((LivingEntity) player, 1, 120, 4);
 		return true;
 	}
 	
 	@Override
 	public boolean tick() {
-		if(tk%10 == 0 && AMath.random(60) == 4 && !ps) {
+		if(tk%10 == 0 && AMath.random(40) == 4 && !ps) {
 			ps = true;
 			player.sendTitle("[Death Note]",Main.GetText("c70:t2"));
 		}
@@ -149,16 +154,20 @@ public class c70raito extends c00main{
 			}
 			if(remove != null) players.remove(remove);
 			
-			if(all && !isps && Rule.c.size() > 1 && skillCooldown(0)) {
+			if(all && !isps && Rule.c.size() > 2 && skillCooldown(0)) {
 				spskillen();
 				spskillon();
 				ARSystem.playSoundAll("c70sp");
+				Bgm.setBgm("c70");
 				for(Player p :Rule.c.keySet()) {
 					ARSystem.giveBuff(p,new TimeStop(p), 480);
 					if(p != player) {
 						delay(()->{
-							Rule.c.put(p, new c000humen(p, plugin, null));
-							Skill.remove(p, player);
+							WinEvent event = new WinEvent(player);
+							Bukkit.getPluginManager().callEvent(event);
+							if(!event.isCancelled()) {
+								Skill.win(player);
+							}
 						},480);
 					}
 				}
@@ -177,6 +186,7 @@ public class c70raito extends c00main{
 	void bgm() {
 		if(ps) {
 			String s = Bgm.bgmcode;
+			if(s.contains("bc") &&Integer.parseInt(s.replace("bc","")) > 500) return;
 			boolean bgm = false;
 			if(s.equals("bc4")) {
 				Bgm.setBgm("r1");

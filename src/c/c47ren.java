@@ -43,6 +43,8 @@ public class c47ren extends c00main{
 	int stack = 0;
 	int tropy = 0;
 	
+	int sp = 0;
+	
 	public c47ren(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 47;
@@ -94,6 +96,7 @@ public class c47ren extends c00main{
 			spskillon();
 			skill("c47_sp");
 			stack = 0;
+			sp = 60;
 		}
 		return true;
 	}
@@ -119,6 +122,27 @@ public class c47ren extends c00main{
 
 	@Override
 	public boolean tick() {
+		if(sp > 0) {
+			sp--;
+			if(sp%2== 0) skill("c47_sp1");
+			for(Entity e : ARSystem.box(player, new Vector(10,10,10), box.TARGET)) {
+				((LivingEntity)e).setNoDamageTicks(0);
+				((LivingEntity)e).damage(1.5,player);
+			}
+			if(sp < 20) {
+				skill("c47_sp1");
+				if(sp%2==0) ARSystem.playSound((Entity)player, "0gun", 2f);
+				for(Entity e : ARSystem.box(player, new Vector(12,12,12), box.TARGET)) {
+					((LivingEntity)e).setNoDamageTicks(0);
+					((LivingEntity)e).damage(1.5,player);
+					((LivingEntity)e).setNoDamageTicks(0);
+					((LivingEntity)e).damage(1.5,player);
+				}
+			} else {
+				if(sp%2==0) ARSystem.playSound((Entity)player, "0gun", 1.2f);
+			}
+			
+		}
 		scoreBoardText.add("&c ["+Main.GetText("c47:ps")+ "] : "+ bullet);
 		if(psopen) {
 			scoreBoardText.add("&c ["+Main.GetText("c47:sk0")+ "] : "+ stack +" / 25");
@@ -130,7 +154,7 @@ public class c47ren extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			stack++;
+			if(e.getDamage() <= 1.4) stack++;
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*3);
 		} else {
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 
@@ -99,5 +100,12 @@ public class Var{
 		if(!(boolean) config.get(s)) {
 			config.set(s , o);
 		}
+	}
+	
+	public ItemStack getItemStack(String s) {
+		if(config.get(s) == null) {
+			return null;
+		}
+		return config.getItemStack(s);
 	}
 }

@@ -6,11 +6,12 @@ public enum modes {
 	ZOMBIE,
 	TEAMMATCH,
 	TEAM,
+	KANNA,
+	GUN,
+	KILLER,
 	
-	
-	
-	
+	KAGEROU,
 	LOBOTOMY;
-	public static int size = 5;
+	public static int size = 8;
 	
 }

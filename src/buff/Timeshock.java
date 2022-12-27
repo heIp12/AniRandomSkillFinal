@@ -51,20 +51,17 @@ public class Timeshock extends Buff{
 	
 	@Override
 	public boolean onAttack(EntityDamageByEntityEvent e) {
-		if(tick > 0) {
-			e.setDamage(0);
-			e.setCancelled(true);
-		}
 		return true;
 	}
 	
 	@Override
 	public boolean onHit(EntityDamageByEntityEvent e) {
 		if(tick > 0) {
-			if(!damage.containsKey((LivingEntity) e.getDamager())) {
-				damage.put((LivingEntity) e.getDamager(), 0.0);
+			LivingEntity attaker = (LivingEntity) e.getDamager();
+			if(!damage.containsKey(attaker)) {
+				damage.put(attaker, 0.0);
 			}
-			damage.put((LivingEntity) e.getDamager(), e.getDamage() + damage.get((LivingEntity) e.getDamager()));
+			damage.put(attaker, e.getDamage() + damage.get(attaker));
 			e.setDamage(0);
 			e.setCancelled(true);
 		}
@@ -73,9 +70,7 @@ public class Timeshock extends Buff{
 	
 	@Override
 	public boolean onSkill(PlayerItemHeldEvent e) {
-		if(tick > 0) {
-			e.setCancelled(true);
-		}
+		if(tick > 0) e.setCancelled(true);
 		return false;
 	}
 	
@@ -89,10 +84,9 @@ public class Timeshock extends Buff{
 		int i = 0;
 		for(LivingEntity e : damage.keySet()) {
 			i++;
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
 				target.setNoDamageTicks(0);
 				target.damage(damage.get(e),e);
-				
 			}, i*2);
 		}
 	}

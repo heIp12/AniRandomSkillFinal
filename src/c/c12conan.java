@@ -69,7 +69,7 @@ public class c12conan extends c00main{
 		if(tk%20==0) {
 			scoreBoardText.add("&c ["+Main.GetText("c12:ps")+ "]&f : " + ticks/20 +" / 50");
 		}
-		if(ARSystem.getPlayerCount() == 2 && player.getGameMode() == GameMode.ADVENTURE &&skillCooldown(0) && !spben) {
+		if(ARSystem.getPlayerCount() == 2 && player.getGameMode() == GameMode.ADVENTURE &&skillCooldown(0)) {
 			spskillen();
 			spskillon();
 			s_score+=50000000;

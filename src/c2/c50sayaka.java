@@ -27,10 +27,12 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Nodamage;
+import buff.Stun;
 import buff.TimeStop;
 import c.c00main;
 import event.Skill;
 import manager.AdvManager;
+import types.MapType;
 import types.modes;
 import util.AMath;
 import util.InvSkill;
@@ -42,7 +44,8 @@ public class c50sayaka extends c00main{
 	int tick = 0;
 	boolean ps = false;
 	float damage = 0;
-	private int ti = 0;
+	
+	int speed = 0;
 
 	public c50sayaka(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -53,76 +56,109 @@ public class c50sayaka extends c00main{
 	
 	@Override
 	public void setStack(float f) {
-		damage = f;
+		speed = (int)f;
+		skillmult = 1+speed*0.05;
 	}
 
 	@Override
 	public boolean skill1() {
-		skill("c50_s1");
+		int delay = 14;
+		delay -= speed/2;
+		if(delay <= 0) {
+			skill("c50_s1");
+		} else {
+			ARSystem.playSound((Entity)player, "0slash5",2.f);
+			delay(()->{skill("c50_s1");},delay);
+		}
 		return true;
 	}
 	@Override
 	public boolean skill2() {
-		ARSystem.potion(player, 1, 60, 1);
+		player.setVelocity(player.getLocation().getDirection().multiply(1.4 + (speed*0.02)).setY(0.2));
 		skill("c50_s2");
 		return true;
 	}
 	
 	@Override
 	public boolean skill3() {
-		ARSystem.heal(player, 2);
-		skill("c50_s3");
+		int delay = 8;
+		delay -= speed/3;
+		if(delay < 1) delay = 1;
+		
+		int d = delay;
+		ARSystem.playSound((Entity)player, "c50s3");
+		int size = 5;
+		if(speed > 5) size += (speed-3)*0.15;
+		for(int i=0;i<size;i++) {
+			delay(()->{
+				ARSystem.playSound((Entity)player, "0slash2",1+((8-d)*0.1f),0.1f);
+				ARSystem.giveBuff(player, new Stun(player), d+1);
+				skill("c50_s3");
+			},delay*i);
+		}
 		return true;
 	}
 	
-
+	@Override
+	public boolean skill4() {
+		if(speed < 10) {
+			skillmult+= 0.05;
+			speed+=1;
+		}
+		skillmult+= 0.05;
+		speed+=1;
+		return true;
+	}
+	
+	boolean son = false;
 	@Override
 	public boolean tick() {
 		tick++;
-		if(tick%10==0) {
+		int delay = 20;
+		delay-= speed/4;
+		if(delay < 4) delay = 4;
+		if(tick%delay==0) {
 			ARSystem.heal(player, 1);
 		}
-		if(tk%20==0 && psopen) {
-			scoreBoardText.add("&c ["+Main.GetText("c50:sk0")+ "] : "+ damage +"/70");
+		if(tk%20==0) {
+			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c50:sk0")+ "] : "+ damage +"/100");
+			scoreBoardText.add("&c ["+Main.GetText("c50:sk4")+ "] : "+ (speed*5) +"%");
 		}
-		if(damage >= 70 && !isps && ARSystem.gameMode != modes.LOBOTOMY) {
+		if(damage >= 100 && !isps && ARSystem.gameMode != modes.LOBOTOMY) {
 			spskillon();
 			spskillen();
 			Rule.playerinfo.get(player).tropy(50,1);
-			ARSystem.playSound((Entity)player, "c50sp",(float) 1);
+			ARSystem.playSoundAll("c50sp",(float) 1);
 			ARSystem.giveBuff(player, new TimeStop(player), 120);
-			delay(new Runnable() {
+			tpsdelay(new Runnable() {
 				@Override
 				public void run() {
 					player.setGameMode(GameMode.SPECTATOR);
 					player.setMaxHealth(1000);
 					player.setHealth(1000);
-					Location locs = player.getLocation();
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn c50_1 1 "+locs.getWorld().getName()+","+locs.getBlockX()+","+locs.getBlockY()+","+locs.getBlockZ());
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn c50_3 3 "+locs.getWorld().getName()+","+locs.getBlockX()+","+locs.getBlockY()+","+locs.getBlockZ());
-					for(int i = 0; i < 10; i++) {
-						Location loc = Map.randomLoc();
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn c50_3 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());
+					Map.mapType = MapType.NORMAL;
+					Map.getMapinfo(1008);
+					if(ARSystem.gameMode2) {
+						for(Player p : Bukkit.getOnlinePlayers()) {
+							Map.playeTp(p);
+						}
 					}
-					for(int i = 0; i < 40; i++) {
-						Location loc = Map.randomLoc();
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn c50_4 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());
-					}
-					for(int i = 0; i < Rule.c.size()*2; i++) {
-						Location loc = Map.randomLoc();
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn c50_2 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());
-					}
+					Map.spawn("c50_1",new Location(player.getWorld(),169,35,69), 1);
+					tpsdelay(()->{
+						son = true;
+					},30);
 				}
 			},100);
 		}
 		if(tick%10==0) {
-			if(isps) ti ++;
-			
-			if(isps && ti > 10) {
+			if(isps && son) {
 				boolean is = true;
 				for(LivingEntity e : player.getWorld().getLivingEntities()) {
-					if(e.getCustomName() != null ) {
+					if(e.getCustomName() != null) {
 						if(e.getCustomName().equals("Oktavia Von Seckendorff")) {
+							if(!Map.inMap(e.getLocation())) {
+								e.teleport(Map.randomLoc());
+							}
 							is = false;
 						}
 					}
@@ -141,8 +177,38 @@ public class c50sayaka extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*2);
+			if(Rule.c.get(e.getEntity()) != null) cooldown[4] -= e.getDamage()*3;
 		} else {
-
+			if(Rule.c.get(e.getDamager()) != null) cooldown[4] -= 3;
+		}
+		if(damage >= 100 && !isps && ARSystem.gameMode != modes.LOBOTOMY) {
+			e.setCancelled(true);
+			e.setDamage(0);
+			spskillon();
+			spskillen();
+			Rule.playerinfo.get(player).tropy(50,1);
+			ARSystem.playSoundAll("c50sp",(float) 1);
+			ARSystem.giveBuff(player, new TimeStop(player), 120);
+			tpsdelay(new Runnable() {
+				@Override
+				public void run() {
+					player.setGameMode(GameMode.SPECTATOR);
+					player.setMaxHealth(1000);
+					player.setHealth(1000);
+					Map.mapType = MapType.NORMAL;
+					Map.getMapinfo(1008);
+					if(ARSystem.gameMode2) {
+						for(Player p : Bukkit.getOnlinePlayers()) {
+							Map.playeTp(p);
+						}
+					}
+					Map.spawn("c50_1",new Location(player.getWorld(),169,35,69), 1);
+					tpsdelay(()->{
+						son = true;
+					},30);
+				}
+			},100);
+			return false;
 		}
 		return true;
 	}

@@ -36,12 +36,12 @@ public class TeamInfo {
 	
 	public void QuitAll(){
 		if(team != null) {
-			for(Player p : teamPlayer) {
-				try {
+			try {
+				for(Player p : teamPlayer) {
 					team.removePlayer(p);
-				} catch (IllegalStateException e) {
-					
 				}
+			} catch (IllegalStateException e) {
+				  
 			}
 			teamPlayer.clear();
 		}

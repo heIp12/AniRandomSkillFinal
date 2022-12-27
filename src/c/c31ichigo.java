@@ -64,6 +64,7 @@ public class c31ichigo extends c00main{
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.TARGET);
 		Player p = null;
 		String is = "";
+		player.setFallDistance(0);
 		for(Entity e : el) {
 			if(Rule.c.get(e) != null) {
 				if(Rule.c.get(e) instanceof c22byakuya) {
@@ -116,7 +117,7 @@ public class c31ichigo extends c00main{
 	
 	void sp(Double d){
 		damage+=d;
-		if(!spben && damage >= 30 && !isps) {
+		if(damage >= 30 && !isps) {
 			ARSystem.playSound((Entity)player,"c31sp");
 			spskillen();
 			spskillon();
@@ -133,6 +134,12 @@ public class c31ichigo extends c00main{
 			if(count >= 2) {
 				Rule.playerinfo.get(player).tropy(31,1);
 			}
+		}
+		if(e == player && timer > 0) {
+			timer = 100;
+			ARSystem.giveBuff(player, new Silence(player), 100);
+			ARSystem.giveBuff(player, new Nodamage(player), 100);
+			ARSystem.potion(player, 18, 60, 10);
 		}
 	}
 

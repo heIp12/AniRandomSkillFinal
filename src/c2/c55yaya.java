@@ -50,13 +50,13 @@ public class c55yaya extends c00main{
 	int sk3 = 0;
 	int sp = 0;
 	float damage = 0;
+	boolean isstart = false;
 	
 	public c55yaya(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 55;
 		load();
 		text();
-		skill("c55_p");
 	}
 	
 
@@ -107,6 +107,10 @@ public class c55yaya extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(!isstart) {
+			isstart = true;
+			skill("c55_p");
+		}
 		if(sk3>0) sk3--;
 		if(sk4 > 0) sk4--;
 		if(sp > 0) sp--;

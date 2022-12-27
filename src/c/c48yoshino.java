@@ -82,7 +82,7 @@ public class c48yoshino extends c00main{
 		if(tick%160==0 && damage < 1) {
 			damage+=0.05;
 		}
-		if(tick%80==0 && isps) {
+		if(tick%40==0 && isps) {
 			skill("c48_s3");
 			hit = new HashMap<LivingEntity, Integer>();
 		}

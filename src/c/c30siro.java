@@ -25,8 +25,12 @@ import ars.Rule;
 import buff.Nodamage;
 import buff.Stun;
 import buff.TimeStop;
+import c2.c51zenos;
+import c2.c86iriya;
 import event.Skill;
 import manager.AdvManager;
+import types.MapType;
+import types.box;
 import types.modes;
 import util.AMath;
 import util.InvSkill;
@@ -171,7 +175,7 @@ public class c30siro extends c00main{
 						n = "";
 					}
 					n +=Main.GetText("c"+number+":name2");
-					Rule.buffmanager.selectBuffAddValue(player, "plushp",10);
+					Rule.buffmanager.selectBuffAddValue(player, "plushp",30);
 					player.performCommand("tm anitext all TITLE true 20 c30:sk0/c30:t8");
 					isps = true;
 					for(Player p : Bukkit.getOnlinePlayers()) {
@@ -192,8 +196,9 @@ public class c30siro extends c00main{
 					if(n.equals("-")) {
 						n = "";
 					}
+					Map.mapType = MapType.NORMAL;
 					n +=Main.GetText("c"+number+":name2");
-					Rule.buffmanager.selectBuffAddValue(player, "plushp",10);
+					Rule.buffmanager.selectBuffAddValue(player, "plushp",30);
 					player.performCommand("tm anitext all TITLE true 20 c30:sk0/c30:t8");
 					isps = true;
 					for(Player p : Bukkit.getOnlinePlayers()) {
@@ -242,7 +247,7 @@ public class c30siro extends c00main{
 	public boolean tick() {
 		if(tk%20==0) {
 			scoreBoardText.add("&c ["+Main.GetText("c30:ps")+ "]&f : "+ passive + "/ 3");
-			if(s_score + s_damage + s_kill == 200&&!spben && ARSystem.gameMode != modes.ONE) {
+			if(s_score + s_damage + s_kill == 200 && ARSystem.gameMode != modes.ONE) {
 				time+= (skillmult + sskillmult);
 				if(!ARSystem.gameMode2) time+= (skillmult + sskillmult);
 				if(psopen) {
@@ -299,6 +304,28 @@ public class c30siro extends c00main{
 				}
 			}
 		}
+		return true;
+	}
+	
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c86iriya) {
+					is = "ir";
+					break;
+				}
+			}
+		}
+		
+		if(is.equals("ir")) {
+			ARSystem.playSound((Entity)player, "c30iriya");
+		} else {
+			ARSystem.playSound((Entity)player, "c30db");
+		}
+		
 		return true;
 	}
 }

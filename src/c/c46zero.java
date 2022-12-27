@@ -26,9 +26,14 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Nodamage;
+import buff.Panic;
+import buff.Rampage;
+import buff.Stun;
 import buff.TimeStop;
 import event.Skill;
+import event.WinEvent;
 import manager.AdvManager;
+import manager.Bgm;
 import util.AMath;
 import util.InvSkill;
 import util.Inventory;
@@ -67,6 +72,11 @@ public class c46zero extends c00main{
 		if(tropy >= 30) {
 			Rule.playerinfo.get(player).tropy(46,1);
 		}
+		delay(()->{
+			for(Player p :Rule.c.keySet()) {
+				p.performCommand("c removeall");
+			}
+		},50);
 		return true;
 	}
 	
@@ -92,16 +102,21 @@ public class c46zero extends c00main{
 				}
 			}
 			if(!isps && map[0]&& map[1]&& map[2]&& map[3]&&skillCooldown(0)) {
+				map[0] = map[1] = map[2] = map[3] = false;
 				spskillen();
 				spskillon();
+				Bgm.setBgm("c46");
 				ARSystem.giveBuff(player, new TimeStop(player), 200);
 				ARSystem.playSoundAll("c46sp");
-				delay(
-				()->{
-					Rule.team.reload();
-					for(Player p : Rule.c.keySet()) {
-						if(p != player) {
-							Rule.c.put(p, new c000humen(p, plugin, null));
+				delay(()->{
+					WinEvent event = new WinEvent(player);
+					Bukkit.getPluginManager().callEvent(event);
+					if(!event.isCancelled()) {
+						Rule.team.reload();
+						for(Player p : Rule.c.keySet()) {
+							if(p != player) {
+								Rule.c.put(p, new c000humen(p, plugin, null));
+							}
 						}
 					}
 				},200);
@@ -113,16 +128,24 @@ public class c46zero extends c00main{
 	@Override
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
-			if(target instanceof Player) {
+			if(isps) {
+				ARSystem.addBuff(target, new Rampage(target), 20);
+			}
+			else if(target instanceof Player) {
+				boolean skon = false;
 				if(Rule.c.get(target) != null) {
 					for(int k=0;k<100;k++) {
 						int i = AMath.random(5);
 						if(Rule.c.get(target).setcooldown[i] > 0 && Rule.c.get(target).cooldown[i] <= 0) {
 							((Player)target).getInventory().setHeldItemSlot(i-1);
+							skon = true;
 							break;
 						}	
 						
 					}
+				}
+				if(!skon) {
+					ARSystem.giveBuff(target, new Panic(target), AMath.random(40) + 20);
 				}
 			}
 		}
@@ -135,6 +158,7 @@ public class c46zero extends c00main{
 
 		} else {
 			if(!entity.contains(e.getDamager())) {
+				ARSystem.addBuff((LivingEntity) e.getDamager(), new Panic((LivingEntity) e.getDamager()), 160);
 				entity.add((LivingEntity) e.getDamager());
 				e.setDamage(e.getDamage()*0.1f);
 			}

@@ -125,7 +125,7 @@ public class h001chruno extends c00main{
 		if(tk%20 == 0) {
 			String s = Bgm.bgmcode;
 			if(!s.equals("bc999") && Bgm.rep) {
-				Bgm.setBgm("c999");
+				Bgm.setlockBgm("c999");
 			}
 		}
 		if(skill1_tick > 0) {

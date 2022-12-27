@@ -43,8 +43,8 @@ public class c22byakuya extends c00main{
 	
 	@Override
 	public boolean skill1() {
-		if(flower >= 20) {
-			flower-=20;
+		if(flower >= 14) {
+			flower-=14;
 			skill("c"+number+"_s1");
 		}
 		return true;
@@ -55,6 +55,7 @@ public class c22byakuya extends c00main{
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.TARGET);
 		Player p = null;
 		String is = "";
+		player.setFallDistance(0);
 		for(Entity e : el) {
 			if(Rule.c.get(e) != null) {
 				if(Rule.c.get(e) instanceof c31ichigo) {
@@ -82,7 +83,7 @@ public class c22byakuya extends c00main{
 	
 	@Override
 	public boolean skill3() {
-		if(flower >= 100 && skillCooldown(0)&&!spben) {
+		if(flower >= 100 && skillCooldown(0)) {
 			spskillen();
 			spskillon();
 			flower-=100;
@@ -98,8 +99,8 @@ public class c22byakuya extends c00main{
 				skill("c"+number+"_sp");
 			}
 		}
-		else if(flower >= 50) {
-			flower-=50;
+		else if(flower >= 40) {
+			flower-=40;
 			skill("c"+number+"_s3");
 		}
 		return true;
@@ -116,9 +117,9 @@ public class c22byakuya extends c00main{
 	
 	@Override
 	public boolean tick() {
-		if(tk%14 == 0) {
+		if(tk%20 == 0) {
 			if(flower >= 200) Rule.playerinfo.get(player).tropy(22,1);
-			if(flower < 1000) flower+=(skillmult + sskillmult);
+			if(flower < 1000) flower+=(skillmult + sskillmult)*2;
 		}
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c22:t")+ "]&f : "+ flower);

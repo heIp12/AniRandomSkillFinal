@@ -152,7 +152,7 @@ public class c80aqit extends c00main{
 		if(myhp < player.getHealth()) myhp = player.getHealth();
 		if(player.getHealth() > myhp) player.setHealth(myhp);
 		
-		if(t>10 && t%160 == 0 && mydamage >= 0.4) {
+		if(t>10 && t%160 == 0 && mydamage >= 0.6) {
 			mydamage= mydamage-0.1;
 		}
 		if(tk%20 == 0) {
@@ -181,7 +181,7 @@ public class c80aqit extends c00main{
 			e.setDamage(e.getDamage() * mydamage);
 			damage+= e.getDamage();
 		} else {
-			if(mydamage<0.4 && player.getHealth() - e.getDamage() < 1 && ((LivingEntity)e.getEntity()).getHealth()/((LivingEntity)e.getEntity()).getMaxHealth() < 0.5) {
+			if(mydamage<0.6 && player.getHealth() - e.getDamage() < 1 && ((LivingEntity)e.getDamager()).getHealth()/((LivingEntity)e.getDamager()).getMaxHealth() < 0.5) {
 				if(skillCooldown(0)) {
 					e.setDamage(0);
 					e.setCancelled(true);
@@ -190,12 +190,15 @@ public class c80aqit extends c00main{
 					Rule.playerinfo.get(player).tropy(80,1);
 					ARSystem.playSound((Entity)player, "c80sp");
 					LivingEntity target = (LivingEntity) e.getDamager();
+					ARSystem.spellCast(player, target, "c80_sp");
+					
 					ARSystem.addBuff(player, new TimeStop(player), 120);
 					ARSystem.addBuff(target, new TimeStop(target), 120);
 					ARSystem.spellCast(player, target, "look1");
 					ARSystem.spellCast(player, target, "look2");
 					delay(()->{
 						Skill.remove(target, player);
+						ARSystem.spellCast(player, target, "c80_sp3");
 						for(Entity en : ARSystem.box(player, new Vector(999,999,999),box.ALL)) {
 							ARSystem.addBuff((LivingEntity) en, new TimeStop((LivingEntity) en), 120);
 						}

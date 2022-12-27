@@ -35,6 +35,7 @@ import buff.Buff;
 import manager.Bgm;
 import manager.BuffManager;
 import manager.EntityBuffManager;
+import manager.Holo;
 import net.minecraft.server.v1_12_R1.PacketPlayOutPosition;
 import net.minecraft.server.v1_12_R1.PacketPlayOutPosition.EnumPlayerTeleportFlags;
 import types.BuffType;
@@ -59,7 +60,17 @@ public class ARSystem {
 	public static int Gamemode = 1;
 	public static int serverOne = 0;
 	
-	static public void Start() {
+	static public void banload() {
+		for(int i=0;i<charban.length;i++) {
+			charban[i] = (Boolean)Rule.Var.Load("#ARS.ban."+(i+1));
+		}
+	}
+	static public void bansave() {
+		for(int i=0;i<charban.length;i++) {
+			Rule.Var.Save("#ARS.ban."+(i+1), charban[i]);
+		}
+	}
+	static public void Start(int mapc) {
 		int i = 0;
 		int max = GetChar.getCount();
 		Rule.c.clear();
@@ -80,8 +91,8 @@ public class ARSystem {
 		Bgm.rep = true;
 		if(gm == 1) {
 			gameMode = modes.NORMAL;
-			if(AMath.random(100) < 6) {
-				gm = AMath.random(4)+1;
+			if(AMath.random(100) <= Integer.parseInt(Main.GetText("general:mode_chance"))) {
+				gm = AMath.random(modes.size-1)+1;
 			}
 		}
 		
@@ -100,11 +111,18 @@ public class ARSystem {
 		} else if(gm == 5){
 			gameMode2 = true;
 			gameMode = modes.TEAM;
+		} else if(gm == 6){
+			gameMode = modes.KANNA;
+		} else if(gm == 7){
+			gameMode = modes.GUN;
+		} else if(gm == 8){
+			gameMode = modes.KILLER;
 		} else if(gm == 666){
 			gameMode = modes.LOBOTOMY;
 		}
 		
-		Map.randomMap();
+		Map.randomMap(mapc);
+
         AniRandomSkill = new ARSinfo(time);
 
 		Bgm.randomBgm();
@@ -144,7 +162,10 @@ public class ARSystem {
 			for(Player player : Bukkit.getOnlinePlayers()) {
 				if(Rule.playerinfo.get(player).gamejoin) {
 					Rule.playerinfo.get(player).addcradit(1,Main.GetText("main:msg106"));
-					if(gameMode == modes.ONE) {
+					if(gameMode == modes.KANNA) {
+						Rule.c.put(player,GetChar.get(player, Rule.gamerule, "98"));
+					}
+					else if(gameMode == modes.ONE) {
 						Rule.c.put(player,GetChar.get(player, Rule.gamerule, ""+(server+1)));
 					}
 					else if(Rule.pick && listset(+Rule.playerinfo.get(player).playerc-1)) {
@@ -155,7 +176,7 @@ public class ARSystem {
 							i = (int) (Math.random()*max);
 							
 							if(Rule.playerinfo.get(player).playchar == i) continue;
-							if(Rule.playerinfo.get(player).playerc > 0 && AMath.random(50) <= 10) {
+							if(Rule.playerinfo.get(player).playerc > 0 && AMath.random(100) <= Integer.parseInt(Main.GetText("general:pick_chance"))) {
 								i = Rule.playerinfo.get(player).playerc-1;
 							}
 							if(!chars[i] && listset(i)) {
@@ -197,7 +218,7 @@ public class ARSystem {
 		while(j < 1000) {
 			i = (int) (Math.random()*max);
 			if(Rule.playerinfo.get(p).playchar == i) continue;
-			if(Rule.playerinfo.get(p).playerc > 0 && AMath.random(50) <= 25) {
+			if(Rule.playerinfo.get(p).playerc > 0 && AMath.random(100) <= Integer.parseInt(Main.GetText("general:pick_chance"))) {
 				i = Rule.playerinfo.get(p).playerc-1;
 			}
 			if(!chars[i] && listset(i)) {
@@ -225,6 +246,7 @@ public class ARSystem {
 			if(chars==43) return false;
 			if(chars==53) return false;
 			if(chars==59) return false;
+			if(chars==81) return false;
 		}
 		if(gameMode == modes.ONE) {
 			if(chars==3) return false;
@@ -237,6 +259,9 @@ public class ARSystem {
 			if(chars==52) return false;
 			if(chars==53) return false;
 			if(chars==59) return false;
+			if(chars==74) return false;
+			if(chars==89) return false;
+			if(chars==92) return false;
 		}
 		if(gameMode == modes.TEAMMATCH) {
 			if(chars==12) return false;
@@ -247,6 +272,7 @@ public class ARSystem {
 			if(chars==53) return false;
 			if(chars==58) return false;
 			if(chars==79) return false;
+			if(chars==90) return false;
 		}
 		if(gameMode == modes.TEAM) {
 			if(chars==43) return false;
@@ -267,9 +293,12 @@ public class ARSystem {
 			if(chars==53) return false;
 			if(chars==59) return false;
 			if(chars==70) return false;
-			if(chars==74) return false;
 			if(chars==78) return false;
 			if(chars==79) return false;
+			if(chars==81) return false;
+			if(chars==90) return false;
+			if(chars==95) return false;
+			if(chars==100) return false;
 		}
 		return true;
 	}
@@ -283,7 +312,16 @@ public class ARSystem {
 		for(PotionEffect potion :p.getActivePotionEffects()) {
 			p.removePotionEffect(potion.getType());
 		}
+		
 		MSUtil.resetbuff(p);
+		String n = "no";
+		if(Rule.c.get(e) != null) {
+			int number = Rule.c.get(e).number;
+			n = "§a(No."+number+")§f§l"+ Main.GetText("c"+number+":name1")+" "+ Main.GetText("c"+number+":name2");
+		} else {
+			n = "Monster";
+		}
+		p.sendTitle("§c§l【Killer】", e.getName() +" §7§l["+n+"]");
 		if(e instanceof Player && ARSystem.AniRandomSkill != null) {
 			if(ARSystem.AniRandomSkill.playerkill.get((Player)e) == null) {
 				ARSystem.AniRandomSkill.playerkill.put((Player) e,0);
@@ -297,17 +335,30 @@ public class ARSystem {
 				buff.stop();
 			}
 		}
-		for(Player playr: Rule.c.keySet()) {
-			Rule.c.get(playr).PlayerDeath(p,e);
-		}
-		if(Map.mapType == MapType.BIG) Map.sizeM();
 		
 		if(Rule.c.get(p) != null) {
 			Rule.c.get(p).info();
-			Rule.c.remove(p);
-			
-			Stop();
+			Rule.removePlayers.add(p);
 		}
+		
+		for(Player playr: Rule.c.keySet()) {
+			Rule.c.get(playr).PlayerDeath(p,e);
+		}
+		if(Map.mapType == MapType.BIG && Boolean.parseBoolean(Main.GetText("general:bigmap_death"))) Map.sizeM(-1);
+		
+		if(Rule.c.get(e) != null && Rule.playerinfo.get(p).getScore() < 100 && e != p) {
+			int j = 1;
+			int i = Rule.c.get(e).getCode();
+			p.sendMessage("§c§l"+Main.GetText("main:info53"));
+			p.sendMessage(n);
+			while(Main.GetText("c"+i+":kill"+j) != null) {
+				String text = Main.GetText("c"+i+":kill"+j);
+				p.sendMessage("§6" + text);
+				j++;
+			}
+			if(j == 1) p.sendMessage("§7"+Main.GetText("main:cmderror3"));
+		}
+		
 		if(Rule.playerinfo.get(e) != null) {
 			p.performCommand("c death"+Rule.playerinfo.get(e).kille);
 		}
@@ -350,7 +401,7 @@ public class ARSystem {
 				gameEnd();
 			}
 		} else if(Rule.c.size() == 1 && AniRandomSkill != null) {
-			for(Player p :Rule.c.keySet()) {
+			for(Player p : Rule.c.keySet()) {
 				if(Rule.buffmanager.selectBuffType(p, BuffType.HEADCC) != null) {
 					for(Buff buff : Rule.buffmanager.getHashMap().get(p).getBuff()) {
 						buff.stop();
@@ -378,18 +429,21 @@ public class ARSystem {
 			gameEnd();
 		}
 		if(Rule.c.size() == 0) {
-			for(Player player : Bukkit.getOnlinePlayers()) {
-				MSUtil.resetbuff(player);
-				player.setGameMode(GameMode.ADVENTURE);
-				player.setMaxHealth(20);
-				player.setHealth(20);
-			}
-			killall();
-			ARSystem.AniRandomSkill = null;
-			if(Rule.buffmanager != null) Rule.buffmanager.clear();
-			Rule.buffmanager = new BuffManager();
-			Rule.c.clear();
-			Map.loby();
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
+				for(Player player : Bukkit.getOnlinePlayers()) {
+					MSUtil.resetbuff(player);
+					player.setGameMode(GameMode.ADVENTURE);
+					player.setMaxHealth(20);
+					player.setHealth(20);
+				}
+				killall();
+				ARSystem.AniRandomSkill = null;
+				if(Rule.buffmanager != null) Rule.buffmanager.clear();
+				Rule.buffmanager = new BuffManager();
+				Rule.removePlayers.clear();
+				Rule.c.clear();
+				Map.loby();
+			},0);
 		}
 	}
 	
@@ -406,9 +460,9 @@ public class ARSystem {
 			}
 			String nm = "§e§l[MVP]§b"+Main.GetText("c"+ ARSystem.AniRandomSkill.startplayer.get(mvps)+":name1")+" "+Main.GetText("c"+ARSystem.AniRandomSkill.startplayer.get(mvps)+":name2");
 			String nn = mvps.getName()+ " | " + mvpk + " Kill";
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
 				for(Player player : Bukkit.getOnlinePlayers()) {
-					player.sendTitle(nm, nn,40,20,40);
+					player.sendTitle(nm, nn, 40, 20, 40);
 				}
 			},60);
 		}
@@ -455,6 +509,10 @@ public class ARSystem {
 	}
 	
 	static public void heal(LivingEntity e,double i) {
+		if(Rule.c.get(e) != null && Rule.buffmanager.isBuff(e, "noheal")) {
+			Holo.create(e.getLocation(),"§4§l[✘]No Heal!",10,new Vector(0,0.05,0));
+			return;
+		}
 		if(e.getMaxHealth() - e.getHealth() > i) {
 			e.setHealth(e.getHealth()+i);
 		} else {
@@ -463,6 +521,10 @@ public class ARSystem {
 	}
 	
 	static public void overheal(LivingEntity e,double i) {
+		if(Rule.c.get(e) != null && Rule.buffmanager.isBuff(e, "noheal")) {
+			Holo.create(e.getLocation(),"§4§l[✘]No Heal!",10,new Vector(0,0.05,0));
+			return;
+		}
 		double damage = e.getMaxHealth() - e.getHealth();
 		if(damage > i) {
 			e.setHealth(e.getHealth()+i);
@@ -487,6 +549,9 @@ public class ARSystem {
 	}
 	static public void playSound(Player entity,String s) {
 		entity.playSound(entity.getLocation(), s, 10000, 1);
+	}
+	static public void playSound(Entity entity,String s,float pitch,float size) {
+		entity.getWorld().playSound(entity.getLocation(), s, size, pitch);
 	}
 	static public void playSound(Entity entity,String s,float pitch) {
 		entity.getWorld().playSound(entity.getLocation(), s, 2, pitch);
@@ -554,10 +619,10 @@ public class ARSystem {
 	
 	static public boolean isTarget(Entity target,Entity caster,types.box box) {
 		if(!(target instanceof LivingEntity)) return false;
-		if(target == caster) return false;
+		if(target == caster && box != box.MYALL) return false;
 		if(target instanceof Player && ((Player) target).getGameMode() == GameMode.SPECTATOR) return false;
 		if(target instanceof ArmorStand) return false;
-		if(box != box.ALL) {
+		if(box != box.ALL && box != box.MYALL) {
 			if(box == box.TARGET && target instanceof Player && caster instanceof Player && Rule.team.isTeam((Player)target, (Player)caster)) return false;
 			if(box == box.TEAM) {
 				if(target instanceof Player && caster instanceof Player && Rule.team.isTeam((Player)target, (Player)caster)) {
@@ -639,20 +704,24 @@ public class ARSystem {
         a = a* ((a%10)+1) * (a%1000/10);
         a = a* (a%1000);
         int i = Rule.Var.Loadint(p.getName()+".info.CodeDay");
-        if(s.equals(Long.toHexString(a).substring(0,7).toUpperCase())) {
-        	if(b > i) {
-        		if(AMath.random(20) == 1) Rule.playerinfo.get(p).tropy(0, 25);
-        		if(AMath.random(20) == 1) Rule.playerinfo.get(p).tropy(0, 24);
-        		if(AMath.random(20) == 1) Rule.playerinfo.get(p).tropy(0, 23);
-        		if(AMath.random(20) == 1) Rule.playerinfo.get(p).tropy(0, 22);
-	        	Rule.Var.setInt(p.getName()+".info.CodeDay",b);
-				p.sendMessage("§a§l[ARSystem] : §a§l "+Main.GetText("main:msg25") + " + Point 300");
-				Rule.playerinfo.get(p).addcradit(300, Main.GetText("main:msg108"));
-				ARSystem.playSound(p,"0event3");
-        	} else {
-        		p.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:cmderror10"));
-        	}
-			return;
+        try {
+	        if(s.equals(Long.toHexString(a).substring(0,7).toUpperCase())) {
+	        	if(b > i) {
+	        		if(AMath.random(20) == 1) Rule.playerinfo.get(p).tropy(0, 25);
+	        		if(AMath.random(20) == 1) Rule.playerinfo.get(p).tropy(0, 24);
+	        		if(AMath.random(20) == 1) Rule.playerinfo.get(p).tropy(0, 23);
+	        		if(AMath.random(20) == 1) Rule.playerinfo.get(p).tropy(0, 22);
+		        	Rule.Var.setInt(p.getName()+".info.CodeDay",b);
+					p.sendMessage("§a§l[ARSystem] : §a§l "+Main.GetText("main:msg25") + " + Point 300");
+					Rule.playerinfo.get(p).addcradit(300, Main.GetText("main:msg108"));
+					ARSystem.playSound(p,"0event3");
+	        	} else {
+	        		p.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:cmderror10"));
+	        	}
+				return;
+	        }
+        } catch(Exception e) {
+        	
         }
         
         if(s.equals("I'mSuperStar")) {
@@ -762,12 +831,12 @@ public class ARSystem {
 	}
 	
 	static public List<Entity> box(Entity et, Vector vt,types.box box) {
-		List<Entity> entity;
-		try {
-			entity = et.getNearbyEntities(vt.getX(),vt.getY(),vt.getZ());
-		} catch (NullPointerException e) {
-			return null;
-		}
+		List<Entity> entity = new ArrayList<Entity>();
+
+		entity = et.getNearbyEntities(vt.getX(),vt.getY(),vt.getZ());
+
+		if(entity == null || entity.size() <= 0) return entity;
+		
 		List<Entity> en = new ArrayList<Entity>();
 		
 		for(Entity e : entity) {
@@ -782,12 +851,11 @@ public class ARSystem {
 	}
 	
 	static public Entity boxRandom(Entity et, Vector vt,types.box box) {
-		List<Entity> entity;
-		try {
-			entity = et.getNearbyEntities(vt.getX(),vt.getY(),vt.getZ());
-		} catch (NullPointerException e) {
-			return null;
-		}
+		List<Entity> entity = new ArrayList<Entity>();
+
+		entity = et.getNearbyEntities(vt.getX(),vt.getY(),vt.getZ());
+		if(entity == null || entity.size() <= 0) return null;
+		
 		List<Entity> en = new ArrayList<Entity>();
 		if(entity == null) return null;
 		
@@ -941,7 +1009,12 @@ public class ARSystem {
 		}
 		return p[0];
 	}
-	
+	static public void spellCast(Player p,String name) {
+		Spell spell = MagicSpells.getSpellByInternalName(name);
+		if(spell != null) {
+			spell.cast(p);
+		}
+	}
 	static public void spellCast(Player p,Entity e,String name) {
 		Spell spell = MagicSpells.getSpellByInternalName(name);
 		if(spell != null && spell instanceof TargetedEntitySpell) {

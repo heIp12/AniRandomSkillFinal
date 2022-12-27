@@ -21,6 +21,8 @@ import org.bukkit.util.Vector;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Buff;
+import buff.Noattack;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
@@ -61,19 +63,40 @@ public class c29guren extends c00main{
 		}
 		if(mana >= 500) {
 			mana-=500;
-			ARSystem.giveBuff(player, new Stun(player), 80);
-			ARSystem.giveBuff(player, new Silence(player), 80);
 			skill("c29_s1");
 		}
 		return true;
 	}
 	@Override
 	public boolean skill2() {
-		type++;
-		if(type == 4) {
-			type = 1;
+		if(type == 1) {
+			if(player.isSneaking()) {
+				skill("c29_s2_1");
+				ARSystem.playSound((Entity)player,"0attack4");
+			} else {
+				player.setVelocity(player.getLocation().getDirection().multiply(2));
+				delay(()->{
+					skill("c29_s2_1");
+					ARSystem.playSound((Entity)player,"0attack4");
+				},5);
+			}
 		}
-		player.sendTitle(Main.GetText("c29:t"+type), Main.GetText("c29:t1") + " " + Main.GetText("c29:t2") + " " + Main.GetText("c29:t3"));
+		if(type == 2) {
+			skill("c29_s2_2");
+			ARSystem.playSound((Entity)player,"0attack3");
+		}
+		if(type == 3) {
+			skill("c29_s2_3");
+			ARSystem.playSound((Entity)player,"0attack2");
+		}
+		if(type == 4) {
+			skill("c29_s2_4");
+		}
+		type++;
+		if(type == 5) {
+			type = 1;
+			cooldown[2] = 6;
+		}
 		return true;
 	}
 	
@@ -104,11 +127,10 @@ public class c29guren extends c00main{
 			if(cast == 7) {
 				spskillon();
 			}
-			if(cast > 7&&!spben) {
+			if(cast > 7) {
 				spskillen();
 				cast = 0;
 				mana = 0;
-				player.setHealth(1);
 				if(ARSystem.gameMode == modes.LOBOTOMY) ARSystem.heal(player, 1000);
 				ARSystem.playSound((Entity)player,"c29sp8");
 				skill("c29_sp");
@@ -121,13 +143,40 @@ public class c29guren extends c00main{
 		return true;
 	}
 	
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			target.setNoDamageTicks(0);
+			target.damage(2,player);
+			ARSystem.giveBuff(target, new Stun(target), 9);
+		}
+		if(n.equals("2")) {
+			target.setNoDamageTicks(0);
+			target.damage(2,player);
+			target.setVelocity(new Vector(0,1,0));
+			ARSystem.giveBuff(target, new Noattack(target), 50);
+		}
+		if(n.equals("3")) {
+			target.setNoDamageTicks(0);
+			target.damage(2,player);
+			Vector loc = player.getLocation().getDirection();
+			target.setVelocity(loc.clone().multiply(2));
+			delay(()->{
+				target.setVelocity(loc.multiply(-2));
+			},10);
+		}
+		if(n.equals("4")) {
+			target.setNoDamageTicks(0);
+			target.damage(4,player);
+		}
+	}
 	
 
 	@Override
 	public boolean tick() {
 		if(tk%20==0) {
 			scoreBoardText.add("&c ["+Main.GetText("c29:ps")+ "]&f : "+ mana + "/1865");
-			
+			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c29:sk0")+ "]&f : "+ cast + "/8");
 		}
 		if(ticks%40==0) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) mana+=200;
@@ -153,6 +202,9 @@ public class c29guren extends c00main{
 		
 		if(arukana) {
 			for(Entity e : ARSystem.box(player, new Vector(10, 8, 10),box.TARGET)) {
+				if(Rule.c.get(e) != null) {
+					for(int i = 0; i< 10; i++ ) if(Rule.c.get(e).cooldown[i] <= 0.5) Rule.c.get(e).cooldown[i] = 0.5f;
+				}
 				ARSystem.giveBuff((LivingEntity) e, new Silence((LivingEntity) e), 4);
 			}
 		}
@@ -165,25 +217,6 @@ public class c29guren extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(type == 1) {
-				e.setDamage(e.getDamage() + 1);
-				ARSystem.playSound(e.getEntity(),"0attack");
-				Vector lasts = AMath.Vector(player.getLocation().clone().toVector().subtract(e.getEntity().getLocation().toVector()).normalize());
-				delay(new Runnable() { Vector last = lasts; @Override public void run() {((LivingEntity)e.getEntity()).setVelocity(last.multiply(-2).setY(0));}}, 1);
-				
-				
-			}
-			if(type == 2) {
-				ARSystem.playSound(e.getEntity(),"0attack4");
-				e.setDamage(e.getDamage() + 3);
-				ARSystem.spellCast(player, e.getEntity(), "c29_s2_1");
-			}
-			if(type == 3) {
-				e.setDamage(e.getDamage() + 1);
-				ARSystem.playSound(e.getEntity(),"0attack3");
-				if(((LivingEntity)e.getEntity()).getNoDamageTicks() < 6) ((LivingEntity)e.getEntity()).setNoDamageTicks(0);
-				delay(new Runnable() { @Override public void run() {((LivingEntity)e.getEntity()).setVelocity(new Vector(0, 0.5, 0));}}, 1);
-			}
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*3);
 		} else {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*0.5);

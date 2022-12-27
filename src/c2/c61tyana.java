@@ -71,7 +71,7 @@ public class c61tyana extends c00main{
 	}
 	@Override
 	public boolean skill1() {
-		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 30 && player.getLocation().getY() > 70 && mana > 70 && player.getLocation().getY() > 70 && skillCooldown(0)) {
+		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 30 && s_damage >= 30 && skillCooldown(0)) {
 			skill0();
 		} else {
 			if(mana > 8) {
@@ -232,7 +232,7 @@ public class c61tyana extends c00main{
 			Rule.playerinfo.get(player).tropy(61,1);
 		}
 		if(e == player) {
-			mana += 20;
+			mana += 45;
 		}
 	}
 	@Override

@@ -116,7 +116,7 @@ public class c18misogi extends c00main{
 	
 	@Override
 	public boolean remove(Entity caster) {
-		if(skillCooldown(0)&&!spben) {
+		if(skillCooldown(0)) {
 			ARSystem.giveBuff(player, new TimeStop(player), 60);
 			player.setMaxHealth(maxHp);
 			spskillen();

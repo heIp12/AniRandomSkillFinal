@@ -75,7 +75,7 @@ public class c34natu extends c00main{
 	
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
-		if(!spben && p != player && e == player && ARSystem.getPlayerCount() == 3 && skillCooldown(0)) {
+		if(p != player && e == player && ARSystem.getPlayerCount() == 3 && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			ARSystem.giveBuff(player, new TimeStop(player), 170);

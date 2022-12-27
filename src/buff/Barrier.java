@@ -50,10 +50,9 @@ public class Barrier extends Buff{
 					return true;
 				} else {
 					e.setDamage(0);
-					e.setCancelled(true);
 					target.setNoDamageTicks(20);
 				}
-				return false;
+				return true;
 			}
 
 		} else {

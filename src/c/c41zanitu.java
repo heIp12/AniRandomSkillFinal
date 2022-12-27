@@ -45,7 +45,7 @@ public class c41zanitu extends c00main{
 	int c3 = 0;
 	int ccount = 6;
 	int brcount = 0;
-	int spcount = 1;
+	int spcount = 3;
 	int s1 = 0;
 	
 	public c41zanitu(Player p,Plugin pl,c00main ch) {
@@ -76,13 +76,14 @@ public class c41zanitu extends c00main{
 				ARSystem.spellCast(player, target, "c41_s1_tg");
 				delay(()->{s1 = 30;}, 20); 
 				if(!target.isOnGround()) {
-					if(AMath.random(100) < 5*spcount) {
+					if(AMath.random(10) < spcount) {
 						spskillon();
 						spskillen();
 						c3 = 300;
 						ccount = 5; 
 						ARSystem.playSound((Player)player, "c41sp");
 						cooldown[1] = 0;
+						spcount = 0;
 					} else {
 						spcount++;
 					}
@@ -145,7 +146,7 @@ public class c41zanitu extends c00main{
 		}
 		if(tk%20==0) {
 			if(target != null) scoreBoardText.add("&c ["+Main.GetText("c41:ps")+ "] &a" + target.getName());
-			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c41:sk0")+ "] &f" + (spcount*5) +"%");
+			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c41:sk0")+ "] &f" + (spcount*10) +"%");
 		}
 		s1--;
 		loc = player.getLocation();

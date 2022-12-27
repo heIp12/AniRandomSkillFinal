@@ -84,28 +84,23 @@ public class c58nao extends c00main{
 
 	@Override
 	public boolean tick() {
-		try {
-			if(tk%2 == 0) {
-				Player pl = null;
-				double l = 1000;
-				for(Player p : Rule.c.keySet()) {
-					if(p != player && p.getLocation().distance(player.getLocation()) <= l) {
-						pl = p;
-						l = p.getLocation().distance(player.getLocation());
-					}
-				}
-				if(pl != null && target != pl) {
-					pl.hidePlayer(player);
-					target.showPlayer(player);
-					target = pl;
+		if(tk%2 == 0) {
+			Player pl = null;
+			double l = 1000;
+			for(Player p : Rule.c.keySet()) {
+				if(p != player && p.getLocation().distance(player.getLocation()) <= l) {
+					pl = p;
+					l = p.getLocation().distance(player.getLocation());
 				}
 			}
-			if(tk%20 == 0 && target != null) {
-				scoreBoardText.add("&c ["+Main.GetText("c58:ps")+ "] : "+ target.getName());
+			if(pl != null && target != pl) {
+				pl.hidePlayer(player);
+				target.showPlayer(player);
+				target = pl;
 			}
-			
-		} catch(Exception e) {
-			System.out.println(e);
+		}
+		if(tk%20 == 0 && target != null) {
+			scoreBoardText.add("&c ["+Main.GetText("c58:ps")+ "] : "+ target.getName());
 		}
 		return true;
 	}
@@ -123,6 +118,7 @@ public class c58nao extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*3);
+			if(Rule.c.size() <=2) e.setDamage(e.getDamage() * 10);
 		} else {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*0.05);
 		}

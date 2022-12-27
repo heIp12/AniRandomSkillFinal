@@ -73,7 +73,7 @@ public class c65cohina extends c00main{
 
 	void sk(int i){
 		if(isps) {
-			if(sk >= 4 && sk <=8 && sks != i) {
+			if(sk <=10 && sks != i) {
 				skill("c65_sp");
 				ARSystem.playSound((Entity)player, "0katana2");
 				for(Entity e : ARSystem.box(player, new Vector(8,4,8), box.TARGET)) {
@@ -172,17 +172,17 @@ public class c65cohina extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			double range = e.getEntity().getLocation().distance(player.getLocation());
-			if(range <= 5 && range >= 3) {
+			if(range <= 5 && range >= 2) {
 				cr++;
 				e.setDamage(e.getDamage() * crit);
 				cooldown[3]-=6;
-				crit+=0.1;
+				crit+=0.05;
 				if(crit >= 3) {
 					Rule.playerinfo.get(player).tropy(65,1);
 				}
 				ARSystem.playSound((Entity)player, "0bload");
 				if(sk4 > 0) {
-					ARSystem.heal(player, e.getDamage()*0.3);
+					ARSystem.heal(player, e.getDamage());
 					cooldown[1]-=1;
 					cooldown[2]-=1;
 					cooldown[3]-=1;

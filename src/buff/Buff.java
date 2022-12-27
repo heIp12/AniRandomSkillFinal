@@ -61,13 +61,7 @@ public class Buff {
 	public void stop() {
 		tick = 0;
 		last();
-		Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{
-			try {
-				Rule.buffmanager.getBuffs(target).getBuff().remove(this);
-			} catch(Exception e) {
-				
-			}
-		});
+		Rule.buffmanager.getBuffs(target).removeBuff(this);
 		
 	}
 	
@@ -121,6 +115,7 @@ public class Buff {
 				onTicks();
 			}
 			if(alltime) {
+				tick = -2000;
 				onTicks();
 			}
 		}
@@ -149,6 +144,7 @@ public class Buff {
 		return true;
 	}
 	
+	public boolean onHitNext(EntityDamageByEntityEvent e){ return true; }
 	public boolean onHit(EntityDamageByEntityEvent e){ return true; }
 	public boolean onAttack(EntityDamageByEntityEvent e){ return true; }
 	public boolean onDeath(PlayerDeathEvent e){ return true; }

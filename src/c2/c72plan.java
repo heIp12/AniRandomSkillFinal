@@ -89,6 +89,7 @@ public class c72plan extends c00main{
 				ARSystem.playSoundAll("c72sp1");
 			},180);
 		} else {
+			
 			for(Player p : Rule.c.keySet()) {
 				p.sendTitle("Don't Move!!!", "");
 			}
@@ -125,14 +126,14 @@ public class c72plan extends c00main{
 		ARSystem.playSound((Entity)player, "c72s21");
 		delay(()->{
 			ARSystem.playSound((Entity)player, "c72s22");
-			for(Entity e : ARSystem.box(player, new Vector(6,3,6), box.TARGET)){
+			for(Entity e : ARSystem.box(player, new Vector(5,5,5), box.TARGET)){
 				LivingEntity en = (LivingEntity) e;
 				en.setNoDamageTicks(0);
 				if(sk3) {
-					delay(()->{en.damage(5*1.5,player);},2);
-					ARSystem.heal(player, 5*1.5);
+					delay(()->{en.damage(6*2,player);},2);
+					ARSystem.heal(player, 6*2);
 				} else {
-					en.damage(5,player);
+					en.damage(6,player);
 				}
 			}
 			sk3 = false;
@@ -143,12 +144,14 @@ public class c72plan extends c00main{
 	public void TargetSpell(SpellTargetEvent e, boolean mycaster) {
 		if(mycaster && e.getSpell().getName().equals("c72_s01_a")) {
 			if(sk3) {
-				ARSystem.heal(player, 2*1.5);
+				ARSystem.heal(player, 3*2.5);
+				sk3 = false;
 			}
 		}
 		if(mycaster && e.getSpell().getName().equals("c72_s02_a")) {
 			if(sk3) {
-				ARSystem.heal(player, 4*1.5);
+				ARSystem.heal(player, 6*2.5);
+				sk3 = false;
 			}
 		}
 	}
@@ -157,12 +160,13 @@ public class c72plan extends c00main{
 	public boolean skill3() {
 		sk3= true;
 		ARSystem.playSound((Entity)player, "c72s3");
+		cooldown[1] = 0;
 		return true;
 	}
 	
 	@Override
 	public boolean tick() {
-		if(player.getHealth() / player.getMaxHealth() >=1 && AMath.random(1000) == 1 && skillCooldown(0)) {
+		if(player.getHealth() / player.getMaxHealth() >=1 && AMath.random(3000) == 1 && skillCooldown(0)) {
 			sk0();
 			Rule.playerinfo.get(player).tropy(72,1);
 		}
@@ -183,14 +187,14 @@ public class c72plan extends c00main{
 				}
 				for(int i=0;i<14;i++) {
 					delay(()->{skill("c72_sp0");},i);
-					delay(()->{
-						for(Player p : move) {
-							Rule.buffmanager.selectBuffTime(p, "timestop",0);
-							p.setNoDamageTicks(0);
-							p.damage(111,player);
-						}
-					},15);
 				}
+				delay(()->{
+					for(Player p : move) {
+						Rule.buffmanager.selectBuffTime(p, "timestop",0);
+						p.setNoDamageTicks(0);
+						p.damage(111,player);
+					}
+				},15);
 			}
 			
 		}
@@ -200,10 +204,17 @@ public class c72plan extends c00main{
 		}
 		if(sk2 > 0) {
 			sk2--;
-			for(Entity e : ARSystem.box(player, new Vector(8,4,8), box.TARGET)) {
+			for(Entity e : ARSystem.box(player, new Vector(16,10,16), box.TARGET)) {
 				Location loc = e.getLocation();
 				loc = Local.lookAt(loc, player.getLocation());
-				e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(0.1)));
+				if(loc.distance(player.getLocation()) < 5) {
+					e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(0.3)));
+					ARSystem.giveBuff((LivingEntity)e, new Silence((LivingEntity)e), 10);
+				} else if(loc.distance(player.getLocation()) < 8)  {
+					e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(0.1)));
+				} else {
+					e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(0.01)));
+				}
 			}
 		}
 		return true;
@@ -213,7 +224,6 @@ public class c72plan extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*3);
-			sk3 = false;
 		} else {
 			if(e.getDamager().getLocation().distance(player.getLocation()) > 8) {
 				e.setDamage(0);

@@ -15,6 +15,8 @@ public class Reflect extends Buff{
 	String effect = "barrier";
 	String targetEffect = "";
 	boolean nodamage = true;
+	int delay = 0;
+	int maxdelay = 20;
 	
 	public Reflect(LivingEntity target) {
 		super(target);
@@ -32,10 +34,15 @@ public class Reflect extends Buff{
 	@Override
 	public boolean onTicks() {
 		value = AMath.round(value, 2);
+		if(delay > 0) delay--;
 		return true;
 	}
 	public void SetEffect(String s) {
 		effect = s;
+	}
+	
+	public void setDelay(int delay) {
+		maxdelay = delay;
 	}
 
 	public void SetTargetEffect(String s) {
@@ -47,14 +54,15 @@ public class Reflect extends Buff{
 	
 	@Override
 	public boolean onHit(EntityDamageByEntityEvent e){
-		if(target.getNoDamageTicks() <= 0) {
+		if(delay <= 0) {
+			delay = maxdelay;
 			 if(value > 0) {
 				if(target instanceof Player) {
 					((Player)target).performCommand("c "+effect);
 				}
 				Holo.create(target.getLocation(),"§f§l☇ "+ AMath.round(e.getDamage()*value,1),20,new Vector(AMath.random(5)*0.02,0.1,AMath.random(5)*0.02));
 				
-				((LivingEntity)e.getDamager()).damage(e.getDamage()*value);
+				((LivingEntity)e.getDamager()).damage(e.getDamage()*value,target);
 				if(!targetEffect.equals("") && target instanceof Player) ARSystem.spellLocCast((Player) target, e.getDamager().getLocation(), targetEffect);
 				if(nodamage) {
 					e.setDamage(0);
@@ -67,6 +75,7 @@ public class Reflect extends Buff{
 
 		} else {
 			e.setDamage(0);
+			e.setCancelled(true);
 		}
 		return false;
 	}

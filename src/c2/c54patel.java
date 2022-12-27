@@ -23,6 +23,7 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.util.BlockUtils;
 
 import Main.Main;
 import aliveblock.ABlock;
@@ -31,6 +32,7 @@ import ars.Rule;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.Panic;
+import buff.Rampage;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
@@ -43,12 +45,17 @@ import manager.Holo;
 import types.box;
 import types.modes;
 import util.AMath;
+import util.BlockUtil;
 import util.InvSkill;
 import util.Inventory;
 import util.MSUtil;
 import util.Map;
 
 public class c54patel extends c00main{
+	LivingEntity entity;
+	Location sk1l;
+	int sk1 = 0;
+	boolean sk11 = false;
 	
 	public c54patel(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -87,30 +94,71 @@ public class c54patel extends c00main{
 		return true;
 	}
 	
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			sk1 = 100;
+			entity = target;
+			ARSystem.addBuff(target, new Panic(target), (int) (setcooldown[1]*10));
+		}
+		if(n.equals("2")) {
+			if(!Rule.buffmanager.isBuff(target, "wound")) {
+				Wound w = new Wound(target);
+				w.setValue(1);
+				w.setDelay(player,120,0);
+				ARSystem.giveBuff(target, w, 600);
+			} else {
+				Rule.buffmanager.selectBuffAddTime(target, "wound", (int) (Rule.buffmanager.selectBuff(target, "wound").getTime()*1.5));
+				Rule.buffmanager.selectBuffAddValue(target, "wound", 0.2f);
+			}
+			ARSystem.addBuff(target, new Panic(target), (int) (setcooldown[2]*10));
+		}
+		if(n.equals("3")) {
+			Wound w = new Wound(target);
+			w.setValue(0.3);
+			w.setDelay(player,10,0);
+			ARSystem.giveBuff(target, w, 60);
+			
+			ARSystem.addBuff(target, new Panic(target), (int) (setcooldown[3]*10));
+			ARSystem.addBuff(target, new Rampage(target), 60);
+		}
+	}
 	
+	int count = 0;
 	@Override
 	public boolean tick() {
+		if(!sk11) {
+			Location l = player.getLocation().add(player.getLocation().getDirection().multiply(4));
+			if(sk1 > 0) {
+				sk1--;
+				if(player.isSneaking() && player.getLocation().getPitch() > -45 && player.getLocation().getPitch() < 45 || !Map.inMap(l)) {
+					sk1 = 0;
+					sk11 = true;
+					count = 4;
+					sk1l = player.getLocation();
+				} else {
+					entity.teleport(l);
+				}
+				cooldown[1] = setcooldown[1];
+			}
+		} else {
+			count++;
+			Location l = player.getLocation().add(sk1l.getDirection().multiply(count));
+			if(BlockUtil.isPathable(l.getBlock().getType()) && count <= 250 && Map.inMap(l)) {
+				ARSystem.giveBuff(player, new Stun(player), 10);
+				entity.teleport(l);
+			} else {
+				entity.setNoDamageTicks(0);
+				if(count > 250) count = 250;
+				entity.damage(2+(2*count*0.02),player);
+				entity = null;
+				sk11 = false;
+			}
+		}
 		
 		return true;
 	}
 	
-	@Override
-	public void TargetSpell(SpellTargetEvent e, boolean mycaster) {
-		if(mycaster && ARSystem.isTarget(e.getTarget(),player)) {
-			if(e.getSpell().getName().equals("c54_s1")) {
-				Wound w = new Wound(e.getTarget());
-				w.setValue(1);
-				w.setDelay(player,40,40);
-				ARSystem.giveBuff(e.getTarget(), w, 240);
-			}
-			if(e.getSpell().getName().equals("c54_s2")) {
-				Wound w = new Wound(e.getTarget());
-				w.setValue(1);
-				w.setDelay(player,120,0);
-				ARSystem.giveBuff(e.getTarget(), w, 2400);
-			}
-		}
-	}
 	
 	@Override
 	public void PlayerSpCast(Player p) {
@@ -130,7 +178,6 @@ public class c54patel extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*6);
-			ARSystem.heal(player, e.getDamage()*0.2);
 			ARSystem.spellLocCast(player, e.getEntity().getLocation(), "c54_p");
 		} else {
 			if(player.getHealth() - e.getDamage() < 1 && Rule.buffmanager.OnBuffTime((LivingEntity) e.getDamager(), "panic")&&skillCooldown(0)) {
@@ -166,11 +213,13 @@ public class c54patel extends c00main{
 		player.setMaxHealth(hp);
 		player.setHealth(hp);
 		ARSystem.giveBuff(player, new Nodamage(player), 60);
-		delay(()->{
+		tpsdelay(()->{
 			if(Rule.c.get(player) != null) {
-				delay(()->{
+				if(Rule.c.size() <= 1) ARSystem.Stop();
+				tpsdelay(()->{
 					if(Rule.c.get(player) != null) {
-						delay(()->{
+						if(Rule.c.size() <= 1) ARSystem.Stop();
+						tpsdelay(()->{
 							if(Rule.c.get(player) != null) {
 								if(Rule.c.size() > 1) {
 									HashMap<Player, c00main> ss = (HashMap<Player, c00main>) Rule.c.clone();

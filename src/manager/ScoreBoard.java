@@ -31,7 +31,7 @@ public class ScoreBoard {
 				  for(OfflinePlayer pl : tm.getPlayers()) {
 					  board.getTeam(tm.getName()).addPlayer(pl);
 				  }
-			  } catch (Exception e) {
+			  } catch (IllegalStateException e) {
 				  
 			  }
 		  }
@@ -45,7 +45,7 @@ public class ScoreBoard {
 		  String f = "";
 		  for (String s : text)
 		  {
-			  f = s;
+			  f = s.substring(0, Math.min(s.length(),39));
 			  o.getScore(ChatColor.translateAlternateColorCodes('&', f)).setScore(--size);
 		  }
 		  player.setScoreboard(board);

@@ -91,13 +91,13 @@ public class c36kaneki extends c00main{
 			player.setMaxHealth(player.getMaxHealth()+4);
 			ARSystem.heal(player, 8);
 			count++;
-			if(!spben && count >= 2 && !isps) {
+			if(count >= 2 && !isps) {
 				spskillon();
 				spskillen();
-				setcooldown[1]-=1;
-				setcooldown[2]-=1;
-				setcooldown[3]-=1;
-				setcooldown[4]-=1;
+				setcooldown[1]-=1.5;
+				setcooldown[2]-=1.5;
+				setcooldown[3]-=1.5;
+				setcooldown[4]-=1.5;
 				skill("c36_sp");
 			}
 			if(count>=3) {
@@ -110,8 +110,8 @@ public class c36kaneki extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(isps) {
+				e.setDamage(e.getDamage() + 5);
 				ARSystem.heal(player,e.getDamage()/3);
-				e.setDamage(e.getDamage() + 2);
 			}
 		} else {
 

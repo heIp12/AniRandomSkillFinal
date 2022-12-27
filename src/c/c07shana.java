@@ -55,7 +55,7 @@ public class c07shana extends c00main{
 	@Override
 	public boolean tick() {
 		if(tk%20==0&&psopen) {
-			scoreBoardText.add("&c ["+Main.GetText("c7:sk0")+ "]&f : " + attack +" / 30");
+			scoreBoardText.add("&c ["+Main.GetText("c7:sk0")+ "]&f : " + attack +" / 50");
 		}
 		if(MSUtil.isbuff(player, "c7_s3_b")) {
 			for(org.bukkit.entity.Entity entity : player.getNearbyEntities(15, 15, 15)) {
@@ -87,15 +87,17 @@ public class c07shana extends c00main{
 			},0);
 			skill("c"+number+"_ps");
 			attack+=1;
-			if(attack > 29 && !isps && !spben) {
+			if(attack > 49 && !isps ) {
 				spskillon();
 				skill("c"+number+"_spe");
 			}
 			if(attack >= 100) {
 				Rule.playerinfo.get(player).tropy(7,1);
 			}
+			
+			ARSystem.spellCast(player, e.getEntity(), "c7_p");
 		} else {
-			if(((LivingEntity)e.getEntity()).getHealth() - e.getDamage() < 1 && attack >= 29) {
+			if(((LivingEntity)e.getEntity()).getHealth() - e.getDamage() < 1 && attack >= 49) {
 				if(skillCooldown(0)) {
 					((LivingEntity)e.getEntity()).setNoDamageTicks(600);
 					spskillen();

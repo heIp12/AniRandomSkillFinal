@@ -26,6 +26,7 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Buff;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
@@ -33,6 +34,7 @@ import c.c00main;
 import event.Skill;
 import manager.AdvManager;
 import manager.Holo;
+import types.box;
 import types.modes;
 import util.AMath;
 import util.InvSkill;
@@ -106,7 +108,7 @@ public class c51zenos extends c00main{
 	public boolean skill4() {
 		if(sk[3]) {
 			tick2 = 4;
-			tick3 = 20;
+			tick3 = 40;
 			attack = 0;
 		}
 		tick2 += 10;
@@ -116,7 +118,7 @@ public class c51zenos extends c00main{
 	
 	public void upgrad() {
 		boolean all = true;
-		ARSystem.heal(player, 6);
+		ARSystem.heal(player, 12);
 		for(int i=0; i<sk.length;i++) {
 			if(!sk[i]) {
 				all = false;
@@ -137,7 +139,7 @@ public class c51zenos extends c00main{
 	@Override
 	public boolean tick() {
 		if(tk%20==0 && psopen) {
-			scoreBoardText.add("&c ["+Main.GetText("c51:sk0")+ "] : "+ attack +" / 8");
+			scoreBoardText.add("&c ["+Main.GetText("c51:sk0")+ "] : "+ attack +" / 7");
 		}
 		if(tk%20 == 0) {
 			String n = "";
@@ -171,19 +173,49 @@ public class c51zenos extends c00main{
 		return true;
 	}
 
-	@Override
-	public void TargetSpell(SpellTargetEvent e, boolean mycaster) {
-		if(mycaster) {
-			if(sk[2] && e.getSpell().getName().equals("c51_s31") && Rule.c.get(e.getTarget()) != null) {
-				Rule.buffmanager.selectBuffValue(e.getTarget(), "barrier",0);
-			}
-		}
-	}
 	
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
 		if(p == player && upgradtick < 600) {
 			Rule.playerinfo.get(player).tropy(51,1);
+		}
+	}
+	
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			if(tick3 > 0) {
+				attack++;
+				target.setNoDamageTicks(0);
+				target.damage(2,player);
+				if(attack >= 7 && skillCooldown(0)) {
+					spskillon();
+					spskillen();
+					ARSystem.spellCast(player, target, "c51_sp");
+					for(int i =0; i<60; i++) {
+						delay(()->{
+							for(Buff b : Rule.buffmanager.getBuffs(target).getBuff()) {
+								b.setTime(0);
+							}
+						},i);
+					}
+				}
+				
+			} else {
+				target.setNoDamageTicks(0);
+				target.damage(1,player);
+			}
+		}
+		if(n.equals("2")) {
+			if(sk[2] && Rule.c.get(target) != null) {
+				Rule.buffmanager.selectBuffValue(target, "barrier",0);
+			}
+			target.setNoDamageTicks(0);
+			if(tick3 > 0) {
+				target.damage(20,player);
+			} else {
+				target.damage(10,player);
+			}
 		}
 	}
 
@@ -192,13 +224,7 @@ public class c51zenos extends c00main{
 		if(isAttack) {
 			if(tick3 > 0) {
 				attack++;
-				e.setDamage(e.getDamage()*2);
 				Holo.create(e.getEntity().getLocation(), "§e<Critical>", 40, new Vector(0, -0.1, 0));
-				if(attack >= 8 && skillCooldown(0)) {
-					spskillon();
-					spskillen();
-					ARSystem.spellCast(player, e.getEntity(), "c51_sp");
-				}
 			}
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*3);
 		} else {
@@ -215,6 +241,28 @@ public class c51zenos extends c00main{
 				return false;
 			}
 		}
+		return true;
+	}
+	
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c81saitama) {
+					is = "s";
+					break;
+				}
+			}
+		}
+		
+		if(is.equals("s")) {
+			ARSystem.playSound((Entity)player, "c51saitama");
+		} else {
+			ARSystem.playSound((Entity)player, "c51db");
+		}
+		
 		return true;
 	}
 }

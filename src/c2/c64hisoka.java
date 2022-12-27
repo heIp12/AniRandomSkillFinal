@@ -45,24 +45,21 @@ import util.AMath;
 import util.GetChar;
 import util.InvSkill;
 import util.Inventory;
+import util.Local;
 import util.MSUtil;
 import util.Map;
 
 public class c64hisoka extends c00main{
-	LivingEntity target1;
-	LivingEntity target2;
+	LivingEntity target;
+
 	int tick = 0;
 	int ty = 0;
-	
-	List<LivingEntity> target = new ArrayList<>();
-	
 	public c64hisoka(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 64;
 		load();
 		text();
 		c = this;
-		target1 = target2 = player;
 		if(ARSystem.gameMode == modes.LOBOTOMY) setcooldown[1] *= 0.4;
 	}
 
@@ -75,131 +72,85 @@ public class c64hisoka extends c00main{
 	
 	@Override
 	public boolean skill2() {
+		ty++;
+		if(ty > 6) {
+			Rule.playerinfo.get(player).tropy(64,1);
+		}
 		ARSystem.playSound((Entity)player, "c64s2");
-		skill("c64_s2");
+		Location loc = player.getLocation();
+		loc.setPitch(0);
+		loc = Local.offset(loc, new Vector(2,0,0));
+		ARSystem.giveBuff(target, new Noattack(target), 15);
+		ARSystem.giveBuff(target, new Nodamage(target), 15);
+		ARSystem.giveBuff(target, new Stun(target), 15);
+		ARSystem.spellLocCast(player, loc, "c64_s2");
+		Location locs = loc;
+		delay(()->{
+			target.teleport(locs);
+			skill("c64_s2-2");
+		},15);
 		return true;
 	}
 	
 	@Override
 	public boolean skill3() {
-		ty++;
-		if(ty > 9) {
-			Rule.playerinfo.get(player).tropy(64,1);
-		}
 		ARSystem.playSound((Entity)player, "c64s3");
-		if(player.isSneaking()) {
-			for(int i=0; i<20;i++) {
-				delay(()->{
-					target1.teleport(target1.getLocation().clone().add(target2.getLocation().clone().subtract(target1.getLocation()).multiply(0.1)));
-				},i);
-			}
-			delay(()->{
-				target1.teleport(target2.getLocation());
-				if(target1 != player) {
-					ARSystem.giveBuff(target1, new Stun(target1), 20);
-					target1.damage(5,player);
-				}
-				if(target2 != player) {
-					ARSystem.giveBuff(target2, new Stun(target2), 20);
-					target2.damage(5,player);
-				}
-			},21);
-		} else {
-			for(int i=0; i<20;i++) {
-				delay(()->{
-					target2.teleport(target2.getLocation().clone().add(target1.getLocation().clone().subtract(target2.getLocation()).multiply(0.1)));
-				},i);
-			}
-			delay(()->{
-				target2.teleport(target1.getLocation());
-				if(target1 != player) {
-					ARSystem.giveBuff(target1, new Stun(target1), 20);
-					target1.damage(5,player);
-				}
-				if(target2 != player) {
-					ARSystem.giveBuff(target2, new Stun(target2), 20);
-					target2.damage(5,player);
-				}
-			},21);
-		}
-		return true;
-	}
-
-	@Override
-	public boolean skill4() {
-		ARSystem.playSound((Entity)player, "c64s4");
-		target2 = target1;
-		target1 = player;
-		ARSystem.heal(player, 2);
-		if(ARSystem.gameMode == modes.LOBOTOMY) ARSystem.heal(player, 10);
+		skill("c64_s3");
 		return true;
 	}
 
 	@Override
 	public boolean tick() {
 		tick++;
-		if(isps) {
-			if(tk%20 == 0 && tick%220 == 0) {
-				cooldown[1] = cooldown[2] = cooldown[3] = cooldown[4] = 0;
-			}
-			if(tk%20 == 0) {
-				for(Entity e : ARSystem.box(player, new Vector(12,12,12), box.TARGET)){
-					if(!target.contains(e)) {
-						target.add((LivingEntity) e);
-						ARSystem.addBuff((LivingEntity) e, new Panic((LivingEntity) e), 1980);
-					}
-				}
-			}
+		if(target == null) {
+			target = player;
 		}
+
 		if(tk%20 == 0) {
-			scoreBoardText.add("&c ["+Main.GetText("c64:ps")+ "] : 1 "+ target1.getName());
-			scoreBoardText.add("&c ["+Main.GetText("c64:ps")+ "] : 2 "+ target2.getName());
-			boolean s = true;
-			for(Player p : Rule.c.keySet()) {
-				if(p.getHealth()/p.getMaxHealth() > 0.5) {
-					s = false;
-				}
-			}
+			scoreBoardText.add("&c ["+Main.GetText("c64:sk2")+ "] : "+ target.getName());
 		}
 		
-		if(!isps && tk%20 == 0) {
-			for(LivingEntity e : target) {
-				if(e.getHealth()/e.getMaxHealth() == 1 && Rule.c.get(e) != null) {
-					spskillen();
-					spskillon();
-					ARSystem.playSound((Entity)player, "c64sp");
-					target.clear();
-					break;
+		double lv = 1;
+		for(Entity e : ARSystem.box(player, new Vector(15,15,15), box.TARGET) ) {
+			if(e.getLocation().distance(player.getLocation()) <= 15) {
+				if(((LivingEntity)e).getHealth()/((LivingEntity)e).getMaxHealth() < lv) {
+					lv = ((LivingEntity)e).getHealth()/((LivingEntity)e).getMaxHealth();
 				}
 			}
+		}
+		if(lv != 1) {
+			for(int i=0;i<10;i++) {
+				if(cooldown[i] > 0) {
+					cooldown[i] -= (1-lv)*0.05;
+				}
+			}
+		}
+		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 111 && !isps) {
+			spskillon();
+			spskillen();
+			ARSystem.playSoundAll("c64sp");
+			for(Player p : Rule.c.keySet()) {
+				ARSystem.giveBuff(p, new TimeStop(p), 100);
+			}
+			delay(()->{
+				Rule.buffmanager.selectBuffValue(player, "buffac",4f);
+				for(Player p : Rule.c.keySet()) {
+					Rule.c.get(p).skillmult+=2;
+				}
+			},100);
 		}
 		return true;
 	}
-	
-	@Override
-	public void PlayerDeath(Player p, Entity e) {
-		if(isps) {
-			ARSystem.heal(player, 3);
-		}
-	}
+
 
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*3);
-			if(target1 != e.getEntity() && e.getEntity() instanceof LivingEntity) {
-				target2 = target1;
-				target1 = (LivingEntity)e.getEntity();
-			}
-			if(isps) {
-				ARSystem.addBuff((LivingEntity) e.getEntity(), new Panic((LivingEntity) e.getEntity()), 60);
-			}
-			if(!isps && ((LivingEntity)e.getEntity()).getHealth()/((LivingEntity)e.getEntity()).getMaxHealth() < 0.5) {
-				target.add((LivingEntity) e.getEntity());
-			}
+			target = (LivingEntity) e.getEntity();
 		} else {
-			if(Rule.buffmanager.isBuff((LivingEntity) e.getDamager(), "panic")) {
-				e.setDamage(e.getDamage()*0.05);
+			if(isps) {
+				e.setDamage(e.getDamage()*0.5);
 			}
 		}
 		return true;

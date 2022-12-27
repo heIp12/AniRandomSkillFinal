@@ -51,7 +51,7 @@ public class c04sans extends c00main{
 		if(skillcount == 7) {
 			spskillon();
 		}
-		if(skillcount > 7 && !spben) {
+		if(skillcount > 7) {
 			skill("c"+number+"_sp");
 			spskillen();
 			skillcount = 0;
@@ -76,7 +76,7 @@ public class c04sans extends c00main{
 				}
 			}
 				
-			if(AMath.random(100) > 2+(e.getDamage()*1.4)) {
+			if(AMath.random(100) > (e.getDamage()*1.4)) {
 				Location loc = player.getLocation().clone().add(0,1,0);
 				loc.setPitch(0);
 				ARSystem.spellLocCast(player, loc, "c4_s0_e");
@@ -99,7 +99,7 @@ public class c04sans extends c00main{
 	@Override
 	public boolean damage(EntityDamageEvent e) {
 		if(e.getCause() != DamageCause.ENTITY_ATTACK) {
-			if(AMath.random(100) > 2+(e.getDamage()*1.4)) {
+			if(AMath.random(100) > (e.getDamage()*1.4)) {
 				cooldown[3]-=1;
 				skill("c4_s0");
 				player.setNoDamageTicks(2);

@@ -2,6 +2,7 @@ package c;
 
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,8 +13,12 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Nodamage;
+import buff.Silence;
+import buff.Stun;
 import c2.c57riri;
 import types.box;
 import types.modes;
@@ -22,6 +27,7 @@ import util.MSUtil;
 
 public class c10bell extends c00main{
 	int count = 0;
+	int Damagecount = 0;
 	
 	public c10bell(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -30,25 +36,33 @@ public class c10bell extends c00main{
 		text();
 	}
 	
+	public void ps(){
+		Damagecount++;
+		delay(()->{if(Damagecount>0)Damagecount--;},140);
+	}
+	
 	@Override
 	public boolean skill1() {
+		ps();
 		skill("c"+number+"_s1");
 		return true;
 	}
 	
 	@Override
 	public boolean skill2() {
+		ps();
 		skill("c"+number+"_s2");
 		return true;
 	}
 	
 	@Override
 	public boolean skill3() {
-		if(player.isSneaking() && player.getHealth() > 3) {
-			cooldown[3] = 0.5f*coolm;
-			player.setHealth(player.getHealth()-2);
+		ps();
+		if(player.isSneaking() && player.getHealth() > 2 + (Damagecount*0.3f)) {
+			cooldown[3] = 0.2f*coolm;
+			player.setHealth(player.getHealth()-(1 + (Damagecount*0.3f)));
 		}
-		if(MSUtil.isbuff(player, "c10_spd") && !spben) {
+		if(MSUtil.isbuff(player, "c10_spd")) {
 			if(skillCooldown(0)) {
 				count++;
 				if(count >= 2) {
@@ -67,6 +81,14 @@ public class c10bell extends c00main{
 	}
 	
 	@Override
+	public boolean tick() {;
+		if(tk%20 ==0) {
+			scoreBoardText.add("&c ["+Main.GetText("c10:ps")+ "]&f : " + Damagecount*10 + "%");
+		}
+		return true;
+	}
+	
+	@Override
 	public void PlayerSpCast(Player p) {
 		if(Rule.c.get(p).number == 10) return;
 		
@@ -80,6 +102,7 @@ public class c10bell extends c00main{
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage() * 2);
 			if(ARSystem.gameMode == modes.LOBOTOMY) ARSystem.heal(player, e.getDamage()*0.1);
+			e.setDamage(e.getDamage() + e.getDamage()*(Damagecount*0.1f));
 		} else {
 			cooldown[0]-=0.5;
 			cooldown[1]-=0.5;

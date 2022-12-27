@@ -123,17 +123,17 @@ public class c73nyaruco extends c00main{
 				target.damage(s1,player);
 			}
 		}
-		if(s1 >= 12) Rule.playerinfo.get(player).tropy(71,1);
+		if(s1 >= 12) Rule.playerinfo.get(player).tropy(73,1);
 	}
 	
 	
 	@Override
 	public boolean tick() {
-		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 40 && !isps) {
+		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 60 && !isps) {
 			spskillen();
 			spskillon();
 			ARSystem.playSound((Entity)player, "c73sp");
-			setcooldown[1] = 0.5f;
+			setcooldown[1] = 0.7f;
 		}
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c [Damage] : "+ AMath.round(s1,1));

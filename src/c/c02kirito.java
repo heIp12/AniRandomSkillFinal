@@ -34,6 +34,7 @@ public class c02kirito extends c00main{
 	int s2 = 0;
 	int s3 = 0;
 	int s4 = 0;
+	boolean ps = false;
 	
 	List<Entity> en = new ArrayList<>();
 	
@@ -52,11 +53,14 @@ public class c02kirito extends c00main{
 				((LivingEntity)e).damage(3,player);
 			}
 		}
-		delay(()->{if(spcount>0)spcount--;},15);
+		delay(()->{if(spcount>0)spcount--;},17);
 	}
 	@Override
 	public boolean skill1() {
-		heal();
+		if(ps) {
+			ps = !ps;
+			ARSystem.heal(player, 3);
+		}
 		skill("c"+number+"_s1");
 		ARSystem.playSound((Entity)player, "c2a3");
 		for(Entity e : ARSystem.box(player, new Vector(4,4,4), box.TARGET)) {
@@ -79,7 +83,10 @@ public class c02kirito extends c00main{
 	
 	@Override
 	public boolean skill2() {
-		heal();
+		if(ps) {
+			ps = !ps;
+			ARSystem.heal(player, 3);
+		}
 		en.clear();
 		ARSystem.playSound((Entity)player, "c2a4");
 		s2 = 20;
@@ -98,7 +105,10 @@ public class c02kirito extends c00main{
 	
 	@Override
 	public boolean skill3() {
-		heal();
+		if(ps) {
+			ps = !ps;
+			ARSystem.heal(player, 3);
+		}
 		s3++;
 		if(s3 == 1) {
 			ARSystem.playSound((Entity)player, "c2a");
@@ -142,7 +152,10 @@ public class c02kirito extends c00main{
 	
 	@Override
 	public boolean skill4() {
-		heal();
+		if(ps) {
+			ps = !ps;
+			ARSystem.heal(player, 3);
+		}
 		millitime = System.currentTimeMillis();
 		ARSystem.playSound((Entity)player, "c2s");
 		s4 = 60;
@@ -160,16 +173,8 @@ public class c02kirito extends c00main{
 		return true;
 	}
 	
-	void heal() {
-		healcount++;
-		if(healcount > 1) {
-			healcount = 0;
-			ARSystem.heal(player, 1);
-		}
-	}
-	
 	public boolean skill0(EntityDamageByEntityEvent e) {
-		if((System.currentTimeMillis()-millitime)/1000.0 < 0.25 && !pson &&!spben) {
+		if((System.currentTimeMillis()-millitime)/1000.0 < 0.25 && !pson) {
 			if(skillCooldown(0)) {
 				ARSystem.playSound((Entity)player, "c2f");
 				setcooldown[1] -= 1;
@@ -193,8 +198,8 @@ public class c02kirito extends c00main{
 		if(s2 > 0) {
 			s2--;
 			Location loc = player.getLocation();
+			skill("c2_s1_ia2");
 			loc.setPitch(0);
-			ARSystem.spellLocCast(player, Local.offset(loc, new Vector(2,1,0)), "c2_s1_ia2");
 			player.setVelocity(loc.getDirection().multiply(0.8));
 			for(Entity e : ARSystem.box(player, new Vector(4,4,4), box.TARGET)) {
 				if(!en.contains(e)) {
@@ -211,6 +216,10 @@ public class c02kirito extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(!isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage() * 0.5);
+			if(!ps) {
+				ps = !ps;
+				ARSystem.heal(player, 1);
+			}
 			if(e.getEntity() instanceof Player) {
 				if(s4 > 0) {
 					s4 = 0;

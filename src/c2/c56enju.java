@@ -1,52 +1,24 @@
 package c2;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.events.SpellTargetEvent;
-
 import Main.Main;
-import aliveblock.ABlock;
 import ars.ARSystem;
 import ars.Rule;
-import buff.Noattack;
-import buff.Nodamage;
-import buff.Panic;
 import buff.Silence;
 import buff.Stun;
-import buff.TimeStop;
 import c.c00main;
 import c.c15tina;
 import ch.h003rentaro;
-import event.Skill;
-import manager.AdvManager;
-import manager.Holo;
 import types.box;
 import types.modes;
 import util.AMath;
-import util.InvSkill;
-import util.Inventory;
-import util.MSUtil;
-import util.Map;
 
 public class c56enju extends c00main{
 	int p = 0;
@@ -100,6 +72,7 @@ public class c56enju extends c00main{
 
 	@Override
 	public boolean tick() {
+		if(pt > 0) pt--;
 		if(tk%20 == 0 && psopen) {
 			scoreBoardText.add("&c ["+Main.GetText("c56:sk0")+ "] : "+ count +" / 14");
 		}
@@ -134,7 +107,7 @@ public class c56enju extends c00main{
 			Rule.playerinfo.get(player).tropy(56,1);
 		}
 	}
-
+	int pt = 0;
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
@@ -142,10 +115,13 @@ public class c56enju extends c00main{
 			if(player.getLocation().getY() > e.getEntity().getLocation().getY() && ARSystem.isTarget(e.getEntity(),player)) {
 				((LivingEntity)e.getEntity()).setVelocity(new Vector(0,-0.4,0));
 				((LivingEntity)e.getEntity()).setNoDamageTicks(0);
-				if(!ARSystem.gameMode2) {
-					((LivingEntity)e.getEntity()).damage(1,player);
-				} else {
-					((LivingEntity)e.getEntity()).damage(3,player);
+				if(pt <= 0) {
+					pt = 1;
+					if(!ARSystem.gameMode2) {
+						((LivingEntity)e.getEntity()).damage(1,player);
+					} else {
+						((LivingEntity)e.getEntity()).damage(3,player);
+					}
 				}
 				skill("c56_p2");
 				if(isps) {

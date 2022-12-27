@@ -53,4 +53,6 @@ public class Panic extends Buff{
 		}
 		return false;
 	}
+	
+	
 }

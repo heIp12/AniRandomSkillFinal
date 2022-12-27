@@ -25,6 +25,7 @@ import ars.Rule;
 import buff.Stun;
 import buff.TimeStop;
 import event.Skill;
+import event.WinEvent;
 import types.box;
 import types.modes;
 import util.AMath;
@@ -282,21 +283,7 @@ public class c16saki extends c00main{
 			Player p = (Player)e;
 			if(pe[8]) {
 				p.sendTitle(Main.GetText("c16:text"+9), handColor(),5,20,5);
-				if(isps) {
-					spskillen();
-					pe[6] = true;
-					if(p == player) 
-						delay(new Runnable() {
-							@Override
-							public void run() {
-								skill("c"+number+"sp");
-								
-							}
-						},30);
-					delay = 25;
-				} else {
-					if(p == player) skill("c"+number+"tumo");
-				}
+				if(p == player) skill("c"+number+"tumo");
 				for(int i=0; i< pe.length-1;i++) {
 					if(pe[i]) {
 						text = ""+i;
@@ -311,29 +298,13 @@ public class c16saki extends c00main{
 								ARSystem.spellCast(player, e, "c16_e");
 								if(s > 8) ARSystem.spellCast(player, e, "c16_e2");
 								if(s > 12) ARSystem.spellCast(player, e, "c16_e2");
-								if(!isps) {
-									if(p == player) skill("c"+number+"p"+t);
-								} else {
-									s = 32000;
-								}
+								skill("c16p"+t);
 								ARSystem.giveBuff((LivingEntity) e, new TimeStop((LivingEntity) e), 32);
 								p.sendTitle(Main.GetText("c16:text"+(t+1)),"Score : "+s,5,5,20);
 							}
 						}, count*delay);
 						count++;
 					}
-				}
-				if(isps) {
-					delay(new Runnable() {
-						@Override
-						public void run() {
-							if(p == player) skill("c"+number+"sp2");
-
-							p.sendTitle(Main.GetText("c16:text8"),"§4Score : 32000!",5,5,20);
-							s_score = 32000;
-						}
-					},count*delay);
-					
 				}
 				if(p != player) {
 					delay(new Runnable() {
@@ -344,16 +315,6 @@ public class c16saki extends c00main{
 						public void run() {
 							double hp = ((LivingEntity)ent).getHealth();
 							double sb = 0;
-							if(isps) {
-								fscore = 32000;
-								scores = 32000;
-								ARSystem.spellCast(player, e, "c16_e");
-								ARSystem.spellCast(player, e, "c16_e");
-								ARSystem.spellCast(player, e, "c16_e");
-								ARSystem.spellCast(player, e, "c16_e2");
-								ARSystem.spellCast(player, e, "c16_e2");
-								ARSystem.spellCast(player, e, "c16_e2");
-							}
 							if(Rule.c.get(ent) != null) {
 								if(Rule.buffmanager.GetBuffValue((LivingEntity) ent, "barrier") > 0) {
 									if(Rule.buffmanager.GetBuffValue(player, "barrier") - scores > 0) {
@@ -398,18 +359,6 @@ public class c16saki extends c00main{
 				int scores = score;
 				@Override
 				public void run() {
-					if(isps) {
-						fscore = 32000;
-						scores = 32000;
-						ARSystem.spellCast(player, e, "c16_e");
-						ARSystem.spellCast(player, e, "c16_e");
-						ARSystem.spellCast(player, e, "c16_e");
-						ARSystem.spellCast(player, e, "c16_e");
-						ARSystem.spellCast(player, e, "c16_e2");
-						ARSystem.spellCast(player, e, "c16_e2");
-						ARSystem.spellCast(player, e, "c16_e2");
-						ARSystem.spellCast(player, e, "c16_e2");
-					}
 					ARSystem.spellCast(player, e, "c16_e");
 					if(scores > 8) ARSystem.spellCast(player, e, "c16_e2");
 					if(scores > 12) ARSystem.spellCast(player, e, "c16_e2");
@@ -443,9 +392,9 @@ public class c16saki extends c00main{
 	@Override
 	public boolean skill1() {
 		double c = skillmult + sskillmult;
+		ARSystem.playSound((Entity)player, "c16get");
 		for(int i = 0; i < c; i++) {
 			if(hand.length() != handcount) {
-				skill("c"+number+"get");
 				drow();
 				player.sendTitle(drow, handColor(), 10, 30, 0);
 			} else {
@@ -481,11 +430,44 @@ public class c16saki extends c00main{
 	@Override
 	public boolean skill4() {
 		List<Entity> entity = ARSystem.box(player,new Vector(6,6,6),box.TARGET);
-		
 		if(isps) {
-			entity = player.getNearbyEntities(1000, 1000, 1000);
+			entity = ARSystem.box(player,new Vector(1000,1000,1000),box.MYALL);
+			spskillen();
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				ARSystem.giveBuff(p, new TimeStop(p), 200);
+			}
+			for(Entity e : entity) {
+				ARSystem.spellCast(player, e, "c16_e");
+				ARSystem.spellCast(player, e, "c16_e");
+				ARSystem.spellCast(player, e, "c16_e");
+				ARSystem.spellCast(player, e, "c16_e2");
+				ARSystem.spellCast(player, e, "c16_e2");
+				ARSystem.spellCast(player, e, "c16_e2");
+				
+			}
+			ARSystem.playSoundAll("c16sp");
+			player.performCommand("tm anitext all SUBTITLE true 90 c16:text10/§aScore : §c§kaaaaa");
+			delay(()->{
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					p.sendTitle("§d"+Main.GetText("c16:text8"),"§fScore : §kaaaaa",10,40,0);
+				}
+			},140);
+			delay(()->{
+					ARSystem.playSoundAll("c16sp2");
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						p.sendTitle("§4§l《§4"+Main.GetText("c16:text8")+"§4§l》","§dScore : 32000!!!",0,10,40);
+					}
+					delay(()->{
+						WinEvent event = new WinEvent(player);
+						Bukkit.getPluginManager().callEvent(event);
+						if(!event.isCancelled()) {
+							Skill.win(player);
+						}
+					},40);
+			},160);
+			
 		}
-		if(hand.length() == handcount && entity.size() > 0 && pe[8]) {
+		else if(hand.length() == handcount && entity.size() > 0 && pe[8]) {
 			skill("c"+number+"deck");
 			s_score+= score;
 			attack(player);

@@ -77,7 +77,7 @@ public class c14rocklee extends c00main{
 						ARSystem.heal(player,1);
 					}
 				} else {
-					if(ticks%20 == 0 && !spben) {
+					if(ticks%20 == 0) {
 						if(spbuff < 100) {
 							if(player.getHealth() > 1) {
 								player.setHealth(player.getHealth()-1);

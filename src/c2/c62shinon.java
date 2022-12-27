@@ -40,6 +40,7 @@ import c.c00main;
 import c.c02kirito;
 import c.c08yuuki;
 import c.c47ren;
+import ca.c0200kirito;
 import event.Skill;
 import manager.AdvManager;
 import manager.Holo;
@@ -71,11 +72,11 @@ public class c62shinon extends c00main{
 		if(!gun) {
 			gun = true;
 			skill("c62_s1e");
-			ARSystem.giveBuff(player, new Silence(player), 40);
-			ARSystem.giveBuff(player, new Stun(player), 40);
+			ARSystem.giveBuff(player, new Silence(player), 20);
+			ARSystem.giveBuff(player, new Stun(player), 20);
 			skill("c62_s1");
 			ARSystem.playSound((Entity)player, "c62s11");
-			targets = 40;
+			targets = 20;
 			cooldown[1] = 0;
 		} else if(target.size() > 0){
 			gun = false;
@@ -84,7 +85,7 @@ public class c62shinon extends c00main{
 			ARSystem.giveBuff(player, new Stun(player), 10);
 			delay(()->{
 				ARSystem.playSound((Entity)player, "0gun");
-				((LivingEntity) target.get(0)).damage(10,player);
+				((LivingEntity) target.get(0)).damage(7,player);
 				ARSystem.spellCast(player, target.get(0), "c62_s1");
 				ARSystem.playerAddRotate(player,0,(float) -25);
 			},10);
@@ -95,6 +96,7 @@ public class c62shinon extends c00main{
 		} else {
 			skill("c62_s1e2");
 			gun = false;
+			cooldown[1] = 2f;
 		}
 		return true;
 	}
@@ -115,9 +117,36 @@ public class c62shinon extends c00main{
 		return true;
 	}
 	
-
+	boolean ev = false;
+	boolean ev2 = true;
+	Player tg;
 	@Override
 	public boolean tick() {
+		if(ev && ev2) {
+			ev2 = false;
+			ARSystem.playSoundAll("c62e");
+			for(Player p : Rule.c.keySet()) {
+				ARSystem.giveBuff(p, new TimeStop(p), 400);
+			}
+			tpsdelay(()->{
+				Skill.win(player.getName() +" | " + tg.getName());
+			},380);
+		} else {
+			if(Rule.c.size() == 2) {
+				ev = false;
+				for(Player p : Rule.c.keySet()) {
+					if(Rule.c.get(p) instanceof c0200kirito) {
+						ev = true;
+						tg = p;
+						
+						p.teleport(player.getLocation().add(player.getLocation().getDirection().multiply(2)));
+						Location loc = p.getLocation();
+						loc.setYaw(loc.getYaw()+180);
+						p.teleport(loc);
+					}
+				}
+			}
+		}
 		if(gun) {
 			ARSystem.giveBuff(player, new Stun(player), 2);
 			target.clear();
@@ -134,7 +163,7 @@ public class c62shinon extends c00main{
 								target.add(e);
 								ARSystem.potion(e, 24, 5, 5);
 								if(targets <= 0) {
-									targets = 60;
+									targets = 40;
 									ARSystem.playSound(player, "c62s1"+(1+AMath.random(2)));
 								}
 							}
@@ -161,9 +190,9 @@ public class c62shinon extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			e.setDamage(e.getDamage() + e.getDamage() * (e.getEntity().getLocation().distance(player.getLocation())*0.03));
+			e.setDamage(e.getDamage() + e.getDamage() * (e.getEntity().getLocation().distance(player.getLocation())*0.07));
 			
-			if(e.getEntity().getLocation().distance(player.getLocation()) >= 50 && skillCooldown(0)) {
+			if(e.getEntity().getLocation().distance(player.getLocation()) >= 80 && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				e.setDamage(999);

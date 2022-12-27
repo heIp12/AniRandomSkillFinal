@@ -139,42 +139,42 @@ public class c42nanaya extends c00main{
 			stack.put(e, num);
 		}
 	}
-
+	
 	@Override
-	public void TargetSpell(SpellTargetEvent e, boolean mycaster) {
-		if(mycaster && !(e.getTarget() instanceof Player && ((Player)e.getTarget()).getGameMode() == GameMode.SPECTATOR )) {
-			if(e.getSpell().getName().equals("c42_s1_a")) {
-				stacks(e.getTarget(),1);
-				if(tick > 0 && e.getTarget().getHealth() <= 14) {
-					if(skillCooldown(0)) {
-						ty++;
-						if(ty >= 2) {
-							Rule.playerinfo.get(player).tropy(42,1);
-						}
-						spskillon();
-						spskillen();
-						ARSystem.giveBuff(player, new Silence(player), 60);
-						ARSystem.giveBuff(player, new Stun(player), 60);
-						ARSystem.giveBuff(player, new Nodamage(player), 60);
-						ARSystem.spellCast(player, e.getTarget(), "c42_sp");
+	public void makerSkill(LivingEntity target, String n) {
+		
+		if(n.equals("1")) {
+			stacks(target,2);
+			if(tick > 0 && target.getHealth() <= 14) {
+				if(skillCooldown(0)) {
+					ty++;
+					if(ty >= 2) {
+						Rule.playerinfo.get(player).tropy(42,1);
 					}
+					spskillon();
+					spskillen();
+					ARSystem.giveBuff(player, new Silence(player), 60);
+					ARSystem.giveBuff(player, new Stun(player), 60);
+					ARSystem.giveBuff(player, new Nodamage(player), 60);
+					ARSystem.spellCast(player, target, "c42_sp");
 				}
-			}
-			if(e.getSpell().getName().equals("c42_s2_a")) {
-				stacks(e.getTarget(),2);
-			}
-			if(e.getSpell().getName().equals("c42_s3_a")) {
-				if(stack.get(e.getTarget()) != null && stack.get(e.getTarget()) > 0) {
-					stack.put(e.getTarget(), stack.get(e.getTarget())-3);
-					if(tick > 0) stack.put(e.getTarget(), stack.get(e.getTarget())-2);
-					e.getTarget().setNoDamageTicks(0);
-					e.getTarget().damage(3,player);
-				}
-			}
-			if(e.getSpell().getName().equals("c42_s4_a")) {
-				stacks(e.getTarget(),3);
 			}
 		}
+		if(n.equals("2")) {
+			stacks(target,3);
+		}
+		if(n.equals("3")) {
+			if(stack.get(target) != null && stack.get(target) > 0) {
+				stack.put(target, stack.get(target)-3);
+				if(tick > 0) stack.put(target, stack.get(target)-2);
+				target.setNoDamageTicks(0);
+				target.damage(3,player);
+			}
+		}
+		if(n.equals("4")) {
+			stacks(target,8);
+		}
+		
 	}
 	
 	@Override

@@ -36,6 +36,8 @@ public class c33meliodace extends c00main{
 	double damage = 0;
 	int tick;
 	int timer = 0;
+	
+	int s1= 0, s2 = 0;
 
 	public c33meliodace(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -48,6 +50,7 @@ public class c33meliodace extends c00main{
 	@Override
 	public boolean skill1() {
 		skill("c33_s1");
+		s1 = 20;
 		return true;
 	}
 	
@@ -56,6 +59,7 @@ public class c33meliodace extends c00main{
 		skill("c33_s2");
 		damage = 0;
 		tick= 80;
+		s2 = 60;
 		return true;
 	}
 	
@@ -69,6 +73,26 @@ public class c33meliodace extends c00main{
 			Rule.playerinfo.get(player).tropy(33,1);
 		}
 		if(tick> 0) tick--;
+		if(s1 > 0) s1--;
+		if(s2 > 0) {
+			s2--;
+			if(s2 == 1) {
+				ARSystem.giveBuff(player, new Nodamage(player), 20);
+			}
+		}
+		
+		if(damage >= 50 && !isps) {
+			ARSystem.giveBuff(player, new Nodamage(player), 40);
+			
+			spskillen();
+			spskillon();
+			player.setMaxHealth(16);
+			player.setHealth(16);
+			setcooldown[1] = setcooldown[1]/2;
+			setcooldown[2] = setcooldown[2]/2;
+			skill("c33_e");
+			skill("c33_e2");
+		}
 		return true;
 	}
 	
@@ -77,23 +101,30 @@ public class c33meliodace extends c00main{
 		if(Rule.buffmanager.OnBuffTime(player, "silence")) {
 			Rule.buffmanager.selectBuffTime(player, "silence",0);
 		}
+		if(Rule.buffmanager.OnBuffTime(player, "rampage")) {
+			Rule.buffmanager.selectBuffTime(player, "rampage",0);
+		}
 		return true;
+	}
+	
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			if(damage >= 1) {
+				target.setNoDamageTicks(0);
+				target.damage(damage,player);
+			}
+		}
 	}
 
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-
 			if(e.getDamage() >  0 &&e.getDamage() <= 0.01 && e.getEntity() instanceof LivingEntity) {
-				e.setCancelled(true);
-				e.setDamage(0);
-				if(damage >= 1) {
-					((LivingEntity)e.getEntity()).damage(damage,player);
-				}
 				return false;
 			}
 		} else {
-			if(MSUtil.isbuff(player, "c33_s1d")) {
+			if(s1 > 0) {
 				e.setCancelled(true);
 				damage = e.getDamage()*2;
 				if(isps) damage = e.getDamage()*5;
@@ -101,7 +132,7 @@ public class c33meliodace extends c00main{
 				e.setDamage(0);
 				return false;
 			}
-			if(MSUtil.isbuff(player, "c33_s2d")) {
+			if(s2 > 0) {
 				damage+=e.getDamage()*2;
 				if(isps) damage += e.getDamage()*3;
 				if(player.getHealth() <= damage) {
@@ -110,20 +141,6 @@ public class c33meliodace extends c00main{
 					e.setDamage(0);
 					return false;
 				}
-			} else if(!spben && tick > 0 && AMath.random(10) <= 4 && !isps) {
-				ARSystem.giveBuff(player, new Nodamage(player), 40);
-				
-				spskillen();
-				spskillon();
-				player.setMaxHealth(16);
-				player.setHealth(16);
-				setcooldown[1] = setcooldown[1]/2;
-				setcooldown[2] = setcooldown[2]/2;
-				skill("c33_e");
-				
-				e.setCancelled(true);
-				e.setDamage(0);
-				return false;
 			}
 		}
 		return true;

@@ -28,13 +28,15 @@ public class c27ray extends c00main{
 	int ticks = 0;
 	int time = 0;
 	int count = 0;
-
+	Location loc;
+	boolean isstart = false;
+	
 	public c27ray(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 27;
 		load();
 		text();
-		skill("c27");
+		if(player != null) loc = player.getLocation();
 	}
 
 	@Override
@@ -43,7 +45,11 @@ public class c27ray extends c00main{
 		if(isps) {
 			ARSystem.spellLocCast(player, player.getLocation(), "c27_spi"+AMath.random(3));
 		} else {
-			skill("c"+number+"_s1");
+			if(player.isSneaking()) {
+				skill("c"+number+"_s1_1");
+			} else {
+				skill("c"+number+"_s1");
+			}
 		}
 		return true;
 	}
@@ -114,14 +120,24 @@ public class c27ray extends c00main{
 			Rule.playerinfo.get(player).tropy(27,1);
 		}
 	}
+
 	@Override
 	public boolean tick() {
-		if(tk%20==0 && !isps && player.getHealth()/player.getMaxHealth() <= 0.40) {
+		if(!isstart){
+			isstart = true;
+			skill("c27");
+			delay(()->{skill("c27_s3");},2 );
+		}
+		if(isps && player.getLocation().distance(loc) > 1) {
+			loc = player.getLocation();
+			ARSystem.spellLocCast(player,player.getLocation().add(new Vector(-2+AMath.random(4),-1,-2+AMath.random(4))), "c27_spi"+AMath.random(3));
+		}
+		if(tk%20==0 && !isps && player.getHealth()/player.getMaxHealth() <= 0.20) {
 			time++;
 			if(psopen&& !isps) {
-				scoreBoardText.add("&c [Time]&f : "+ time + " / 40");
+				scoreBoardText.add("&c [Time]&f : "+ time + " / 15");
 			}
-			if(time > 39&& !isps&&!spben) {
+			if(time > 14&& !isps) {
 				time = 0;
 				spskillon();
 				spskillen();
@@ -135,6 +151,7 @@ public class c27ray extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*3);
+			if(!isps) e.setDamage(e.getDamage() * (2.0-player.getHealth()/player.getMaxHealth()));
 		} else {
 
 		}

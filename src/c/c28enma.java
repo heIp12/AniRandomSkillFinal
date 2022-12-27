@@ -33,6 +33,7 @@ import util.Map;
 
 public class c28enma extends c00main{
 	int ticks = 0;
+	int delay = 0;
 	boolean passive = false;
 	Player deathPlayer;
 	List<Player> playlist = new ArrayList<Player>();
@@ -144,12 +145,14 @@ public class c28enma extends c00main{
 
 	@Override
 	public boolean tick() {
+		if(delay > 0) delay--;
+		
 		if(tk%20==0) {
 			for(Player p : playlist) {
 				scoreBoardText.add("&c ["+Main.GetText("c28:sk1")+ "]&f : "+ p.getName());
 			}	
 		}
-		if(ticks%10==0 && player.getGameMode() != GameMode.SPECTATOR) {
+		if(delay <= 0 && ticks%10==0 && player.getGameMode() != GameMode.SPECTATOR) {
 			for(Entity e : player.getNearbyEntities(5, 5, 5)) {
 				if(e instanceof Player && ((Player) e).getGameMode() != GameMode.SPECTATOR && playlist.contains(e)) {
 					playlist.remove(e);
@@ -170,6 +173,7 @@ public class c28enma extends c00main{
 						@Override
 						public void run() {
 							ARSystem.playSoundAll("c28s3");
+							delay = 100;
 						}
 					},260);
 					
@@ -180,6 +184,7 @@ public class c28enma extends c00main{
 							player.setGameMode(GameMode.ADVENTURE);
 							player.teleport(e);
 							Skill.remove(e,player);
+							delay = 100;
 						}
 					},300);
 				}
@@ -193,7 +198,10 @@ public class c28enma extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			
+			if(e.getDamage() > 1) {
+				e.setDamage(0);
+				return false;
+			}
 		} else {
 
 		}

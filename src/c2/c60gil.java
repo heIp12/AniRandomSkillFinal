@@ -63,7 +63,7 @@ public class c60gil extends c00main{
 		load();
 		text();
 		c = this;
-		sword = 20;
+		sword = 50;
 	}
 	@Override
 	public void setStack(float f) {
@@ -99,7 +99,7 @@ public class c60gil extends c00main{
 	
 	@Override
 	public void PlayerSpCast(Player p) {
-		if(Rule.c.get(p) != null && !(Rule.c.get(p) instanceof c60gil)) {
+		if(Rule.c.get(p) != null && !(Rule.c.get(p) instanceof c60gil) && ARSystem.AniRandomSkill == null || (ARSystem.AniRandomSkill.getTime() >= 1)) {
 			count++;
 			if(ARSystem.AniRandomSkill.startplayer.size() > 5 && AMath.random(10) <= 3) {
 				count++;

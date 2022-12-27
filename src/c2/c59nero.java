@@ -39,6 +39,7 @@ import c.c00main;
 import event.Skill;
 import manager.AdvManager;
 import manager.Holo;
+import types.MapType;
 import util.AMath;
 import util.GetChar;
 import util.InvSkill;
@@ -125,20 +126,21 @@ public class c59nero extends c00main{
 			@Override
 			public void run() {
 				skill("c59_spe2");
-				player.performCommand("tm anitext all SUBTITLE true 67 c59:t3/"+player.getName());
+				player.performCommand("tm anitext all SUBTITLE true 50 c59:t3/"+player.getName());
 			}
 		},116);
 		delay(new Runnable() {
 			@Override
 			public void run() {
 				skill("c59_spe2");
-				player.performCommand("tm anitext all SUBTITLE true 90 c59:t4/"+player.getName());
+				player.performCommand("tm anitext all SUBTITLE true 40 c59:t4/"+player.getName());
 			}
 		},183);
 		
 		delay(new Runnable() {
 			@Override
 			public void run() {
+				Map.mapType = MapType.NORMAL;
 				ARSystem.heal(player,100);
 				player.performCommand("tm anitext all SUBTITLE true 20 c59:t6/c59:t5");
 				if(ARSystem.gameMode2) {
@@ -172,7 +174,7 @@ public class c59nero extends c00main{
 			if(AMath.random(1000) == 5) {
 				ARSystem.addBuff(player, new Stun(player), 20);
 			}
-			if(player.getHealth() < 3 && !sirosp) {
+			if(player.getHealth() < 4 && !sirosp) {
 				sp++;
 				if(!ARSystem.gameMode2) sp+=2;
 				if(sp > 100 && !isps) {
@@ -191,7 +193,7 @@ public class c59nero extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(sk3 > 0 && !isps) ARSystem.heal(player,e.getDamage()*0.3);
+			if(sk3 > 0 && !isps) ARSystem.heal(player,e.getDamage()*0.5);
 			if(sk3 > 0 && isps) ARSystem.heal(player,e.getDamage()*1.2);
 		} else {
 			if(ps && player.getHealth() - e.getDamage() <= 1) {

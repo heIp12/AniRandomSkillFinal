@@ -30,6 +30,7 @@ import manager.AdvManager;
 import util.AMath;
 import util.InvSkill;
 import util.Inventory;
+import util.Local;
 import util.MSUtil;
 import util.Map;
 
@@ -78,6 +79,8 @@ public class c45momo extends c00main{
 		if(psopen) {
 			scoreBoardText.add("&c ["+Main.GetText("c45:sk0")+ "] : "+ (tick/20) +" / 20");
 		}
+		if(tk%20==0) scoreBoardText.add("&c ["+Main.GetText("c45:ps")+ "] : "+ count+" / "+(count*5) +"%");
+		
 		if(tick%400 == 0) {
 			if(Rule.buffmanager.GetBuffValue(player, "barrier") < count*2) {
 				Rule.buffmanager.selectBuffValue(player, "barrier",count*2);
@@ -90,6 +93,12 @@ public class c45momo extends c00main{
 				spskillen();
 				setcooldown[2] *= 0.5;
 				ARSystem.playSound(player, "c45sp");
+				count+=5;
+				ARSystem.spellLocCast(player, Local.offset(player.getLocation(),new Vector(0.5,0,0)),"c45_flower2");
+				ARSystem.spellLocCast(player, Local.offset(player.getLocation(),new Vector(0.25,0,0.75)),"c45_flower2");
+				ARSystem.spellLocCast(player, Local.offset(player.getLocation(),new Vector(0.25,0,-0.75)),"c45_flower2");
+				ARSystem.spellLocCast(player, Local.offset(player.getLocation(),new Vector(0.1,0,1.5)),"c45_flower2");
+				ARSystem.spellLocCast(player, Local.offset(player.getLocation(),new Vector(0.1,0,-1.5)),"c45_flower2");
 			}
 		}
 		return true;
@@ -99,7 +108,7 @@ public class c45momo extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-
+			e.setDamage(e.getDamage() + e.getDamage()*(count*0.05));
 		} else {
 
 		}

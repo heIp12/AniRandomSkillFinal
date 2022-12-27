@@ -80,8 +80,8 @@ public class c75gon extends c00main{
 		if(e != null) {
 			if(player.getHealth() <= 2) Rule.playerinfo.get(player).tropy(75,1);
 			cooldown[3] = cooldown[2] = cooldown[1] = setcooldown[1];
-			ARSystem.giveBuff(player,new TimeStop(player), 200);
-			ARSystem.giveBuff(e,new TimeStop(e), 200);
+			ARSystem.giveBuff(player,new TimeStop(player), 80);
+			ARSystem.giveBuff(e,new TimeStop(e), 80);
 			ARSystem.playSound((Entity)player, "c75s1");
 			ARSystem.spellCast(player, e, "c75_s1");
 			delay(()->{ARSystem.spellCast(player, e, "c75_s2");},17);
@@ -123,14 +123,16 @@ public class c75gon extends c00main{
 					inv.setItem(16, is);
 					invskill.setInventory(inv);
 					invskill.openInventory((Player) e);
+				} else {
+					tsk = AMath.random(3);
 				}
-			},30);
+			},10);
 			delay(()->{
 				if(tsk == 0) {tsk = AMath.random(3);}
 				ARSystem.spellLocCast(player, player.getLocation(), "c75e"+sk);
 				ARSystem.spellLocCast(player, e.getLocation(), "c75e"+tsk);
 				ARSystem.playSound((Entity)player, "c75s1"+sk);
-			},180);
+			},70);
 			
 			delay(()->{
 				if(e instanceof Player) {
@@ -138,38 +140,38 @@ public class c75gon extends c00main{
 				}
 				Rule.buffmanager.selectBuffTime(e, "timestop",0);
 				if(sk==1) {
-					if( tsk==3) {
-						for(int t=0;t<20;t++) delay(()->{
+					if(tsk==3) {
+						for(int t=0;t<15;t++) delay(()->{
 							e.setNoDamageTicks(0);
 							e.damage(1,player);
 						},t);
 						lose = 0;
 					} else {
 						if(tsk==2) {
-							ARSystem.heal(e, 12);
+
 						} else {
 							cooldown[3] = cooldown[2] = cooldown[1] = setcooldown[1]/5f;
 						}
 						lose++;
 					}
 					}
-				if(sk==2) {
-					if(tsk==1) {
+				if(sk==3) {
+					if(tsk==2) {
 						e.setNoDamageTicks(0);
-						e.damage(25,player);
+						e.damage(17,player);
 						lose = 0;
 					} else {
-						if(tsk==3) {
-							ARSystem.overheal(e, 20);
+						if(tsk==1) {
+
 						} else {
 							cooldown[3] = cooldown[2] = cooldown[1] = setcooldown[1]/5f;
 						}
 						lose++;
 					}
 				}
-				if(sk==3) {
-					if(tsk==2) {
-						double damage = 16;
+				if(sk==2) {
+					if(tsk==1) {
+						double damage = 10;
 						s_damage += damage;
 						if(e.getHealth()+1 >= damage) {
 							e.setHealth(e.getHealth()-damage);
@@ -178,15 +180,15 @@ public class c75gon extends c00main{
 						}
 						lose = 0;
 					} else {
-						if(tsk==1) {
-							ARSystem.heal(e, 20);
+						if(tsk==3) {
+
 						} else {
 							cooldown[3] = cooldown[2] = cooldown[1] = setcooldown[1]/5f;
 						}
 						lose++;
 					}
 				}
-			},200);
+			},80);
 		} else {
 			cooldown[3] = cooldown[2] = cooldown[1] = 0;
 			return false;
@@ -235,30 +237,17 @@ public class c75gon extends c00main{
 	@Override
 	public boolean tick() {
 		if(tk%20 == 0) {
-			if(psopen && !ARSystem.gameMode2) scoreBoardText.add("&c ["+Main.GetText("c75:sk0")+ "] : "+ lose+" / 3");
-			if(psopen && ARSystem.gameMode2) scoreBoardText.add("&c ["+Main.GetText("c75:sk0")+ "] : "+ lose+" / 5");
+			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c75:sk0")+ "] : "+ lose+" / 3");		
 			if(isps) scoreBoardText.add("&c ["+Main.GetText("c75:sk0")+ "] : "+ AMath.round(ps/20,2));
 		}
-		if(!ARSystem.gameMode2) {
-			if(lose >=3 && !isps) {
-				spskillen();
-				spskillon();
-				ARSystem.playSound((Entity)player, "c75sp");
-				player.setMaxHealth(300);
-				player.setHealth(300);
-				ps = 600;
-				ARSystem.potion(player, 1, 100000, 30);
-			}
-		} else {
-			if(lose >=5 && !isps) {
-				spskillen();
-				spskillon();
-				ARSystem.playSound((Entity)player, "c75sp");
-				player.setMaxHealth(300);
-				player.setHealth(300);
-				ps = 600;
-				ARSystem.potion(player, 1, 100000, 30);
-			}
+		if(lose >=3 && !isps) {
+			spskillen();
+			spskillon();
+			ARSystem.playSound((Entity)player, "c75sp");
+			player.setMaxHealth(300);
+			player.setHealth(300);
+			ps = 600;
+			ARSystem.potion(player, 1, 100000, 30);
 		}
 		if(ps > 0) {
 			ps--;

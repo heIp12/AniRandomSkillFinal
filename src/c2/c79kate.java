@@ -43,6 +43,7 @@ import buff.Wound;
 import c.c000humen;
 import c.c00main;
 import event.Skill;
+import event.WinEvent;
 import manager.AdvManager;
 import manager.Bgm;
 import manager.Holo;
@@ -87,14 +88,14 @@ public class c79kate extends c00main{
 	@Override
 	public boolean skill2() {
 		ARSystem.playSound((Entity)player, "c79s2");
-		ARSystem.heal(player, 12);
+		ARSystem.heal(player, 999);
 		return true;
 	}
 	
 	@Override
 	public boolean skill3() {
 		ARSystem.playSound((Entity)player, "c79s3");
-		sk3 = 100;
+		sk3 = 60;
 		return true;
 	}
 	
@@ -153,15 +154,7 @@ public class c79kate extends c00main{
 					spskillon();
 					score+=1000000;
 					ARSystem.playSoundAll("c79sp");
-					
-					Rule.c.get(player).info();
-					for(Player p :Rule.c.keySet()) {
-						Rule.playerinfo.get(p).addcradit(Rule.c.size()*2,Main.GetText("main:msg103"));
-					}
-					
-					int number = Rule.c.get(player).getCode();
-					Rule.Var.addInt(player.getName()+".c"+(number%1000)+"Win",1);
-					Rule.Var.addInt("ARSystem.c"+(number%1000)+"Win",1);
+					Bgm.setBgm("c79");
 					
 					for(Player p : Rule.c.keySet()) {
 						ARSystem.giveBuff(p,new TimeStop(p), 100);
@@ -172,19 +165,35 @@ public class c79kate extends c00main{
 					}
 					
 					delay(()->{
-						Rule.team.getTeam("Zvezda").setTeamWin(true);
-						List<String> removelist = new ArrayList<>();
-						for(TeamInfo t : Rule.team.getTeams()) {
-							if(!t.getTeamName().equals("Zvezda")) {
-								removelist.add(t.getTeamName());
+					WinEvent event = new WinEvent(player);
+					Bukkit.getPluginManager().callEvent(event);
+					if(!event.isCancelled()) {
+							Rule.c.get(player).info();
+							for(Player p :Rule.c.keySet()) {
+								Rule.playerinfo.get(p).addcradit(Rule.c.size()*2,Main.GetText("main:msg103"));
 							}
+							
+							int number = Rule.c.get(player).getCode();
+							Rule.Var.addInt(player.getName()+".c"+(number%1000)+"Win",1);
+							Rule.Var.addInt("ARSystem.c"+(number%1000)+"Win",1);
+							
+							
+							delay(()->{
+								Rule.team.getTeam("Zvezda").setTeamWin(true);
+								List<String> removelist = new ArrayList<>();
+								for(TeamInfo t : Rule.team.getTeams()) {
+									if(!t.getTeamName().equals("Zvezda")) {
+										removelist.add(t.getTeamName());
+									}
+								}
+								for(String t : removelist) {
+									Rule.team.teamRemove(t);
+								}
+								ARSystem.gameMode = modes.TEAM;
+								ARSystem.Stop();
+							},20);
 						}
-						for(String t : removelist) {
-							Rule.team.teamRemove(t);
-						}
-						ARSystem.gameMode = modes.TEAM;
-						ARSystem.Stop();
-					},120);
+					},100);
 				}
 			}
 		}

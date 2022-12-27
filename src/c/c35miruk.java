@@ -24,6 +24,7 @@ import ars.ARSystem;
 import ars.Rule;
 import buff.Nodamage;
 import buff.Silence;
+import buff.Stun;
 import event.Skill;
 import manager.AdvManager;
 import types.box;
@@ -51,23 +52,29 @@ public class c35miruk extends c00main{
 
 	@Override
 	public boolean skill1() {
-		if(player.getMaxHealth() > 1) {
+		if(player.getMaxHealth() > 1 || isps) {
 			s1 = !s1;
-			if(s1) {
-				ARSystem.playSound((Entity)player, "c35s1");
-			}
+			if(s1) ARSystem.playSound((Entity)player, "c35s1");
 		}
 		return true;
 	}
 	
 	@Override
 	public boolean skill2() {
+		if(s1) {
+			cooldown[2] = 0;
+			return false;
+		}
 		skill("c35_s2");
 		return true;
 	}
 	
 	@Override
 	public boolean skill3() {
+		if(s1) {
+			cooldown[3] = 0;
+			return false;
+		}
 		ARSystem.giveBuff(player, new Nodamage(player), 100);
 		for(Entity e : ARSystem.box(player, new Vector(12,8,12), box.ALL)) {
 			ARSystem.giveBuff((LivingEntity) e, new Nodamage((LivingEntity) e), 100);
@@ -102,39 +109,41 @@ public class c35miruk extends c00main{
 	
 	@Override
 	public boolean tick() {
-		if(player.getHealth() <= 1) {
-			timer++;
-			if(!spben && timer > 1200) {
-				if(skillCooldown(0)) {
-					spskillen();
-					spskillon();
-					player.setMaxHealth(50);
-					player.setHealth(50);
-					timer = 0;
-				}
-			}
-		} else {
-			timer = 0;
-		}
-		if(tk%20==0 && psopen) {
-			scoreBoardText.add("&c ["+Main.GetText("c35:sk0")+ "]&f" + (int)(timer/20));
-		}
 		if(s1) {
-			if(player.getMaxHealth() > 1) {
-				double hp = player.getHealth();
-				player.setMaxHealth(player.getMaxHealth()-0.4);
-				if(hp < player.getMaxHealth()) player.setHealth(hp);
+			if(player.getMaxHealth() > 1 || isps) {
+				if(!isps) {
+					if(player.getHealth() <= 2) {
+						if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time <= 20) {
+							spskillen();
+							spskillon();
+							player.setMaxHealth(30);
+							player.setHealth(30);
+							s1 = false;
+						}
+					}
+					double hp = player.getHealth();
+					player.setMaxHealth(player.getMaxHealth()-0.4);
+					if(hp < player.getMaxHealth()) player.setHealth(hp);
+				} else {
+					ARSystem.giveBuff(player, new Stun(player), 10);
+				}
 				List<Entity> el = ARSystem.box(player, new Vector(1,1,1),box.TARGET);
 				for(Entity e : el) {
 					if(e != player) {
-						e.teleport(e.getLocation().add(0,-100,0));
-						count++;
-						if(count >= 35) {
-							Rule.playerinfo.get(player).tropy(35,1);
+						if(!isps) { 
+							e.teleport(e.getLocation().add(0,-100,0));
+						} else {
+							if(tk%4 == 1) {
+								((LivingEntity)e).setNoDamageTicks(0);
+								((LivingEntity)e).damage(1,player);
+								count++;
+								if(count >= 30) {
+									Rule.playerinfo.get(player).tropy(35,1);
+								}
+							}
 						}
 					}
 				}
-			
 				skill("c35_p");
 			}
 		}

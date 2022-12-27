@@ -45,12 +45,16 @@ public class c43yuno extends c00main{
 	int c = 0;
 	boolean ps = true;
 	double score = 0;
+	boolean start = true;
 	
 	public c43yuno(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 43;
 		load();
 		text();
+	}
+	
+	public void team() {
 		for(int i = 0; i<4;i++) co[i] = setcooldown[i];
 		Rule.team.teamCreate("Yuno");
 		Rule.team.teamJoin("Yuno", player);
@@ -105,7 +109,7 @@ public class c43yuno extends c00main{
 	@Override
 	public boolean skill1() {
 		player.teleport(yuki);
-		tick = 60;
+		tick = 160;
 		skill("c43_s1");
 		ARSystem.playSound((Player)player, "c43s");
 		return true;
@@ -113,25 +117,28 @@ public class c43yuno extends c00main{
 	@Override
 	public boolean skill2() {
 		ARSystem.playSound((Player)player, "c43s2");
-		Rule.c.get(yuki).cooldown[0] -= Rule.c.get(yuki).setcooldown[0] * 0.25;
-		Rule.c.get(yuki).cooldown[1] -= Rule.c.get(yuki).setcooldown[1] * 0.25;
-		Rule.c.get(yuki).cooldown[2] -= Rule.c.get(yuki).setcooldown[2] * 0.25;
-		Rule.c.get(yuki).cooldown[3] -= Rule.c.get(yuki).setcooldown[3] * 0.25;
-		Rule.c.get(yuki).cooldown[4] -= Rule.c.get(yuki).setcooldown[4] * 0.25;
-		Rule.c.get(yuki).cooldown[5] -= Rule.c.get(yuki).setcooldown[5] * 0.25;
-		ARSystem.heal(yuki, yuki.getMaxHealth()*0.2);
-		s_score +=yuki.getMaxHealth()*0.5;
-		ARSystem.giveBuff(yuki, new Panic(yuki), 120);
+		for(int i=0;i<10;i++) {
+			Rule.c.get(yuki).cooldown[i] -= 3;
+			if(Rule.c.get(yuki).cooldown[i] < 0) Rule.c.get(yuki).cooldown[i] = 0;
+		}
+		ARSystem.heal(yuki, 10000);
+		s_score +=yuki.getMaxHealth();
 		return true;
 	}
 	
 	@Override
 	public boolean skill3() {
-		ARSystem.playSound((Player)player, "c43s3");
-		for(Entity p : ARSystem.box(yuki, new Vector(8,8,8),box.TARGET)) {
-			if(p != yuki && p != player) {
-				ARSystem.spellCast(player, p, "c43_s2a");
+		if(yuki.getGameMode() != GameMode.SPECTATOR) {
+			ARSystem.playSound((Player)player, "c43s3");
+			if(yuki != null) {
+				for(Entity p : ARSystem.box(yuki, new Vector(8,8,8),box.TARGET)) {
+					if(p != yuki && p != player) {
+						ARSystem.spellCast(player, p, "c43_s2a");
+					}
+				}
 			}
+		} else {
+			cooldown[3] = 0;
 		}
 		return true;
 	}
@@ -139,7 +146,11 @@ public class c43yuno extends c00main{
 
 	@Override
 	public boolean tick() {
-		if(yuki == null) {
+		if(start) {
+			start = false;
+			team();
+		}
+		if(yuki == null && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time > 10) {
 			yuki = ARSystem.RandomPlayer(player);
 			heal = yuki.getHealth();
 			yuki.sendTitle(Main.GetText("c43:t1"), "",5,15,20);
@@ -213,7 +224,9 @@ public class c43yuno extends c00main{
 		if(isAttack) {
 
 		} else {
-
+			if(tick > 0) {
+				e.setDamage(e.getDamage()*0.5);
+			}
 		}
 		return true;
 	}

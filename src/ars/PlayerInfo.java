@@ -21,8 +21,10 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.Skull;
 
 import Main.Main;
+import c2.c58nao;
 import manager.AdvManager;
 import types.modes;
+import util.BlockUtil;
 import util.GetChar;
 import util.MSUtil;
 import util.Map;
@@ -39,6 +41,8 @@ public class PlayerInfo {
 	public boolean gamejoin = true;
 	public boolean abchar = false;
 	public String team;
+	ItemStack head;
+	
 	
 	List<String> craditlog = new ArrayList<String>();
 	
@@ -63,6 +67,10 @@ public class PlayerInfo {
 		}
 	}
 	public int getcradit() { return cradit; }
+	
+	public boolean isTropy(int i, int j) {
+		return trophy[i][j];
+	}
 	
 	public void addcradit(int i,String s) {
 		cradit += i;
@@ -101,6 +109,7 @@ public class PlayerInfo {
 	}
 	
 	public void open(Player p,String s) {
+		if(page < 0) page = 0;
 		if(s != null) {
 			invtype = Integer.parseInt(s);
 		}
@@ -112,16 +121,16 @@ public class PlayerInfo {
 		float time = max(player.getName()+".c","Time");
 		float rating = Math.round((win/play)*time)/10.f;
 		if(rating > 100) {
-			rating = 50 + (Math.round((win/play)*(time/2.0))/10.f);
+			rating = 100 + (Math.round((win/play)*(time/5.0))/10.f);
 		}
 		if(rating > 300) {
-			rating = 150 + (Math.round((win/play)*(time/5.0))/10.f);
+			rating = 300 + (Math.round((win/play)*(time/10.0))/10.f);
 		}
 		if(rating > 500) {
-			rating = 250 + (Math.round((win/play)*(time/20.0))/10.f);
+			rating = 500 + (Math.round((win/play)*(time/40.0))/10.f);
 		}
 		if(rating > 1000) {
-			rating = 400 + (Math.round((win/play)*(time/100.0))/10.f);
+			rating = 1000 + (Math.round((win/play)*(time/200.0))/10.f);
 		}
 		
 		if(rating < 10) rating = 10;
@@ -135,6 +144,15 @@ public class PlayerInfo {
 			} else {
 				spopen[i] = false;
 			}
+		}
+		head = (ItemStack) Rule.Var.getItemStack(player.getName()+".head");
+		if(head == null) {
+			head = new ItemStack(397, 1, (short) 3);
+			SkullMeta meta =  (SkullMeta) head.getItemMeta();
+			meta.setDisplayName(""+player.getName());
+			meta.setOwner(player.getName());
+			head.setItemMeta(meta);
+			Rule.Var.Save(player.getName()+".head", head);
 		}
 		cradit = Rule.Var.Loadint(player.getName()+".info.Cradit");
 		addcradit = Rule.Var.Loadint(player.getName()+".info.CraditOpen");
@@ -216,6 +234,7 @@ public class PlayerInfo {
 	}
 	
 	public void getinv() {
+		if(invtype == 7) createInventoryCInfo();
 		if(invtype == 6) createInventoryTeam();
 		if(invtype == 5) createInventoryOption();
 		if(invtype == 4) createInventoryShop();
@@ -275,6 +294,9 @@ public class PlayerInfo {
 		}
 		if(invtype == 6) {
 			inv7(e);
+		}
+		if(invtype == 7) {
+			inv8(e);
 		}
 	}
 	private void inv1(InventoryClickEvent e) {
@@ -340,24 +362,24 @@ public class PlayerInfo {
 			}
 		}
 		if(slot == 13) {
-			createInventoryInfo();
+			createInventoryCInfo();
 			open(player, null);
 		}
 		if(slot == 14) {
-			createInventory();
+			createInventoryInfo();
 			open(player, null);
 		}
 		if(slot == 15) {
-			createInventoryTropy();
+			createInventory();
 			open(player, null);
 		}
 		if(slot == 16) {
-			createInventoryShop();
+			createInventoryTropy();
 			open(player, null);
 		}
 		if(slot == 17) {
-			log();
-			player.closeInventory();
+			createInventoryShop();
+			open(player, null);
 		}
 		if(slot == 21 && (player.isOp() || Rule.ishelp(player))) {
 			createInventoryOption();
@@ -385,7 +407,7 @@ public class PlayerInfo {
 		int slot = e.getSlot()+1;
 		int cradi = cradit;
 		if(slot == 2 && e.isShiftClick()) {
-			if(cradit >= 100 && ARSystem.gameMode != modes.ONE) {
+			if(cradit >= 100 && (ARSystem.gameMode == modes.NORMAL || ARSystem.gameMode == modes.TEAM || ARSystem.gameMode == modes.TEAMMATCH || ARSystem.gameMode == modes.ZOMBIE)) {
 				if(ARSystem.AniRandomSkill != null && !ARSystem.AniRandomSkill.chageplayer.contains(player)) {
 					if(ARSystem.AniRandomSkill.time < 0 && Rule.c.get(player) != null) {
 						addcradit(-100,Main.GetText("main:msg107"));
@@ -405,16 +427,17 @@ public class PlayerInfo {
 		if(slot == 3 && e.isShiftClick()) {
 			if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time > 0) {
 				for(Player p : Bukkit.getOnlinePlayers()) {
+					if(Rule.c.get(p) instanceof c58nao) continue;
 					p.hidePlayer(player);
 					player.hidePlayer(p);
 					p.showPlayer(player);
 					player.showPlayer(p);
 				}
-				for(int i=0;i<30;i++) {
-					if(player.getLocation().clone().add(0,-1,0).getBlock().getTypeId() != 0)
-					player.teleport(player.getLocation().add(0,1,0));
+				for(int i=0;i<300;i++) {
+					if(!BlockUtil.isPathable(player.getLocation().getBlock().getType()))
+						player.teleport(player.getLocation().add(0,1,0));
 				}
-				if(player.getLocation().clone().add(0,1,0).getBlock().getTypeId() != 0) {
+				if(!BlockUtil.isPathable(player.getLocation().clone().add(0,1,0).getBlock().getType())) {
 					player.teleport(Map.randomLoc(player));
 				}
 				createInventoryMain();
@@ -435,6 +458,10 @@ public class PlayerInfo {
 	        }
 	        createInventoryMain();
 			open(player, "2");
+		}
+		if(slot == 9 && e.isShiftClick()) {
+			log();
+			player.closeInventory();
 		}
 		if(slot == 11 && e.isShiftClick()) {
 			if(cradit >= 5000) {
@@ -868,7 +895,7 @@ public class PlayerInfo {
 		}
 		
 		
-		if(slot == 17) ARSystem.Start();
+		if(slot == 17) ARSystem.Start(-1);
 		createInventoryOption();
 		open(player, null);
 	}
@@ -922,6 +949,22 @@ public class PlayerInfo {
 				Bukkit.broadcastMessage("§a§l[ARSystem] : §cOnline Player Team Reset");
 			}
 		}
+	}
+	
+	private void inv8(InventoryClickEvent e) {
+		int slot = (e.getSlot()+1) + (page*45);
+		if(e.getCurrentItem().getTypeId() != 0) {
+			if(e.isShiftClick()) {
+				String n = e.getCurrentItem().getItemMeta().getLore().get(1).replace("§0", "");
+
+				player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("tropy:msg3") + " : " + name);
+				ARSystem.playSound(player,"0click2");
+			} else {
+				ARSystem.playSound(player,"0click");
+			}
+		}
+		createInventoryCInfo();
+		open(player,"7");
 	}
 	public int max(String name, String s) {
 		int number = 0;
@@ -1023,6 +1066,13 @@ public class PlayerInfo {
 		meta.setLore(lore);
 		is.setItemMeta(meta);
 		spinv.setItem(3, is);
+		
+		
+		is = new ItemStack(339, 1);
+		meta = is.getItemMeta();
+		meta.setDisplayName("§f"+Main.GetText("main:info18"));
+		is.setItemMeta(meta);
+		spinv.setItem(8, is);
 		
 		// trophy
 		lore.clear();
@@ -1352,36 +1402,38 @@ public class PlayerInfo {
 		is.setItemMeta(meta);
 		spinv.setItem(10, is);
 
+		
+		is = new ItemStack(386, 1);
+		meta = is.getItemMeta();
+		meta.setDisplayName("§f"+Main.GetText("main:info50"));
+		is.setItemMeta(meta);
+		spinv.setItem(12, is);
+		
 		is = new ItemStack(340, 1);
 		meta = is.getItemMeta();
 		meta.setDisplayName("§f"+Main.GetText("main:info7"));
 		is.setItemMeta(meta);
-		spinv.setItem(12, is);
+		spinv.setItem(13, is);
 		
 		is = new ItemStack(339, 1);
 		meta = is.getItemMeta();
 		meta.setDisplayName("§f"+Main.GetText("main:info17"));
 		is.setItemMeta(meta);
-		spinv.setItem(13, is);
+		spinv.setItem(14, is);
 		
 		is = new ItemStack(426, 1);
 		meta = is.getItemMeta();
 		meta.setDisplayName("§f"+Main.GetText("main:info9"));
 		is.setItemMeta(meta);
-		spinv.setItem(14, is);
+		spinv.setItem(15, is);
 		
 		is = new ItemStack(266, 1);
 		meta = is.getItemMeta();
 		meta.setDisplayName("§f"+Main.GetText("main:info8"));
 		is.setItemMeta(meta);
-		spinv.setItem(15, is);
-		
-		is = new ItemStack(339, 1);
-		meta = is.getItemMeta();
-		meta.setDisplayName("§f"+Main.GetText("main:info18"));
-		is.setItemMeta(meta);
 		spinv.setItem(16, is);
 		
+
 		if(player.isOp() || Rule.ishelp(player)) {
 			is = new ItemStack(339, 1);
 			meta = is.getItemMeta();
@@ -1559,6 +1611,91 @@ public class PlayerInfo {
 		}
 	}
 	
+	public void createInventoryCInfo() {
+		invtype = 7;
+		int number = page * 45;
+		
+		spinv = new CraftInventoryCustom(null, 54, player.getName() +" : Info List");
+		int list = 0;
+		
+		for(int j = 1; j< 46; j++) {
+			ItemStack is;
+			int i = j + number;
+			if(i <= GetChar.getCount()) {
+				is = new ItemStack(278, 1, (short) i);
+
+				ItemMeta meta = is.getItemMeta();
+				meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+				meta.setUnbreakable(true);
+				
+				if(Main.GetText("c"+i+":name2") != null) {
+					meta.setDisplayName("§f§l["+i+"]"+Main.GetText("c"+i+":name1").replace("-", "") +" "+ Main.GetText("c"+i+":name2"));
+				} else {
+					meta.setDisplayName("§f§l["+i+"]");
+				}
+				List<String> lore = new ArrayList<String>();
+				int n = 1;
+				lore.add("§a§l"+Main.GetText("main:info51"));
+				while(Main.GetText("c"+i+":info"+n) != null) {
+					String text = Main.GetText("c"+i+":info"+n);
+					if(text.contains("✧") || text.contains("✦")) {
+						lore.add("§e§l" + text);
+					} else {
+						lore.add("§7" + text);
+					}
+					n++;
+				}
+				if(n == 1) lore.add("§7"+Main.GetText("main:cmderror3"));
+				
+				n = 1;
+				lore.add("§b§l"+Main.GetText("main:info52"));
+				while(Main.GetText("c"+i+":help"+n) != null) {
+					String text = Main.GetText("c"+i+":help"+n);
+					lore.add("§f" + text);
+					n++;
+				}
+				if(n == 1) lore.add("§7"+Main.GetText("main:cmderror3"));
+
+				n = 1;
+				lore.add("§c§l"+Main.GetText("main:info53"));
+				while(Main.GetText("c"+i+":kill"+n) != null) {
+					String text = Main.GetText("c"+i+":kill"+n);
+					lore.add("§6" + text);
+					n++;
+				}
+				if(n == 1) lore.add("§7"+Main.GetText("main:cmderror3"));
+				
+				meta.setLore(lore);
+				
+				is.setItemMeta(meta);
+				spinv.setItem(list, is);
+				list++;
+			}
+		}
+		List<String> lore = new ArrayList<String>();
+		
+		ItemStack is = new ItemStack(339, 1);
+		ItemMeta meta = is.getItemMeta();
+		meta.setDisplayName("§f§l"+Main.GetText("main:info12"));
+		lore.add("§e=====================================");
+		lore.add("§a§l"+ (page) +Main.GetText("main:info13"));
+		meta.setLore(lore);
+		is.setItemMeta(meta);
+		spinv.setItem(45, is);
+		
+		lore.clear();
+		
+		is = new ItemStack(339, 1);
+		meta = is.getItemMeta();
+		meta.setDisplayName("§f§l"+Main.GetText("main:info11"));
+		lore.add("§e=====================================");
+		lore.add("§a§l"+ (page+2) +Main.GetText("main:info13"));
+		meta.setLore(lore);
+		is.setItemMeta(meta);
+		spinv.setItem(53, is);
+	}
+	
 	public void createInventoryInfo() {
 		invtype = 1;
 		int number = page * 45;
@@ -1706,6 +1843,9 @@ public class PlayerInfo {
 		meta.setLore(lore);
 		is.setItemMeta(meta);
 		spinv.setItem(53, is);
+	}
+	public ItemStack getHead() {
+		return head;
 	}
 	
 }

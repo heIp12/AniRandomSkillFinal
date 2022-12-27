@@ -10,16 +10,23 @@ import org.bukkit.entity.LivingEntity;
 import buff.Buff;
 
 public class EntityBuffManager {
-	List<Buff> buff;
+	List<Buff> buff = new ArrayList<>();
+	List<Buff> removes = new ArrayList<>();
 	LivingEntity entity;
 	lengthCompare lc = new lengthCompare();
+	
 	public EntityBuffManager(LivingEntity e){
 		entity = e;
-		buff = new ArrayList<Buff>();
 	}
+	
 	public List<Buff> getBuff() {
 		return buff;
 	}
+	
+	public void removeBuff(Buff buff) {
+		removes.add(buff);
+	}
+	
 	public LivingEntity getTarget() {
 		return entity;
 	}
@@ -36,14 +43,17 @@ public class EntityBuffManager {
 	
 	public void bufforder() {
 		if(buff != null && lc != null) {
-			try {
-				List<Buff> buffa = buff;
-				Collections.sort(buffa,lc);
-				buff = buffa;
-			} catch (Exception e) {
-				
-			}
+			List<Buff> buffa = buff;
+			Collections.sort(buffa,lc);
+			buff = buffa;
 		}
+	}
+
+	public void run() {
+		for(Buff buff : removes){
+			this.buff.remove(buff);
+		}
+		removes.clear();
 	}
 }
 

@@ -1,5 +1,7 @@
 package c;
 
+import java.util.List;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -15,7 +17,10 @@ import org.bukkit.util.Vector;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 
 import Main.Main;
+import ars.ARSystem;
 import ars.Rule;
+import c2.c62shinon;
+import types.box;
 import util.AMath;
 import util.GetChar;
 import util.MSUtil;
@@ -28,6 +33,12 @@ public class c000humen extends c00main{
 		number = 10000;
 		load();
 		text();
+		ARSystem.playSound(player, "humendb1");
 	}
-
+	
+	@Override
+	protected boolean skill9() {
+		ARSystem.playSound((Entity)player, "humendb"+(AMath.random(5)+1));
+		return true;
+	}
 }

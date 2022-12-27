@@ -88,7 +88,7 @@ public class h002claw extends c00main{
 		if(tk%20 == 0) {
 			String s = Bgm.bgmcode;
 			if(!s.equals("bc998") && Bgm.rep) {
-				Bgm.setBgm("c998");
+				Bgm.setlockBgm("c998");
 			}
 		}
 		if(sk2 > 0) {
@@ -105,6 +105,8 @@ public class h002claw extends c00main{
 						en.add((LivingEntity) e);
 						ARSystem.playSound(e, "0bload",(float) 0.2);
 						ARSystem.spellCast(player, e, "claw_s2");
+						((LivingEntity)e).setNoDamageTicks(0);
+						((LivingEntity)e).damage(10,player);
 					}
 				}
 			}
@@ -190,7 +192,7 @@ public class h002claw extends c00main{
 						}
 						for(int j =0; j<20;j++) {
 							delay(()->{
-								Map.Random(0);
+								Map.Random(0,-1);
 								Location locl = Map.randomLoc();
 								player.teleport(locl);
 								skill("claw_sp2");

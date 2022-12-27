@@ -26,6 +26,11 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Airborne;
+import buff.NoHeal;
+import buff.Timeshock;
+import c2.c62shinon;
+import c2.c83sora;
+import c2.c84siro;
 import event.Skill;
 import manager.AdvManager;
 import types.box;
@@ -36,18 +41,15 @@ import util.MSUtil;
 import util.Map;
 
 public class c44izuna extends c00main{
-	int tick = 0;
-	int count = 0;
-	int tick2 = 0;
-	int tick3 = 0;
-	int ty = 0;
 
-	boolean ps = false;
-
-	boolean sn = false;
+	Location loc;
+	boolean left = true;
 	
-	int c = 0;
-	private int s3;
+	float down = 0;
+	int ps = 0;
+	
+	int sp = 0;
+	
 	public c44izuna(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 44;
@@ -58,24 +60,14 @@ public class c44izuna extends c00main{
 
 	@Override
 	public boolean skill1() {
-		skill("c44_s1_ia");
-		ty++;
-		if(ty >= 100) {
-			Rule.playerinfo.get(player).tropy(44,1);
-		}
-		tick = 40;
-		tick2 = 0;
-		tick3 = 20;
-		count = 5;
+		player.setVelocity(player.getLocation().getDirection().multiply(2).setY(0));
 		return true;
 	}
 	@Override
 	public boolean skill2() {
-		if(player.getHealth() > 2) {
-			player.setHealth(player.getHealth() - 1);
-			tick3 = 20;
-			tick2 = 10;
-			tick = 0;
+		if(ps> 5) {
+			ps-=5;
+			skill("c44_s2");
 		} else {
 			cooldown[2] = 0;
 		}
@@ -83,106 +75,119 @@ public class c44izuna extends c00main{
 	}
 	
 	@Override
-	public boolean skill3() {
-		ARSystem.heal(player, 2);
-		tick3 = 20;
-		s3 = 20;
-		skill("c44_s3");
+	public boolean firsttick() {
+		if(Rule.buffmanager.OnBuffTime(player, "stun")) {
+			Rule.buffmanager.selectBuffTime(player, "stun",0);
+		}
+		return true;
+	}
+	
+	
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			ARSystem.giveBuff(target, new NoHeal(target), 100);
+		}
+	}
+	
+	@Override
+	public boolean tick() {
+		if(loc == null) loc = player.getLocation();
+		
+		double yaw = Math.abs(loc.getYaw() - player.getLocation().getYaw());
+		if(yaw > 180) yaw -= 360;
+		
+		if(yaw > 45 || (sp > 0 && yaw != 0) || (!player.isOnGround() && yaw > 30)) {
+			if(loc.getYaw() >= player.getLocation().getYaw() && left || (sp > 0 && left)) {
+				left = false;
+				ps++;
+				skill("c44_s1_i");
+				skill("c44_s1_a");
+			} else if(loc.getYaw() <= player.getLocation().getYaw() && !left || (sp > 0 && !left )){
+				ps++;
+				left = true;
+				skill("c44_s1_i2");
+				skill("c44_s1_a");
+			}
+		}
+		
+		if(player.getLocation().getPitch() >= 75) {
+			down = 5;
+		}
+		if(player.getLocation().getPitch() <= -50 && down > 0 && skillCooldown(5)) {
+			skill("c44_s4");
+			player.setVelocity(player.getLocation().getDirection().multiply(1.5).setY(1));
+			delay(()->{
+				ARSystem.giveBuff(player, new Airborne(player),20);
+			} ,14);
+			ps+= 5;
+		}
+		
+		if(tk%5 == 0 && ps > 0) ps--;
+		if(ps >= 30 && !player.isOnGround() && player.getHealth() <= player.getMaxHealth()/2 && skillCooldown(0) && sp <= 0 ) {
+			spskillon();
+			spskillen();
+			ARSystem.playSound((Entity)player, "c44sp");
+			ARSystem.giveBuff(player, new Airborne(player),200);
+			for(Entity e : ARSystem.box(player, new Vector(15,15,15), box.ALL)) {
+				ARSystem.giveBuff((LivingEntity) e, new Timeshock((LivingEntity) e), 200);
+			}
+			sp = 200;
+		}
+		if(tk%20 == 0) {
+			scoreBoardText.add("&c ["+Main.GetText("c44:ps")+ "] : "+ ps);
+		}
+		if(sp > 0) sp--;
+		if(down > 0) down--;
+		loc = player.getLocation();
+		return true;
+	}
+
+	int attck = 0;
+	@Override
+	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
+		if(isAttack) {
+			attck++;
+			if(attck >= 3) {
+				attck = 0;
+				ARSystem.heal(player, 1);
+			}
+			if(!e.getEntity().isOnGround()) {
+				if(Rule.buffmanager.isBuff((LivingEntity) e.getEntity(), "airborne")) {
+					Rule.buffmanager.selectBuffAddValue((LivingEntity) e.getEntity(), "airborne", 4);
+				} else {
+					ARSystem.giveBuff((LivingEntity) e.getEntity(), new Airborne((LivingEntity) e.getEntity()), 4);
+				}
+			}
+		} else {
+
+		}
 		return true;
 	}
 	
 	@Override
-	public boolean skill4() {
-		if(player.isOnGround()) {
-			skill("c44_s4");
-			tick3 = 20;
-		} else {
-			ARSystem.playSound((Entity)player,"c44s4");
-			skill("c44_s4_a");
-			tick3 = 20;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean tick() {
-		
-		if(s3 > 0) {
-			if(ARSystem.box(player, new Vector(6, 6, 6),box.TARGET) != null && ARSystem.box(player, new Vector(6, 6, 6),box.TARGET).size() > 0) {
-				s3 = 0;
-				skill("c44_s3_a2");
-			}
-		}
-		if(!ps && player.getHealth() <= 4) ps = true;
-		if(ps && player.getHealth() == player.getMaxHealth() && !isps) {
-			spskillon();
-			spskillen();
-			hp*=2;
-			player.setMaxHealth(hp);
-			player.setHealth(hp);
-			setcooldown[1] *= 0.7f;
-			setcooldown[2] *= 0.7f;
-			setcooldown[3] *= 0.7f;
-			setcooldown[4] *= 0.7f;
-			skill("c44_sp");
-		}
-		if(player.isSneaking()) {
-			if(tick2 > 0  && !sn) {
-				ty++;
-				if(ty >= 100) {
-					Rule.playerinfo.get(player).tropy(44,1);
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c83sora) {
+					is = "zero";
+					break;
 				}
-				sn = true;
-				skill("c44_s2");
-				tick3 = 20;
-				tick2 = 0;
-			}
-			if(tick > 0 && count > 0 && !sn) {
-				sn = true;
-				skill("c44_s1_ia");
-				tick3 = 20;
-				count--;
-			}
-		} else {
-			sn = false;
-		}
-		
-		if(tick3>0) tick3--;
-		if(tick2>0) tick2--;
-		if(tick>0) tick--;
-		return true;
-	}
-
-
-	@Override
-	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
-		if(isAttack) {
-			ARSystem.giveBuff(player, new Airborne(player), 20);
-			ARSystem.giveBuff((LivingEntity) e.getEntity(), new Airborne((LivingEntity) e.getEntity()), 20);
-			if(e.getEntity() instanceof LivingEntity && !((LivingEntity)e.getEntity()).isOnGround()) {
-				cooldown[3] -=1;
-				cooldown[4] -=1;
-			}
-			double hp = ((LivingEntity)e.getEntity()).getHealth() / ((LivingEntity)e.getEntity()).getMaxHealth();
-			e.setDamage(e.getDamage() + e.getDamage() * (1.0 - hp));
-			if(hp <= 0.7 || isps) {
-				ARSystem.heal(player, e.getDamage());
-			}
-			if(hp <= 0.4) {
-				cooldown[1] -= setcooldown[1]*0.15;
-				cooldown[2] -= setcooldown[2]*0.15;
-				cooldown[3] -= setcooldown[3]*0.15;
-				cooldown[4] -= setcooldown[4]*0.15;
-			}
-		} else {
-			if(tick3 > 0) {
-				if(isps) {
-					e.setDamage(e.getDamage()*0.60);
-				} else {
-					e.setDamage(e.getDamage()*0.75);
+				if(Rule.c.get(e) instanceof c84siro){
+					is = "zero";
+					break;
 				}
 			}
 		}
+		
+		if(is.equals("zero")) {
+			ARSystem.playSound((Entity)player, "c44zero");
+		} else {
+			ARSystem.playSound((Entity)player, "c44db");
+		}
+		
 		return true;
 	}
 }

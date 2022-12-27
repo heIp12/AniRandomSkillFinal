@@ -27,6 +27,7 @@ import buff.Panic;
 import buff.Rampage;
 import buff.Silence;
 import buff.Stun;
+import ca.c2100abigeil;
 import event.Skill;
 import types.box;
 import util.AMath;
@@ -241,7 +242,7 @@ public class c21abigeil extends c00main{
 				fear.put(e,0);
 			} else {
 				fear.put(e, fear.get(e)+i);
-				if(fear.get(e) >= 60&&!spben) {
+				if(fear.get(e) >= 60) {
 					fear.put(e,0);
 					if(skillCooldown(0)) sp(e);
 				}

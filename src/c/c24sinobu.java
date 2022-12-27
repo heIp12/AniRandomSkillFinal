@@ -24,6 +24,7 @@ import ars.Rule;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.Silence;
+import ca.c2400sinobu;
 import types.modes;
 import util.AMath;
 import util.MSUtil;
@@ -33,11 +34,11 @@ import util.Var;
 public class c24sinobu extends c00main{
 	boolean passive;
 	boolean ps;
-	boolean drain;
 	
-	int time = 30;
+	int time = 120;
 	int ticks = 0;
 	int heal = 0;
+	float damage = 1;
 	
 	int shdow = -1;
 	LivingEntity target;
@@ -49,7 +50,6 @@ public class c24sinobu extends c00main{
 		text();
 		passive = true;
 		ps = false;
-		drain = false;
 		Rule.buffmanager.selectBuffTime(player, "silence",0);
 	}
 	
@@ -98,11 +98,19 @@ public class c24sinobu extends c00main{
 		}
 		return true;
 	}
-
+	
 	@Override
-	public void TargetSpell(SpellTargetEvent e, boolean mycaster) {
-		if(e.getSpell().getName().equals("c24_s1_a")) {
-			drain = true;
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			target.setNoDamageTicks(0);
+			target.damage(4,player);
+
+
+			if(player.getMaxHealth() - player.getHealth() < 4) {
+				heal += 4 - (player.getMaxHealth() - player.getHealth());
+			}
+			ARSystem.heal(player, 4);
+			
 		}
 	}
 
@@ -110,15 +118,15 @@ public class c24sinobu extends c00main{
 	@Override
 	public boolean tick() {
 		ticks++;
-		if(heal > 30&&!spben) {
+		if(heal >=15) {
 			spskillen();
 			spskillon();
-			Rule.Var.open(player.getName()+".c"+(number%1000)+"Sp",isps);
+			Rule.Var.open(player.getName()+".c"+(number%1000)+"Sp",true);
 			Rule.playerinfo.get(player).tropy(24,1);
 			Rule.c.put(player, new c2400sinobu(player,Rule.gamerule, this));
 		}
 		if(tk%20 == 0 && psopen) {
-			scoreBoardText.add("&c ["+Main.GetText("c24:sk0")+ "]&f : "+ heal + " / 30");
+			scoreBoardText.add("&c ["+Main.GetText("c24:sk0")+ "]&f : "+ heal + " / 15");
 		}
 		if(ticks < 20 && ARSystem.getPlayerCount() < 4) {
 			ticks+=20;
@@ -133,7 +141,7 @@ public class c24sinobu extends c00main{
 			Rule.buffmanager.selectBuffTime(player, "nodamage",0);
 			Rule.buffmanager.selectBuffTime(player, "noattack",0);
 			ARSystem.potion(player, 14, 0, 0);
-			if(player.getLocation().getBlock().getLightLevel() > 11) player.damage(10,player);
+			if(player.getLocation().getBlock().getLightLevel() > 11) player.damage(999,player);
 			ARSystem.playSound((Entity)player, "c24s3");
 		}
 		if(ticks%10==0 && passive) {
@@ -169,12 +177,14 @@ public class c24sinobu extends c00main{
 		if(time > 0 && !passive && ps && ARSystem.getPlayerCount() < 3) {
 			ticks = 40;
 		}
-		if(!passive && ps && ticks%40 == 0 && time > 0) {
+		if(!passive && ps && ticks%20 == 0 && time > 0) {
 			time--;
-			ARSystem.heal((Player) target,3);
-			player.setMaxHealth(player.getMaxHealth()+1);
+			ARSystem.heal((Player) target,1);
+			player.setMaxHealth(player.getMaxHealth()+0.25);
 			player.setHealth(player.getMaxHealth());
-			skillmult += 0.04;
+			skillmult += 0.01;
+			damage +=0.0005;
+			scoreBoardText.add("&c ["+Main.GetText("c24:ps")+ "]&f : "+ target.getName());
 		}
 		ticks%=40;
 		return false;
@@ -189,14 +199,9 @@ public class c24sinobu extends c00main{
 				if(s.indexOf("tg4") == -1) {
 					e.setDamage(e.getDamage()*1.5);
 				}
+				e.setDamage(e.getDamage() * damage);
 			}
-			if(drain) {
-				drain = false;
-				if(player.getMaxHealth() - player.getHealth() < e.getDamage()) {
-					heal += e.getDamage() - (player.getMaxHealth() - player.getHealth());
-				}
-				ARSystem.heal(player, e.getDamage());
-			}
+
 		} else {
 
 		}

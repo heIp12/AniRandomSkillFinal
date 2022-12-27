@@ -41,6 +41,7 @@ public class c11yasuo extends c00main{
 	@Override
 	public boolean skill2() {
 		skill("c"+number+"_s2");
+		ARSystem.giveBuff(player, new Nodamage(player), 30);
 		return true;
 	}
 	
@@ -65,7 +66,7 @@ public class c11yasuo extends c00main{
 				} 
 			}
 		}
-		if(!allairbone && skillCooldown(0) && !spben) {
+		if(!allairbone && skillCooldown(0) ) {
 			spskillon();
 			spskillen();
 			s_score+= 300*ARSystem.getPlayerCount();

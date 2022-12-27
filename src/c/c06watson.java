@@ -16,6 +16,7 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Dancing;
+import buff.Rampage;
 import types.box;
 import types.modes;
 import util.AMath;
@@ -95,6 +96,7 @@ public class c06watson extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*3);
+			ARSystem.giveBuff((LivingEntity)e.getEntity(), new Rampage((LivingEntity)e.getEntity()), 20);
 			((LivingEntity)e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION,200,10));
 		}
 		return true;

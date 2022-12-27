@@ -36,6 +36,8 @@ public class BeamSpell extends InstantSpell implements TargetedLocationSpell {
 	float gravity;
 	float beamHorizOffset;
 	float beamVertOffset;
+	boolean beamBackOffset;
+	
 	float maxDistance;
 	float interval;
 	float yOffset;
@@ -66,6 +68,7 @@ public class BeamSpell extends InstantSpell implements TargetedLocationSpell {
 		rotation = getConfigFloat("rotation", 0);
 		beamHorizOffset = getConfigFloat("beam-horiz-offset", 0);
 		beamVertOffset = getConfigFloat("beam-vert-offset", 0);
+		beamBackOffset = getConfigBoolean("beam-back", false);
 		spread = getConfigFloat("beam-spread", 0);
 		maxDistance = getConfigFloat("max-distance", 50);
 		interval = getConfigFloat("interval", 0.25F);
@@ -141,7 +144,10 @@ public class BeamSpell extends InstantSpell implements TargetedLocationSpell {
 
 			if (beamVertOffset != 0) this.startLoc.setPitch(this.startLoc.getPitch() - beamVertOffset);
 			if (beamHorizOffset != 0) this.startLoc.setYaw(this.startLoc.getYaw() + beamHorizOffset);
-
+			if(beamBackOffset) {
+				this.startLoc.setPitch(this.startLoc.getPitch() * -1);
+				this.startLoc.setYaw(this.startLoc.getYaw() * -1);
+			}
 			//apply relative offset
 			Vector startDir = this.startLoc.getDirection().normalize();
 			Vector horizOffset = new Vector(-startDir.getZ(), 0, startDir.getX()).normalize();

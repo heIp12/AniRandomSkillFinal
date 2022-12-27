@@ -235,7 +235,7 @@ public class c38hajime extends c00main{
 		s.clear();
 		im.setDisplayName("1§f:"+Main.GetText("c38:t6"));
 		s.add("§a§l"+Main.GetText("c38:t1")+": +1");
-		s.add("§c§l"+Main.GetText("c38:t2")+": 50%");
+		s.add("§c§l"+Main.GetText("c38:t2")+": -40%");
 		s.add("§c§l"+Main.GetText("c38:t3")+": -20%");
 		s.add("§a§l"+Main.GetText("c38:t5")+": -30%");
 		im.setLore(s);
@@ -245,7 +245,7 @@ public class c38hajime extends c00main{
 		s.clear();
 		im = is.getItemMeta();
 		im.setDisplayName("2§f:"+Main.GetText("c38:t7"));
-		s.add("§c§l"+Main.GetText("c38:t1")+": -30%");
+		s.add("§c§l"+Main.GetText("c38:t1")+": -20%");
 		s.add("§a§l"+Main.GetText("c38:t2")+": 30%");
 		s.add("§a§l"+Main.GetText("c38:t3")+": 30%");
 		s.add("§c§l"+Main.GetText("c38:t5")+": 30%");
@@ -256,8 +256,8 @@ public class c38hajime extends c00main{
 		s.clear();
 		im = is.getItemMeta();
 		im.setDisplayName("3§f:"+Main.GetText("c38:t8"));
-		s.add("§c§l"+Main.GetText("c38:t1")+": -20%");
-		s.add("§a§l"+Main.GetText("c38:t2")+": 10%");
+		s.add("§c§l"+Main.GetText("c38:t1")+": -10%");
+		s.add("§a§l"+Main.GetText("c38:t2")+": -10%");
 		s.add("§a§l"+Main.GetText("c38:t3")+": 50%");
 		s.add("§c§l"+Main.GetText("c38:t5")+": 10%");
 		im.setLore(s);
@@ -307,10 +307,10 @@ public class c38hajime extends c00main{
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage()*2);
 		} else {
-			if(!spben && !isps && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time < 30 && ((LivingEntity)e.getEntity()).getHealth() <= e.getDamage()+1) {
+			if(!isps && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time < 30 && ((LivingEntity)e.getEntity()).getHealth() <= e.getDamage()+1) {
 				spskillon();
 				spskillen();
-				heal = 3;
+				heal = 2;
 				ARSystem.giveBuff(player, new TimeStop(player), 480);
 				player.setMaxHealth(30);
 				player.setHealth(player.getMaxHealth());
@@ -370,21 +370,21 @@ public class c38hajime extends c00main{
 				} else if(damage > 1) {
 					damage+=1;
 				} else {
-					damage += 0.45;
+					damage += 0.55;
 				}
 				sp*=0.7;
 				if(damage > 10 && speed > 2.5) {
 					damage += 2;
-					speed += 1;
+					speed += 0.8;
 					sp*=0.5;
 				}
 				mybullet*=0.8;
 				bullet*=0.8;
-				speed*=1.5;
+				speed*=1.4;
 			}
 			if(i == 2) {
 				sp*=1.4;
-				damage*=0.7;
+				damage*=0.8;
 				mybullet*=1.3;
 				bullet*=1.3;
 				speed*= 0.7;
@@ -398,7 +398,7 @@ public class c38hajime extends c00main{
 			}
 			if(i == 3) {
 				sp*=1.1;
-				damage*=0.8;
+				damage*=0.9;
 				mybullet*=1.5;
 				bullet*=1.5;
 				speed*=0.9;
@@ -409,7 +409,7 @@ public class c38hajime extends c00main{
 					sp*=1.2;
 				}
 			}
-			if(i == 4 && AMath.random(10) <= 5) {
+			if(i == 4 && AMath.random(10) <= 4) {
 				while(E.size() < c38hajime.Enchent.values().length) {
 					c38hajime.Enchent ec = c38hajime.Enchent.values()[AMath.random(c38hajime.Enchent.values().length)-1];
 					if(E.indexOf(ec) == -1) {

@@ -57,7 +57,7 @@ public class c08yuuki extends c00main{
 	
 	@Override
 	public boolean skill4() {
-		if(player.getHealth() > 8 || spben) {
+		if(player.getHealth() > 8) {
 			cooldown[1] = 0;
 			cooldown[2] = 0;
 			cooldown[3] = 0;

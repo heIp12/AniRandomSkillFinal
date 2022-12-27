@@ -39,8 +39,10 @@ public class Cindaella extends Buff{
 				((Player)target).showPlayer(p);
 			}
 			if(Rule.c.get(target) != null) {
+				float d = Rule.c.get((Player) target).s_damage;
 				Rule.c.put((Player) target, rep.ccset(Rule.c.get(target)));
 				target.setMaxHealth(Rule.c.get(target).getHp());
+				Rule.c.get((Player) target).s_damage = d;
 				ARSystem.playSound(target, "c57s3");
 			}
 		}

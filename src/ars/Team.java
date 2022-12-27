@@ -112,4 +112,28 @@ public class Team {
 		}
 		return false;
 	}
+	public boolean isTeam(Player p) {
+		for(String s : player.keySet()) {
+			if(player.get(s).getPlayer().contains(p)) return true;
+		}
+		return false;
+	}
+	public String getTeamName(Player p) {
+		for(String s : player.keySet()) {
+			if(player.get(s).getPlayer().contains(p)) {
+				return s;
+			}
+		}
+		return null;
+	}
+	public int isTeamSize(String team,boolean isAlive) {
+		if(isAlive) {
+			int i = 0;
+			for(Player p : player.get(team).getPlayer()) {
+				if(Rule.c.get(p) != null) i++;
+			}
+			return i;
+		}
+		return player.get(team).getPlayer().size();
+	}
 }

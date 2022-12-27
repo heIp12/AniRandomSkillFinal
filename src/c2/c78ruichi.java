@@ -45,12 +45,16 @@ import c.c000humen;
 import c.c00main;
 import c.c11yasuo;
 import c.c12conan;
-import c.c1800misogi;
 import c.c18misogi;
-import c.c2000kurumi;
 import c.c20kurumi;
+import c.c22byakuya;
 import c.c25Accelerator;
+import c.c31ichigo;
 import c.c35miruk;
+import c.c37subaru;
+import c.c40megumin;
+import ca.c1800misogi;
+import ca.c2000kurumi;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
@@ -148,6 +152,7 @@ public class c78ruichi extends c00main{
 			if(id==71) player.performCommand("tm anitext all SUBTITLE true 40 "+Main.GetText("c78:t2-9")+"/["+ player.getName()+"["+Main.GetText("c78:o3")+"]");
 			if(id==79) player.performCommand("tm anitext all SUBTITLE true 40 "+Main.GetText("c78:t2-10")+"/["+ player.getName()+"["+Main.GetText("c78:o3")+"]");
 			if(id==35) player.performCommand("tm anitext all SUBTITLE true 40 "+Main.GetText("c78:t2-11")+"/["+ player.getName()+"["+Main.GetText("c78:o3")+"]");
+			
 		},80);
 		delay(()->{ 
 			player.performCommand("tm sound all 0tc");
@@ -239,12 +244,16 @@ public class c78ruichi extends c00main{
 			if(Rule.c.get(e.getEntity()) != null) {
 				int target = 0;
 				if(Rule.c.get(e.getEntity()) instanceof c12conan) target = 12;
+				if(Rule.c.get(e.getEntity()) instanceof c22byakuya) target = 12;
+				if(Rule.c.get(e.getEntity()) instanceof c31ichigo) target = 12;
 				if(Rule.c.get(e.getEntity()) instanceof c18misogi) target = 18;
 				if(Rule.c.get(e.getEntity()) instanceof c1800misogi) target = 18;
 				if(Rule.c.get(e.getEntity()) instanceof c20kurumi) target = 20;
 				if(Rule.c.get(e.getEntity()) instanceof c2000kurumi) target = 20;
 				if(Rule.c.get(e.getEntity()) instanceof c25Accelerator) target = 25;
 				if(Rule.c.get(e.getEntity()) instanceof c35miruk) target = 35;
+				if(Rule.c.get(e.getEntity()) instanceof c37subaru) target = 54;
+				if(Rule.c.get(e.getEntity()) instanceof c40megumin) target = 52;
 				if(Rule.c.get(e.getEntity()) instanceof c52toby) target = 52;
 				if(Rule.c.get(e.getEntity()) instanceof c53cabuto) target = 52;
 				if(Rule.c.get(e.getEntity()) instanceof c54patel) target = 54;
@@ -252,6 +261,11 @@ public class c78ruichi extends c00main{
 				if(Rule.c.get(e.getEntity()) instanceof c70raito) target = 70;
 				if(Rule.c.get(e.getEntity()) instanceof c71diabolo) target = 71;
 				if(Rule.c.get(e.getEntity()) instanceof c79kate) target = 79;
+				if(Rule.c.get(e.getEntity()) instanceof c83sora) target = 35;
+				if(Rule.c.get(e.getEntity()) instanceof c89kazuma) target = 35;
+				if(Rule.c.get(e.getEntity()) instanceof c90arabe) target = 35;
+				if(Rule.c.get(e.getEntity()) instanceof c96iki) target = 64;
+				if(Rule.c.get(e.getEntity()) instanceof c65cohina) target = 64;
 				
 				if( target != 0 || Rule.c.get(e.getEntity()).s_kill >= 3) {
 					if(skillCooldown(0)) {

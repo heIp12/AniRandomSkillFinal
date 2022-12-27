@@ -42,12 +42,14 @@ public class c01minato extends c00main{
 		number = 1;
 		load();
 		text();
-		for(int i = 1; i<4;i++) {
-			player.performCommand("as create "+p.getName()+"c1_"+i);
-			player.performCommand("as set "+p.getName()+"c1_"+i);
-			player.performCommand("as item "+p.getName()+"c1_"+i+" 279:1");
-			player.performCommand("as group "+p.getName()+"c1_"+i+" games");
-			player.performCommand("as despawn "+p.getName()+"c1_"+i);
+		if(player != null) {
+			for(int i = 1; i<4;i++) {
+				player.performCommand("as create "+p.getName()+"c1_"+i);
+				player.performCommand("as set "+p.getName()+"c1_"+i);
+				player.performCommand("as item "+p.getName()+"c1_"+i+" 279:1");
+				player.performCommand("as group "+p.getName()+"c1_"+i+" games");
+				player.performCommand("as despawn "+p.getName()+"c1_"+i);
+			}
 		}
 	}
 	
@@ -212,7 +214,7 @@ public class c01minato extends c00main{
 		}
 		
 		e.getEntity().teleport(targetloc);
-		ARSystem.giveBuff((LivingEntity) e.getDamager(), new Nodamage((LivingEntity) e.getDamager()), 60);
+		ARSystem.giveBuff((LivingEntity) e.getDamager(), new Nodamage((LivingEntity) e.getDamager()), 30);
 
 		
 		delay(()->{
@@ -271,8 +273,9 @@ public class c01minato extends c00main{
 			ARSystem.spellCast(player, e.getEntity(), "c1_sp_r");
 		},20);
 		delay(()->{
-			for(Entity en : ARSystem.box(player, new Vector(10,20,10), box.TARGET)){
-				((LivingEntity)en).damage(30,player);
+			for(Entity en : ARSystem.box(player, new Vector(5,14,5), box.TARGET)){
+				((LivingEntity)en).setNoDamageTicks(0);
+				((LivingEntity)en).damage(33,player);
 				ARSystem.spellLocCast(player, targetloc.clone().add(new Vector(3,8,3)), "c1_se");
 				ARSystem.spellLocCast(player, targetloc.clone().add(new Vector(-3,8,3)), "c1_se");
 				ARSystem.spellLocCast(player, targetloc.clone().add(new Vector(3,8,-3)), "c1_se");
@@ -330,7 +333,7 @@ public class c01minato extends c00main{
 		if(isAttack) {
 			if(ARSystem.gameMode == modes.LOBOTOMY) e.setDamage(e.getDamage() * 4);
 			if(e.getDamager() instanceof Player) {
-				if(stack > 2 && !spben) {
+				if(stack > 2) {
 					stack = 0;
 					if(skillCooldown(0)) {
 						spskillon();

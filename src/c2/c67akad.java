@@ -59,6 +59,7 @@ public class c67akad extends c00main{
 	boolean sk4 = false;
 	int stk = 0;
 	LivingEntity lasttarget = null;
+	float cc = 0;
 	
 	public c67akad(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -103,6 +104,7 @@ public class c67akad extends c00main{
 	@Override
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
+			target.setNoDamageTicks(0);
 			if(ARSystem.gameMode == modes.LOBOTOMY && target.getMaxHealth() > 500) {
 				target.damage(2 + (target.getMaxHealth() - target.getHealth()) * (damage/5),player);
 			} else {
@@ -110,6 +112,7 @@ public class c67akad extends c00main{
 			}
 		}
 		if(n.equals("2")) {
+			target.setNoDamageTicks(0);
 			if(ARSystem.gameMode == modes.LOBOTOMY && target.getMaxHealth() > 500) {
 				target.damage(2 + target.getHealth() *  (damage/5),player);
 			} else {
@@ -133,6 +136,8 @@ public class c67akad extends c00main{
 		if((sk4||isps) && tk%10 == 0) {
 			if(player.getHealth() < player.getMaxHealth()) {
 				ARSystem.heal(player, 1);
+				cc++;
+				if(cc >= 100) Rule.playerinfo.get(player).tropy(67,1);
 			} else {
 				sk4 = false;
 			}
@@ -181,6 +186,8 @@ public class c67akad extends c00main{
 				lasttarget = (LivingEntity) e.getEntity();
 				e.setDamage(e.getDamage() * 2);
 				ARSystem.addBuff(lasttarget, new Panic(lasttarget), (int) (e.getDamage()*20));
+				ARSystem.spellCast(player, lasttarget, "c67_p");
+				ARSystem.playSound(lasttarget, "0bload");
 				if(lasttarget.getHealth()- e.getDamage() < 1) {
 					ARSystem.overheal(player, lasttarget.getMaxHealth());
 					delay(()->{
@@ -192,7 +199,7 @@ public class c67akad extends c00main{
 				}
 			}
 		} else {
-			if(e.getEntity() == player) {
+			if(e.getEntity() == player && sk3 > 0) {
 				e.setDamage(0);
 				e.setCancelled(true);
 			}

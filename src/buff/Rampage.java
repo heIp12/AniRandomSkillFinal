@@ -70,6 +70,7 @@ public class Rampage extends Buff{
 		return false;
 	}
 	
+	
 	@Override
 	public boolean onSkill(PlayerItemHeldEvent e) {
 		e.setCancelled(true);

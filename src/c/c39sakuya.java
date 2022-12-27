@@ -57,6 +57,7 @@ public class c39sakuya extends c00main{
 		if(time > 0) cooldown[1] = setcooldown[1]/2;
 		return true;
 	}
+	
 	@Override
 	public boolean skill2() {
 		if(player.getNearbyEntities(300, 300, 300).size() < 300) {
@@ -80,7 +81,7 @@ public class c39sakuya extends c00main{
 	public boolean skill4() {
 		if(AMath.random(10) <= 1) cooldown[4] = 0;
 		time = 100;
-		if(!spben && AMath.random(100)<=10 && skillCooldown(0)) {
+		if(AMath.random(100)<=10 && skillCooldown(0)) {
 			spskillen();
 			spskillon();
 			
