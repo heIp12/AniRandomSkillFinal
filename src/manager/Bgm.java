@@ -22,7 +22,7 @@ public class Bgm {
 	private static int bgmCount = -1;
 	private static double bgmFrstTime = 0;
 	private static int[] bgmlist = new int[10];
-	static boolean bgmlock = false;
+	public static boolean bgmlock = false;
 	
 	public static boolean rep = true;
 	

@@ -11,10 +11,13 @@ import Main.Main;
 import aliveblock.ABlock;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Timeshock;
+import chars.c3.c101aris;
+import chars.ca.c8400subi;
 import manager.AdvManager;
 import manager.BuffManager;
-import manager.Holo;
-import util.AMath;
+import util.GetChar;
+import util.Holo;
 import util.MSUtil;
 import util.Map;
 
@@ -102,5 +105,27 @@ public class Skill {
 			}
 			aliveblock.Main.Aliveblock.clear();
 		}
+	}
+
+	public static void TimeLoop(LivingEntity target) {
+		if(Rule.c.get(target) != null) ARSystem.giveBuff(target, new Timeshock(target), 200);
+		int number = Rule.c.get(target).number;
+		if(number == 1084) return;
+		
+		if(number == 101) {
+			((c101aris)Rule.c.get(target)).sp();
+			return;
+		}
+		if(number == 84) {
+			Rule.c.put((Player) target, new c8400subi((Player) target, Rule.gamerule, null));
+			return;
+		}
+		
+		if(number > 999) {
+			Rule.c.put((Player) target, GetChar.get((Player) target, Rule.gamerule, ""+(number%1000)));
+		} else {
+			for(int i = 0; i < 10; i++) Rule.c.get(target).cooldown[i] = 3;
+		}
+		
 	}
 }

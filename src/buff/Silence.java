@@ -10,9 +10,9 @@ import org.bukkit.util.Vector;
 
 import ars.Rule;
 import event.Skill;
-import manager.Holo;
 import types.BuffType;
 import util.AMath;
+import util.Holo;
 
 public class Silence extends Buff{
 	Location loc;

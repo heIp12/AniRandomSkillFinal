@@ -16,88 +16,84 @@ import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
 import types.MapType;
-import types.modes;
+
 import util.AMath;
 import util.Map;
 import util.NpcPlayer;
+import util.Text;
 
-public class MNormal {
+public class MNormal extends ModeBase{
+	public MNormal(){
+		super();
+		modeName = "normal";
+		disPlayName = Text.get("main:mode1");
+	}
 	
-	public static void tick(int time) {
-		if(Bgm.bgmcode.equals("mk16")) {
-			ARSystem.AniRandomSkill.time-=2;
-			if(ARSystem.AniRandomSkill.time < 50) {
-				ARSystem.spellLocCast(NpcPlayer.npc(Map.randomLoc()), Map.randomLoc(), "azami_snake3");
-				ARSystem.spellLocCast(NpcPlayer.npc(ARSystem.RandomPlayer().getLocation()), ARSystem.RandomPlayer().getLocation(), "azami_snake3");
+	public void tick(int time) {
+		if(Map.mapid == 15) {
+			if(Bgm.bgmcode.equals("mk16")) {
+				ARSystem.AniRandomSkill.time-=2;
+				if(ARSystem.AniRandomSkill.time < 50) {
+					ARSystem.spellLocCast(NpcPlayer.npc(Map.randomLoc()), Map.randomLoc(), "azami_snake3");
+					ARSystem.spellLocCast(NpcPlayer.npc(ARSystem.RandomPlayer().getLocation()), ARSystem.RandomPlayer().getLocation(), "azami_snake3");
+				}
+				Location loc = Map.randomLoc();
+				if(AMath.random(10) == 2) loc = ARSystem.RandomPlayer().getLocation();
+				ARSystem.spellLocCast(NpcPlayer.npc(loc), loc, "azami_snake3");
+				
+				if(ARSystem.AniRandomSkill.time <= 2 && ARSystem.AniRandomSkill.time > 1) {
+					Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule,()->{
+						ARSystem.addGameMode(new MKagerou());
+					},10);
+					ARSystem.AniRandomSkill.time = 0;
+				}
 			}
-			Location loc = Map.randomLoc();
-			if(AMath.random(10) == 2) loc = ARSystem.RandomPlayer().getLocation();
-			ARSystem.spellLocCast(NpcPlayer.npc(loc), loc, "azami_snake3");
-			
-			if(ARSystem.AniRandomSkill.time <= 10) {
-				ARSystem.gameMode = modes.KAGEROU;
+			if(!Bgm.bgmcode.equals("mk16")) {
+				Location loc = new Location(Bukkit.getWorld("world"),325.5,31,-216.5,-130,0);
+				if(time == 120) {
+					boolean azami = false;
+					for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
+						if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
+							azami = true;
+						}
+					}
+					if(azami == false) {
+						Map.spawn("azami",loc, 1);
+					}
+				}
+				if(time > 123 && time < 130) {
+					boolean azami = false;
+					for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
+						if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
+							azami = true;
+						}
+					}
+					if(azami == false) {
+						ARSystem.playSoundAll("mkb16");
+						Bgm.setForceBgm("mk16");
+					}
+				}
+				if(time == 130) {
+					for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
+						if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
+							Skill.remove(e, e);
+						}
+					}
+				}
 			}
 		}
-		if(Map.mapid == 15 && !Bgm.bgmcode.equals("mk16")) {
-			Location loc = new Location(Bukkit.getWorld("world"),325.5,31,-216.5,-130,0);
-			if(time == 120) {
-				boolean azami = false;
-				for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
-					if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
-						azami = true;
-					}
-				}
-				if(azami == false) {
-					Map.spawn("azami",loc, 1);
-				}
+		
+		if(!ARSystem.isGameMode("team") && Map.mapType == MapType.NORMAL &&time >= 120 && time%30 == 0) {
+			ARSystem.playSoundAll("0select2");
+			if(time <= 180) {
+				RandomEvent(AMath.random(7));
+			} else if(time <= 240)  {
+				RandomEvent(AMath.random(8));
+			} else if(time <= 300) {
+				RandomEvent(7+AMath.random(2));
+			} else {
+				RandomEvent(10);
 			}
-			if(time > 123 && time < 130) {
-				boolean azami = false;
-				for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
-					if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
-						azami = true;
-					}
-				}
-				if(azami == false) {
-					ARSystem.playSoundAll("mkb16");
-					Bgm.setForceBgm("mk16");
-				}
-			}
-			if(time == 130) {
-				for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
-					if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
-						Skill.remove(e, e);
-					}
-				}
-			}
-		}
-		if(ARSystem.gameMode == modes.TEAM) {
-			if(time >= 70 && time%20 == 0) {
-				for(Player p : Rule.c.keySet()) {
-					AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg10"));
-					ARSystem.potion(p, 24, 100, 1);
-				}
-			}
-			if(Map.mapType == MapType.BIG &&time >= 60 && time%Integer.parseInt(Main.GetText("general:bigmap_time_value")) == 0) {
-				if(Boolean.parseBoolean(Main.GetText("general:bigmap_time"))) {
-					ARSystem.playSoundAll("0select2");
-					Map.sizeM(-1);
-				}
-			}
-			
-			if(Map.mapType == MapType.NORMAL &&time >= 120 && time%30 == 0) {
-				ARSystem.playSoundAll("0select2");
-				if(time <= 180) {
-					RandomEvent(AMath.random(7));
-				} else if(time <= 240)  {
-					RandomEvent(AMath.random(8));
-				} else if(time <= 300) {
-					RandomEvent(7+AMath.random(2));
-				} else {
-					RandomEvent(10);
-				}
-			}
-			return;
 		}
 		
 		if(Map.mapType == MapType.BIG &&time >= 60 && time%Integer.parseInt(Main.GetText("general:bigmap_time_value")) == 0) {
@@ -121,7 +117,6 @@ public class MNormal {
 		}
 	}
 
-	
 	public static void RandomEvent(int i) {
 		if(i == 1) {
 			for(Player p :Rule.c.keySet()) {

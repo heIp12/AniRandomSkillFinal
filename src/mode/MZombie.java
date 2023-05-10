@@ -11,15 +11,41 @@ import org.bukkit.entity.Player;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import chars.ca.c100001;
 import manager.AdvManager;
 import manager.Bgm;
 import util.AMath;
 import util.MSUtil;
 import util.Map;
+import util.Text;
 
-public class MZombie {
-
-	public static void tick(int time) {
+public class MZombie extends ModeBase{
+	public MZombie(){
+		super();
+		modeName = "zombie";
+		disPlayName = Text.get("main:mode3");
+		isOnlyOne = true;
+	}
+	@Override
+	public void option() {
+		Rule.team.teamRemove("buri");
+		Rule.team.teamCreate("buri");
+		Rule.team.getTeam("buri").setTeamColor("6");
+		Rule.team.getTeam("buri").setTeamName("buris");
+	}
+	
+	
+	@Override
+	public void firstTick() {
+		for(Player pl :Rule.c.keySet()) {
+			AdvManager.set(pl, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:mode3"));
+			AdvManager.set(pl, 388, 0,  Main.GetText("main:msg32"));
+		}
+		Player p = ARSystem.RandomPlayer();
+		Rule.c.put(p, new c100001(p, Rule.gamerule, null));
+	}
+	
+	public void tick(int time) {
 		if(time == 180) {
 			int i = 0;
 			int br = 0;

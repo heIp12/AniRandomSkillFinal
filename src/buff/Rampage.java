@@ -14,12 +14,11 @@ import org.bukkit.util.Vector;
 import ars.ARSystem;
 import ars.Rule;
 import event.Skill;
-import manager.Holo;
 import types.BuffType;
 import types.box;
-import types.modes;
 import util.AMath;
-import util.Local;
+import util.Holo;
+import util.ULocal;
 
 public class Rampage extends Buff{
 	Location loc;
@@ -43,9 +42,9 @@ public class Rampage extends Buff{
 	public boolean onTicks() {
 		Entity t = ARSystem.boxSOne(target, new Vector(14,14,14), box.ALL);
 		if(t != null) {
-			Location look = Local.lookAt(target.getLocation(), t.getLocation());
+			Location look = ULocal.lookAt(target.getLocation(), t.getLocation());
 			if(t.getLocation().distance(target.getLocation()) < 3) {
-				if(ARSystem.gameMode != modes.LOBOTOMY || tick%10 == 0) {
+				if(ARSystem.isGameMode("lobotomy") || tick%10 == 0) {
 					((LivingEntity)t).damage(1,target);
 					Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{((LivingEntity)t).damage(1,target);});
 				}

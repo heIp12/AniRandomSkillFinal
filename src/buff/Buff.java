@@ -29,8 +29,15 @@ public class Buff {
 	String buffName = "";
 	String color = "§7";
 	
-	LivingEntity target;
+	public LivingEntity target;
 	List<BuffType> bufftype = new ArrayList<BuffType>();
+	
+	public Buff clone() {
+		Buff buff = new Buff(target);
+		buff.setTime((int)(tick*20));
+		buff.setValue(value);
+		return buff;
+	}
 	
 	public Buff(LivingEntity target){
 		this.target = target;
@@ -98,6 +105,7 @@ public class Buff {
 		if(target instanceof ArmorStand) {
 			stop();
 		}
+		if(target == null) return true;
 		else if(buffName.equals("timestop") || !Rule.buffmanager.OnBuffTime(target, "timestop")) {
 			if(!alltime) {
 				if(Rule.c.get(target) != null && tick%2 == 0 ) {

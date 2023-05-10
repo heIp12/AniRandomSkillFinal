@@ -61,16 +61,18 @@ import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 
 import Main.Main;
+import ars.gui.G_Menu;
 import buff.Buff;
 import buff.Silence;
-import c.c00main;
+import chars.c.c00main;
 import event.Skill;
 import event.WinEvent;
-import manager.Holo;
 import types.box;
 import util.AMath;
+import util.Holo;
 import util.MSUtil;
 import util.Map;
+import util.Text;
 
 
 
@@ -90,6 +92,7 @@ public class Event
 	public void moth(ServerListPingEvent e) {
 		e.setMotd("§6ARSF Version : §a§l"+ Map.Version);
 	}
+	
 	@EventHandler
 	public void join(PlayerJoinEvent e) {
 		if(Rule.isben(e.getPlayer())) e.getPlayer().kickPlayer("https://cafe.naver.com/helpgames");
@@ -156,8 +159,7 @@ public class Event
 	public void invclick(InventoryInteractEvent e) {
 		if (e.getInventory().getType() == InventoryType.CRAFTING && e.getWhoClicked().getGameMode() != GameMode.CREATIVE) {
 			e.getWhoClicked().closeInventory();
-			Rule.playerinfo.get(e.getWhoClicked()).createInventoryMain();
-			Rule.playerinfo.get(e.getWhoClicked()).open((Player) e.getWhoClicked(), "2");
+			new G_Menu((Player)e.getWhoClicked());
 		}
 	}
 	
@@ -174,15 +176,11 @@ public class Event
 		e.setCancelled(true);
 		if (e.getInventory().getType() == InventoryType.CRAFTING && e.getWhoClicked().getGameMode() != GameMode.CREATIVE) {
 			e.getWhoClicked().closeInventory();
-			Rule.playerinfo.get(e.getWhoClicked()).createInventoryMain();
-			Rule.playerinfo.get(e.getWhoClicked()).open((Player) e.getWhoClicked(), "2");
+			new G_Menu((Player)e.getWhoClicked());
 		}
 		
 		if(e.getWhoClicked().isOp() && e.getWhoClicked().getGameMode() == GameMode.CREATIVE) {
 			e.setCancelled(false);
-		}
-		if(inv.getName().equals(Rule.playerinfo.get(e.getWhoClicked()).spinv.getName()) && e.getSlot() != -999 && e.getSlot() < 60) {
-			Rule.playerinfo.get(e.getWhoClicked()).spClick(e);
 		}
 		
 		if(inv.getName().indexOf(" : Skill") != -1 && e.getSlot() != -999 && e.getSlot() < e.getInventory().getSize()-9) {
@@ -191,7 +189,7 @@ public class Event
 			}
 			Player p = Bukkit.getPlayer(inv.getName().replace(" : Skill", ""));
 			
-			if(Rule.c.get(p).invskill != null) {
+			if(Rule.c.get(p) != null && Rule.c.get(p).invskill != null) {
 				e.setCancelled(true);
 				if(e.getCurrentItem().getTypeId() == 0) return;
 				Rule.c.get(p).invskill.Start(e.getCurrentItem().getItemMeta().getDisplayName());
@@ -203,7 +201,7 @@ public class Event
 				return;
 			}
 			
-			if(Rule.c.get(e.getWhoClicked()).invskill != null) {
+			if(Rule.c.get(e.getWhoClicked()) != null && Rule.c.get(e.getWhoClicked()).invskill != null) {
 				e.setCancelled(true);
 				if(e.getCurrentItem().getTypeId() == 0) return;
 				Rule.c.get(e.getWhoClicked()).invskill.Start(e.getCurrentItem().getItemMeta().getDisplayName());
@@ -214,16 +212,49 @@ public class Event
 	@EventHandler
 	public void chat(PlayerChatEvent e) {
 		if(Rule.playerinfo.get(e.getPlayer()) != null) {
-			
 			e.setCancelled(true);
+			String msg = e.getMessage();
 			String s = "f";
 			String t = Rule.playerinfo.get(e.getPlayer()).playerTrophy;
+			
+			if(Rule.buffmanager.GetBuffTime(e.getPlayer(), "panic") > 0 || t.equals("21-1")|| t.equals("73-1")) {
+				msg = "";
+				if((t.equals("21-1")|| t.equals("73-1"))&& AMath.random(10) <= 1) e.setMessage(Text.get("tropy:c"+t).substring(4,Text.get("tropy:c"+t).length()));
+				String str[] = e.getMessage().split(" ");
+				for(String str2 : str) {
+					int o = 0;
+					for(char c : str2.toCharArray()) {
+							msg+=(char)((int)c + (AMath.random(4)-2));
+						o++;
+					}
+					msg+=" ";
+				}
+			}
+			if( t.equals("112-1") || (Rule.c.get(e.getPlayer()) != null && Rule.c.get(e.getPlayer()).getCode() == 112)) {
+				msg = msg.replace("아", "냐").replace("야", "냐");
+				msg = msg.replace("안", "냥").replace("얀", "냥");
+				msg = msg.replace("앙", "냥").replace("양", "냥");
+				msg = msg.replace("나", "냐").replace("라", "냐");
+				msg = msg.replace("난", "냥").replace("낭", "냥");
+				msg = msg.replace("다", "냐").replace("댜", "냐");
+				msg = msg.replace("당", "냥").replace("댱", "냥");
+				msg = msg.replace("단", "냥").replace("댠", "냥");
+				msg = msg.replace("라", "냐").replace("랴", "냐");
+				msg = msg.replace("란", "냥").replace("랑", "냥");
+				msg = msg.replace("랸", "냥").replace("량", "냥");
+				
+				if(AMath.random(50) <= 1) msg = "골골골골";
+			}
+			e.setMessage(msg);
+			
 			if(t.equals("12-1")) s = "7";
 			if(t.equals("0-13")) s = "6";
 			if(t.equals("0-14")) s = "e";
 			if(t.equals("0-17")) s = "a";
 			if(t.equals("0-31")) s = "l";
+			if(t.equals("0-35")) s = "b";
 			if(t.equals("23-2")) s = "d";
+			if(t.equals("27-1")) s = "n";
 			
 			boolean chat = true;
 			for(Player p : Rule.c.keySet()) {
@@ -233,8 +264,25 @@ public class Event
 					chat = false;
 				}
 			}
+			msg = e.getMessage();
+			
 			if(chat) {
-				Bukkit.broadcastMessage(Rule.playerinfo.get(e.getPlayer()).name + " "+e.getPlayer().getName() +"§f :§"+s+" " +e.getMessage());
+				if(t.equals("0-37")) {
+					String str[] = msg.split(" ");
+					msg = "";
+					for(String str2 : str) {
+						int o = 0;
+						msg += "§b";
+						for(char c : str2.toCharArray()) {
+							if(o == 1) msg+="§f";
+								msg+=c;
+							o++;
+						}
+						msg+=" ";
+					}
+					
+				}
+				Bukkit.broadcastMessage(Rule.playerinfo.get(e.getPlayer()).name + " "+e.getPlayer().getName() +"§f :§"+s+" " +msg);
 			}
 		}
 		if(Main.GetText("general:skip").contentEquals(e.getMessage()) && ARSystem.AniRandomSkill != null) {
@@ -300,10 +348,18 @@ public class Event
 					e.setCancelled(true);
 				} else if(e.getCause() == DamageCause.FALL && Rule.c.get(e.getEntity()) != null) {
 					if(e.getDamage()/5 > 0.5) {
-						((Player)e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (e.getDamage()*5), (int) (e.getDamage()/2)));
-						ARSystem.addBuff(((Player)e.getEntity()), new Silence(((Player)e.getEntity())), (int) (e.getDamage()*4));
+						double mult = Text.getD("general:falldamage_mult");
+						if(Main.GetText("general:falldamage_type").equalsIgnoreCase("stun")) {
+							((Player)e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (e.getDamage()*5*mult), (int) (e.getDamage()/2*mult)));
+							ARSystem.addBuff(((Player)e.getEntity()), new Silence(((Player)e.getEntity())), (int) (e.getDamage()*4*mult));
+							e.setCancelled(true);
+						}
+						if(Main.GetText("general:falldamage_type").equalsIgnoreCase("damage")) {
+							e.setDamage(e.getDamage()*mult);
+						}
+					} else {
+						e.setCancelled(true);
 					}
-					e.setCancelled(true);
 				} else if(!Rule.c.get(e.getEntity()).damage(e)) {
 					e.setDamage(0);
 				}

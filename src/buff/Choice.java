@@ -15,15 +15,15 @@ import org.bukkit.util.Vector;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
-import c.c000humen;
-import c2.c90arabe;
+import chars.c.c000humen;
+import chars.c2.c90arabe;
 import event.Skill;
 import event.WinEvent;
-import manager.Holo;
 import types.BuffType;
 import types.box;
 import util.AMath;
 import util.GetChar;
+import util.Holo;
 
 public class Choice extends Buff{
 	Player caster;

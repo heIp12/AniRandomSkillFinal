@@ -22,20 +22,20 @@ import buff.Noattack;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
-import ca.c100001;
-import ca.c4000megumin;
+import chars.ca.c100001;
+import chars.ca.c4000megumin;
 import manager.AdvManager;
 import manager.Bgm;
-import mode.Kagerou;
-import mode.LoboTomy;
+import mode.MKagerou;
+import mode.MLoboTomy;
 import mode.MGUN;
 import mode.MKanna;
 import mode.MKiller;
 import mode.MNormal;
 import mode.MZombie;
-import mode.ZombieAdv;
+import mode.ModeBase;
+import mode.MZombieAdv;
 import types.MapType;
-import types.modes;
 import util.AMath;
 import util.MSUtil;
 import util.Map;
@@ -51,10 +51,17 @@ public class ARSinfo {
 	public HashMap<Player,Integer> playerkill = new HashMap<Player,Integer>();
 	boolean isstart = false;
 	
-	ARSinfo(int timer){
-		time-= timer;
-	}
+	public List<ModeBase> modes;
 	List<Player> skip;
+
+	ARSinfo(int timer,List<ModeBase> modes){
+		time-= timer;
+		this.modes = modes;
+	}
+
+	public void addMode(ModeBase mode) {
+		modes.add(mode);
+	}
 	public void skip(Player p) {
 		if(!skip.contains(p)) {
 			if(Boolean.parseBoolean(Main.GetText("general:skip_death_count")) || !Boolean.parseBoolean(Main.GetText("general:skip_death_count")) && Rule.c.get(p) != null) {
@@ -77,9 +84,11 @@ public class ARSinfo {
 			}
 		}
 	}
-	
 	public void start() {
 		isstart = false;
+		for(ModeBase mb : modes) {
+			mb.start();
+		}
 		for(Player p : Rule.c.keySet()) {
 			for(Player pl : Rule.c.keySet()) {
 				if(!Rule.team.isTeamAttack(pl, p)) {
@@ -95,58 +104,21 @@ public class ARSinfo {
 	}
 	
 	public void Time() {
-		if(time >= 0 && !isstart) {
-			isstart = true;
-			first();
+		if(time >= 0) {	
+			if(!isstart) {
+				isstart = true;
+				first();
+			}
+			for(ModeBase mb : modes) {
+				mb.tick(time);
+			}
 		}
 		time++;
-		
-		if(mob) {
-			ZombieAdv.tick(time);
-		}
-		if(ARSystem.gameMode == modes.LOBOTOMY) {
-			LoboTomy.tick(time);
-			return;
-		}
-		if(ARSystem.gameMode == modes.KAGEROU) {
-			Kagerou.tick(time);
-			return;
-		}
-		if(ARSystem.gameMode == modes.KANNA) {
-			MKanna.tick(time);
-			return;
-		}
-		if(ARSystem.gameMode == modes.GUN) {
-			MGUN.tick(time);
-			return;
-		}
-		if(ARSystem.gameMode == modes.KILLER) {
-			Bukkit.getWorld("world").setTime(18000);
-			MKiller.tick(time);
-			return;
-		}
-		if(ARSystem.gameMode == modes.ZOMBIE) {
-			MZombie.tick(time);
-			return;
-		}
-		if(ARSystem.gameMode == modes.TEAMMATCH) {
-			if(time >= 60 && time%20 == 0 && time <= 120) {
-				for(Player p : Rule.c.keySet()) {
-					AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg10"));
-					ARSystem.potion(p, 24, 100, 1);
-				}
-			}
-			if(time >= 121 && time%10 == 0) {
-				for(Player p :Rule.c.keySet()) {
-					AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg7"));
-				}
-				ARSystem.Death(ARSystem.RandomPlayer(),ARSystem.RandomPlayer());
-			}
-			return;
-		}
-		
-		if(ARSystem.gameMode == modes.TEAM || ARSystem.gameMode == modes.NORMAL) {
-			MNormal.tick(time);
+	}
+	
+	public void Tick() {
+		for(ModeBase mb : modes) {
+			mb.tick2();
 		}
 	}
 	
@@ -154,41 +126,14 @@ public class ARSinfo {
 		for(Player p : Rule.c.keySet()) {
 			startplayer.put(p,Rule.c.get(p).getCode());
 		}
-		if(AMath.random(100) <= Rule.urf && ARSystem.gameMode != modes.LOBOTOMY) {
-			ARSystem.playSoundAll("0select2");
-			for(Player p :Rule.c.keySet()) {
-				double cool = AMath.random(40) * 0.05;
-				cool = Math.round(cool*100)/100.0;
-				Rule.c.get(p).sskillmult+=cool;
-				AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg3") +" +"+(cool*100)+"% ");
-			}
-		}
-		if(AMath.random(100) <= 2 && ARSystem.gameMode != modes.LOBOTOMY) {
-			ARSystem.playSoundAll("0select2");
-			mob = true;
-			for(Player p :Rule.c.keySet()) {
-				AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg53") +" Adv");
-			}
-		}
-		if(ARSystem.gameMode == modes.ZOMBIE) {
-			Player p = ARSystem.RandomPlayer();
-			Rule.c.put(p, new c100001(p, Rule.gamerule, null));
-			for(Player pl :Rule.c.keySet()) {
-				AdvManager.set(pl, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:mode3"));
-				AdvManager.set(pl, 388, 0,  Main.GetText("main:msg32"));
-			}
-		}
-		if(ARSystem.gameMode == modes.ONE) {
-			for(Player pl :Rule.c.keySet()) {
-				AdvManager.set(pl, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:mode2"));
-			}
+		for(ModeBase mb : modes) {
+			mb.firstTick();
 		}
 		if(Rule.pick) {
 			for(Player pl :Rule.c.keySet()) {
 				AdvManager.set(pl, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:mode0"));
 			}
 		}
-		
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			for(Player pl : Bukkit.getOnlinePlayers()) {
 				p.showPlayer(pl);

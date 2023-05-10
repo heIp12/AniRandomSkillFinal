@@ -6,9 +6,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
 import ars.Rule;
-import manager.Holo;
 import types.BuffType;
 import util.AMath;
+import util.Holo;
 
 public class Barrier extends Buff{
 	String effect = "barrier";

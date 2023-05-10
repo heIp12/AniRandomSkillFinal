@@ -12,8 +12,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 import Main.Main;
-import manager.Holo;
 import util.AMath;
+import util.Holo;
 
 public class Team {
 	HashMap<String,TeamInfo> player;

@@ -25,6 +25,7 @@ import com.nisovin.magicspells.util.TargetInfo;
 import com.nisovin.magicspells.util.Util;
 import com.nisovin.magicspells.util.compat.EventUtil;
 
+import util.AMath;
 import ars.Rule;
 import event.Skill;
 

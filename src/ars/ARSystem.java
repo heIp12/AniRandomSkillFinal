@@ -35,48 +35,41 @@ import buff.Buff;
 import manager.Bgm;
 import manager.BuffManager;
 import manager.EntityBuffManager;
-import manager.Holo;
+import mode.MNormal;
+import mode.ModeBase;
 import net.minecraft.server.v1_12_R1.PacketPlayOutPosition;
 import net.minecraft.server.v1_12_R1.PacketPlayOutPosition.EnumPlayerTeleportFlags;
 import types.BuffType;
+import types.GameModes;
 import types.MapType;
 import types.box;
-import types.modes;
 import util.AMath;
 import util.GetChar;
+import util.Holo;
 import util.MSUtil;
 import util.Map;
 
 public class ARSystem {
 	public static ARSinfo AniRandomSkill;
 	static boolean chars[] = null;
-	static boolean charban[] = new boolean[GetChar.getCount()+1];
 	
 	public static boolean ban = false;
 	public static int time = 12;
 	public static int starttime = 30;
-	public static modes gameMode = modes.NORMAL;
+	public static List<ModeBase> gameMode = new ArrayList<>();
+	public static List<String> selectGameMode = new ArrayList<>();
 	public static boolean gameMode2 = true;
-	public static int Gamemode = 1;
 	public static int serverOne = 0;
 	
-	static public void banload() {
-		for(int i=0;i<charban.length;i++) {
-			charban[i] = (Boolean)Rule.Var.Load("#ARS.ban."+(i+1));
-		}
-	}
-	static public void bansave() {
-		for(int i=0;i<charban.length;i++) {
-			Rule.Var.Save("#ARS.ban."+(i+1), charban[i]);
-		}
-	}
-	static public void Start(int mapc) {
+	static public void Start(int mapnumer) {
 		int i = 0;
 		int max = GetChar.getCount();
+		Bgm.bgmlock = false;
+		Bgm.rep = true;
+		
 		Rule.c.clear();
 		Rule.team.reload();
 		killall();
-		int gm = Gamemode;
 		gameMode2 = true;
 		
 		if(Rule.buffmanager != null) Rule.buffmanager.clear();
@@ -88,46 +81,25 @@ public class ARSystem {
 			}
 			aliveblock.Main.Aliveblock.clear();
 		}
-		Bgm.rep = true;
-		if(gm == 1) {
-			gameMode = modes.NORMAL;
-			if(AMath.random(100) <= Integer.parseInt(Main.GetText("general:mode_chance"))) {
-				gm = AMath.random(modes.size-1)+1;
+		gameMode.clear();
+		
+		
+		for(String str : selectGameMode) gameMode.add(GameModes.getGameModes(str));
+		for(ModeBase mb : gameMode) mb.initialize();
+		for(String str : selectGameMode) {
+			boolean add = true;
+			for(ModeBase mb : gameMode) {
+				if(mb.getModeName().equals(str)) {
+					add = false;
+				}
 			}
+			if(add) gameMode.add(GameModes.getGameModes(str));
 		}
 		
-		if(gm == 2){
-			gameMode = modes.ONE;
-		} else if(gm == 3){
-			gameMode2 = false;
-			gameMode = modes.ZOMBIE;
-			Rule.team.teamRemove("buri");
-			Rule.team.teamCreate("buri");
-			Rule.team.getTeam("buri").setTeamColor("6");
-			Rule.team.getTeam("buri").setTeamName("buris");
-		} else if(gm == 4){
-			gameMode2 = false;
-			gameMode = modes.TEAMMATCH;
-		} else if(gm == 5){
-			gameMode2 = true;
-			gameMode = modes.TEAM;
-		} else if(gm == 6){
-			gameMode = modes.KANNA;
-		} else if(gm == 7){
-			gameMode = modes.GUN;
-		} else if(gm == 8){
-			gameMode = modes.KILLER;
-		} else if(gm == 666){
-			gameMode = modes.LOBOTOMY;
-		}
-		
-		Map.randomMap(mapc);
-
-        AniRandomSkill = new ARSinfo(time);
+        AniRandomSkill = new ARSinfo(time,gameMode);
 
 		Bgm.randomBgm();
 		AniRandomSkill.player = 0;
-		Map.playerTpall();
 		float score = 0;
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			if(Rule.playerinfo.get(player).gamejoin) {
@@ -136,63 +108,53 @@ public class ARSystem {
 			}
 		}
 		
+        for(ModeBase mb : gameMode) {
+			mb.option();
+		}
+        
+		if(Map.mapid == 0) {
+			Map.randomMap(mapnumer);
+		}
+		
+		Map.playerTpall();
+		
 		if(score != 0) {
 			score /= AniRandomSkill.player;
 			AniRandomSkill.gamescore = score;
 		}
 		
-		
 		Bukkit.broadcastMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:info25")+" "+Math.round(score));
-		
 		chars = new boolean[GetChar.getCount()+1];
-		
-    	int server = serverOne;
-    	if(gm == 2 && server == 0) {
-	    	while(true) {
-		        server = (int) (Math.random()*max);
-				if(listset(server)) {
-					break;
-				}
-	    	}
-    	} else {
-    		server--;
-    	}
 		
 		if(AniRandomSkill.player > 1 || (Bukkit.getOnlinePlayers().size() == 1 && AniRandomSkill.player == 1 )) {
 			for(Player player : Bukkit.getOnlinePlayers()) {
-				if(Rule.playerinfo.get(player).gamejoin) {
-					Rule.playerinfo.get(player).addcradit(1,Main.GetText("main:msg106"));
-					if(gameMode == modes.KANNA) {
-						Rule.c.put(player,GetChar.get(player, Rule.gamerule, "98"));
-					}
-					else if(gameMode == modes.ONE) {
-						Rule.c.put(player,GetChar.get(player, Rule.gamerule, ""+(server+1)));
-					}
-					else if(Rule.pick && listset(+Rule.playerinfo.get(player).playerc-1)) {
-						Rule.c.put(player, GetChar.get(player, Rule.gamerule, ""+Rule.playerinfo.get(player).playerc));
-					} else {
-						int j = 0;
-						while(j < 1000) {
-							i = (int) (Math.random()*max);
-							
-							if(Rule.playerinfo.get(player).playchar == i) continue;
-							if(Rule.playerinfo.get(player).playerc > 0 && AMath.random(100) <= Integer.parseInt(Main.GetText("general:pick_chance"))) {
-								i = Rule.playerinfo.get(player).playerc-1;
-							}
-							if(!chars[i] && listset(i)) {
-								chars[i] = true;
-								Rule.c.put(player, GetChar.get(player, Rule.gamerule, ""+(i+1)));
-								break;
+				if(Rule.c.get(player) == null) {
+					if(Rule.playerinfo.get(player).gamejoin) {
+						Rule.playerinfo.get(player).addcradit(1,Main.GetText("main:msg106"));
+						if((Rule.pick && Rule.playerinfo.get(player).playerc > 0) && GetChar.isBan(Rule.playerinfo.get(player).playerc-1)) {
+							Rule.c.put(player, GetChar.get(player, Rule.gamerule, ""+Rule.playerinfo.get(player).playerc));
+						} else {
+							int j = 0;
+							while(j < 1000) {
+								i = (int) (Math.random()*max);
 								
+								if(Rule.playerinfo.get(player).playchar == i) continue;
+								if(Rule.playerinfo.get(player).playerc > 0 && AMath.random(100) <= Integer.parseInt(Main.GetText("general:pick_chance"))) {
+									i = Rule.playerinfo.get(player).playerc-1;
+								}
+								if(!chars[i] && GetChar.isBan(i)) {
+									chars[i] = true;
+									Rule.c.put(player, GetChar.get(player, Rule.gamerule, ""+(i+1)));
+									break;
+								}
+							}
+							if(j > 999) {
+								Rule.c.put(player, GetChar.get(player,Rule.gamerule, ""+0));
 							}
 						}
-						
-						if(j > 999) {
-							Rule.c.put(player, GetChar.get(player,Rule.gamerule, ""+0));
-						}
+					} else {
+						player.setGameMode(GameMode.SPECTATOR);
 					}
-				} else {
-					player.setGameMode(GameMode.SPECTATOR);
 				}
 			}
 		} else {
@@ -221,7 +183,7 @@ public class ARSystem {
 			if(Rule.playerinfo.get(p).playerc > 0 && AMath.random(100) <= Integer.parseInt(Main.GetText("general:pick_chance"))) {
 				i = Rule.playerinfo.get(p).playerc-1;
 			}
-			if(!chars[i] && listset(i)) {
+			if(!chars[i] && GetChar.isBan(i)) {
 				chars[i] = true;
 				Rule.playerinfo.get(p).playchar = i;
 				Rule.c.put(p, GetChar.get(p, Rule.gamerule, ""+(i+1)));
@@ -234,75 +196,43 @@ public class ARSystem {
 		}
 	}
 	
-	static public boolean listset(int chars) {
-		chars += 1;
-		if(ban) {
-			if(charban[chars-1] == true) return false;
+	static public void redyMode(String modename) {
+		if(selectGameMode.contains(modename)){
+			selectGameMode.remove(modename);
+		} else {
+			List<String> lists = new ArrayList<String>();
+			for(String list : selectGameMode) lists.add(list);
+			for(String list : lists) {
+				if(GameModes.getGameModes(list).IsOnlyOne()){
+					selectGameMode.remove(list);
+				}
+			}
+			if(GameModes.getGameModes(modename).IsOne()) {
+				for(String list : lists) {
+					if(GameModes.getGameModes(list).IsOne()){
+						selectGameMode.remove(list);
+					}
+				}
+			}
+			if(GameModes.getGameModes(modename).IsOnlyOne()) {
+				selectGameMode.clear();
+			}
+			selectGameMode.add(modename);
 		}
-		if(AniRandomSkill.player < 3) {
-			if(chars==12) return false;
-			if(chars==28) return false;
-			if(chars==37) return false;
-			if(chars==43) return false;
-			if(chars==53) return false;
-			if(chars==59) return false;
-			if(chars==81) return false;
-		}
-		if(gameMode == modes.ONE) {
-			if(chars==3) return false;
-			if(chars==12) return false;
-			if(chars==17) return false;
-			if(chars==25) return false;
-			if(chars==28) return false;
-			if(chars==37) return false;
-			if(chars==43) return false;
-			if(chars==52) return false;
-			if(chars==53) return false;
-			if(chars==59) return false;
-			if(chars==74) return false;
-			if(chars==89) return false;
-			if(chars==92) return false;
-		}
-		if(gameMode == modes.TEAMMATCH) {
-			if(chars==12) return false;
-			if(chars==28) return false;
-			if(chars==35) return false;
-			if(chars==37) return false;
-			if(chars==43) return false;
-			if(chars==53) return false;
-			if(chars==58) return false;
-			if(chars==79) return false;
-			if(chars==90) return false;
-		}
-		if(gameMode == modes.TEAM) {
-			if(chars==43) return false;
-			if(chars==53) return false;
-			if(chars==58) return false;
-			if(chars==79) return false;
-		}
-		if(gameMode == modes.LOBOTOMY) {
-			if(chars==12) return false;
-			if(chars==16) return false;
-			if(chars==18) return false;
-			if(chars==23) return false;
-			if(chars==28) return false;
-			if(chars==30) return false;
-			if(chars==35) return false;
-			if(chars==37) return false;
-			if(chars==46) return false;
-			if(chars==53) return false;
-			if(chars==59) return false;
-			if(chars==70) return false;
-			if(chars==78) return false;
-			if(chars==79) return false;
-			if(chars==81) return false;
-			if(chars==90) return false;
-			if(chars==95) return false;
-			if(chars==100) return false;
-		}
-		return true;
 	}
 	
+	static public boolean isGameMode(String name) {
+		if(AniRandomSkill == null) return false;
+		for(ModeBase bm : AniRandomSkill.modes) {
+			if(name.equals(bm.getModeName())) return true;
+		}
+		return false;
+	}
+
+	static public void addGameMode(ModeBase mode) {
+		if(AniRandomSkill == null) return;
+		AniRandomSkill.addMode(mode);
+	}
 	static public void Death(Player p,Entity e) {
 		p.setGameMode(GameMode.SPECTATOR);
 		p.setMaxHealth(40);
@@ -364,43 +294,18 @@ public class ARSystem {
 		}
 	}
 	
+	static public List<Player> getReadyPlayer() {
+		List<Player> players = new ArrayList<>();
+		for(Player player : Bukkit.getOnlinePlayers()) {
+			if(Rule.playerinfo.get(player).gamejoin) {
+				players.add(player);
+			}
+		}
+		return players;
+	}
+	
 	static public void Stop() {
-		if(gameMode == modes.LOBOTOMY) {
-			if(Rule.c.size() == 0) gameEnd();
-		} else if((gameMode == modes.TEAM || gameMode == modes.TEAMMATCH) && AniRandomSkill != null) {
-			List<Player> players = new ArrayList<Player>();
-			for(Player p :Rule.c.keySet()) {
-				players.add(p);
-			}
-			if(Rule.team.allTeam(players)) {
-				for(Player p :Rule.c.keySet()) {
-					if(Rule.buffmanager.selectBuffType(p, BuffType.HEADCC) != null) {
-						for(Buff buff : Rule.buffmanager.getHashMap().get(p).getBuff()) {
-							buff.stop();
-						}
-					}
-				}
-				if(Rule.c.keySet().size() == 0) {
-					gameEnd();
-					return;
-				}
-				Player win = (Player) Rule.c.keySet().toArray()[0];
-				String team = Rule.team.getTeam(win).get(0).getTeamName();
-				String name = "§e§lTeam : " + team +" Win!!";
-				String names = "";
-				for(Player p : Rule.team.getTeam(win).get(0).getPlayer()) {
-					names+=p.getName()+",";
-				}
-				for(Player player : Bukkit.getOnlinePlayers()) {
-					player.sendTitle(name, "" +names,40,20,40);
-					MSUtil.resetbuff(player);
-					player.setGameMode(GameMode.ADVENTURE);
-					player.setMaxHealth(20);
-					player.setHealth(20);
-				}
-				gameEnd();
-			}
-		} else if(Rule.c.size() == 1 && AniRandomSkill != null) {
+		if(Rule.c.size() == 1 && AniRandomSkill != null) {
 			for(Player p : Rule.c.keySet()) {
 				if(Rule.buffmanager.selectBuffType(p, BuffType.HEADCC) != null) {
 					for(Buff buff : Rule.buffmanager.getHashMap().get(p).getBuff()) {
@@ -448,6 +353,11 @@ public class ARSystem {
 	}
 	
 	static public void gameEnd() {
+		if(AniRandomSkill != null) {
+			for(ModeBase mb : AniRandomSkill.modes) {
+				mb.end();
+			}
+		}
 		HashMap<Player, Integer> mvp = ARSystem.AniRandomSkill.playerkill;
 		Player mvps = null;
 		int mvpk = 0;
@@ -818,6 +728,9 @@ public class ARSystem {
 	static public Player RandomPlayer() {
 		return (Player) Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1];
 	}
+	static public Player RandomOnlinePlayer() {
+		return (Player) Bukkit.getOnlinePlayers().toArray()[AMath.random(Bukkit.getOnlinePlayers().size())-1];
+	}
 	public static Player RandomPlayer(Player player) {
 		Player p = (Player) Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1];
 		for(int i = 0; i <1000; i++) {
@@ -829,10 +742,46 @@ public class ARSystem {
 		}
 		return p;
 	}
-	
+	static public List<Entity> PlayerBeamBox(Player player,float rangeblock, float size, types.box box){
+		List<Entity> entity = new ArrayList<Entity>();
+		Location loc = player.getLocation().clone();
+		for(float i=0;i<rangeblock;i++) {
+			loc.add(loc.getDirection());
+			if(!loc.clone().add(0,1,0).getBlock().isEmpty()) {
+				i = rangeblock+1;
+			} else {
+				for (LivingEntity e : player.getWorld().getLivingEntities()) {
+					if(e.getLocation().distance(loc) <= size && e != player) {
+						if(isTarget(e, player ,box) && !entity.contains(e)) {
+							entity.add(e);
+						}
+					}
+				}
+			}
+		}
+		return entity;
+	}
+	static public List<Player> PlayerOnlyBeamBox(Player player,float rangeblock, float size, types.box box){
+		List<Player> entity = new ArrayList<Player>();
+		Location loc = player.getLocation().clone();
+		for(float i=0;i<rangeblock;i++) {
+			loc.add(loc.getDirection());
+			if(!loc.clone().add(0,1,0).getBlock().isEmpty()) {
+				i = rangeblock+1;
+			} else {
+				for (Player e : Bukkit.getOnlinePlayers()) {
+					if(e.getLocation().distance(loc) <= size && e != player && e.getGameMode() != GameMode.SPECTATOR ) {
+						if(isTarget(e, player ,box) && !entity.contains(e)) {
+							entity.add(e);
+						}
+					}
+				}
+			}
+		}
+		return entity;
+	}
 	static public List<Entity> box(Entity et, Vector vt,types.box box) {
 		List<Entity> entity = new ArrayList<Entity>();
-
 		entity = et.getNearbyEntities(vt.getX(),vt.getY(),vt.getZ());
 
 		if(entity == null || entity.size() <= 0) return entity;

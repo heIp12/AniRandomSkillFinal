@@ -1,8 +1,12 @@
 package util;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 
 public class BlockUtil {
+	public static boolean isPathable(Block block) {
+		return isPathable(block.getType());
+	}
 	public static boolean isPathable(Material material) {
 		return
 				material == Material.AIR ||

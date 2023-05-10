@@ -20,6 +20,7 @@ public class EntityBuffManager {
 	}
 	
 	public List<Buff> getBuff() {
+		if(buff == null) return new ArrayList<>();
 		return buff;
 	}
 	

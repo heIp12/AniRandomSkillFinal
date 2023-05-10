@@ -12,8 +12,7 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import manager.AdvManager;
-import manager.Holo;
-import util.AMath;
+import util.Holo;
 
 public class WinEvent extends Event{
 	private static final HandlerList HANDLERS = new HandlerList();

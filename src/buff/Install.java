@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 import ars.ARSystem;
 import ars.Rule;
-import c.c00main;
-import c2.c86iriya;
+import chars.c.c00main;
+import chars.c2.c86iriya;
 import types.BuffType;
 import util.AMath;
 
@@ -42,6 +42,7 @@ public class Install extends Buff{
 				Rule.c.get(target).setStack((float) value);
 				ARSystem.playSound(target, "c86sc");
 				target.setHealth(target.getMaxHealth() * hp);
+				Rule.buffmanager.selectBuffValue(target, "barrier", (float) 0);
 			}
 		}
 	}

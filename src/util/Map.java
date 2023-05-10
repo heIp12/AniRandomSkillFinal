@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -21,16 +22,15 @@ import buff.Nodamage;
 import buff.Silence;
 import event.Skill;
 import types.MapType;
-import types.modes;
 import manager.AdvManager;
 import manager.Bgm;
-import manager.Holo;
+import util.Holo;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
 public class Map {
-	static Location loc_f;
-	static Location loc_l;
+	public static Location loc_f;
+	public static Location loc_l;
 	static String name;
 	static String type;
 	static int mapCount = 0;
@@ -38,7 +38,7 @@ public class Map {
 	
 	public static int maphuman = 10;
 	
-	public static String Version = "1.72";
+	public static String Version = "1.8";
 	public static MapType mapType = MapType.NORMAL;
 	public static World world = Bukkit.getWorld("world");
 	public static int lastplay = 0;
@@ -56,162 +56,8 @@ public class Map {
 				i++;
 			}
 		}
-		if(ARSystem.gameMode == modes.LOBOTOMY) {
-			mapType = MapType.NORMAL;
-			ARSystem.Gamemode = 1;
-			getMapinfo(1004);
-			Rule.team.teamCreate("H");
-			Rule.team.getTeam("H").setTeamColor("7");
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				Rule.team.teamJoin("H", p);
-			}
-			Bgm.rep = false;
-		}
-		else if(ARSystem.gameMode == modes.KANNA) {
-			mapType = MapType.NORMAL;
-			getMapinfo(1005);
-			Rule.team.teamCreate("K");
-			Rule.team.getTeam("K").setTeamColor("7");
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				Rule.team.teamJoin("K", p);
-			}
-		}
-		else if(ARSystem.gameMode == modes.GUN) {
-			mapType = MapType.BIG;
-			getMapinfo(107);
-		}
-		else if(ARSystem.gameMode == modes.KILLER) {
-			mapType = MapType.BIG;
-			getMapinfo(102);
-		}
-		else if(ARSystem.gameMode == modes.TEAMMATCH) {
-			mapType = MapType.TEAMMATCH;
-			getMapinfo(1003);
-			Rule.team.teamCreate("RED");
-			Rule.team.teamCreate("BLUE");
-			String local = Main.GetText("map:map1003t1");
-			Location loc = new Location(loc_f.getWorld(),Integer.parseInt(local.split(",")[0]),Integer.parseInt(local.split(",")[1]),Integer.parseInt(local.split(",")[2]));
-			Rule.team.getTeam("RED").setTeamSpawn(loc);
-			local = Main.GetText("map:map1003t2");
-			loc = new Location(loc_f.getWorld(),Integer.parseInt(local.split(",")[0]),Integer.parseInt(local.split(",")[1]),Integer.parseInt(local.split(",")[2]));
-			Rule.team.getTeam("BLUE").setTeamSpawn(loc);
-			Rule.team.getTeam("RED").setTeamWin(true);
-			Rule.team.getTeam("BLUE").setTeamWin(true);
-			Rule.team.getTeam("RED").setTeamColor("c");
-			Rule.team.getTeam("BLUE").setTeamColor("9");
-			
-			List<Player> gameplayers = new ArrayList<Player>();
-			List<Player> gameplayers2 = new ArrayList<Player>();
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				if(Rule.playerinfo.get(p).gamejoin) {
-					gameplayers.add(p);
-					gameplayers2.add(p);
-				}
-			}
-			int blue = 0;
-			int red = 0;
-			
-			for(Player p : gameplayers) {
-				if(Rule.playerinfo.get(p).team != null) {
-					if(Rule.playerinfo.get(p).team.equals("red")) {
-						Rule.team.teamJoin("RED", p);
-						gameplayers2.remove(p);
-						red++;
-					}
-					if(Rule.playerinfo.get(p).team.equals("blue")) {
-						Rule.team.teamJoin("BLUE", p);
-						gameplayers2.remove(p);
-						blue++;
-					}
-				}
-			}
-			
-			for(Player p : gameplayers) {
-				if(gameplayers2.contains(p)) {
-					if(blue < red) {
-						Rule.team.teamJoin("BLUE", p);
-						blue++;
-					} else {
-						Rule.team.teamJoin("RED", p);
-						red++;
-					}
-				}
-			}
-			
-		} else {
-			if(ARSystem.gameMode == modes.TEAM) {
-				Rule.team.teamCreate("RED");
-				Rule.team.teamCreate("BLUE");
-				Rule.team.teamCreate("YELLOW");
-				Rule.team.teamCreate("GREEN");
-				Rule.team.getTeam("RED").setTeamWin(true);
-				Rule.team.getTeam("BLUE").setTeamWin(true);
-				Rule.team.getTeam("YELLOW").setTeamWin(true);
-				Rule.team.getTeam("GREEN").setTeamWin(true);
-				Rule.team.getTeam("RED").setTeamColor("c");
-				Rule.team.getTeam("BLUE").setTeamColor("9");
-				Rule.team.getTeam("YELLOW").setTeamColor("e");
-				Rule.team.getTeam("GREEN").setTeamColor("a");
-				
-				List<Player> gameplayers = new ArrayList<Player>();
-				List<Player> gameplayers2 = new ArrayList<Player>();
-				for(Player p : Bukkit.getOnlinePlayers()) {
-					if(Rule.playerinfo.get(p).gamejoin) {
-						gameplayers.add(p);
-						gameplayers2.add(p);
-					}
-				}
-				int blue = 0;
-				int red = 0;
-				int yellow = 0;
-				int green = 0;
-				
-				for(Player p : gameplayers) {
-					if(Rule.playerinfo.get(p).team != null) {
-						if(Rule.playerinfo.get(p).team.equals("red")) {
-							Rule.team.teamJoin("RED", p);
-							gameplayers2.remove(p);
-							red++;
-						}
-						if(Rule.playerinfo.get(p).team.equals("blue")) {
-							Rule.team.teamJoin("BLUE", p);
-							gameplayers2.remove(p);
-							blue++;
-						}
-						if(Rule.playerinfo.get(p).team.equals("green")) {
-							Rule.team.teamJoin("GREEN", p);
-							gameplayers2.remove(p);
-							green++;
-						}
-						if(Rule.playerinfo.get(p).team.equals("yellow")) {
-							Rule.team.teamJoin("YELLOW", p);
-							gameplayers2.remove(p);
-							yellow++;
-						}
-					}
-				}
-				
-				for(Player p : gameplayers) {
-					if(gameplayers2.contains(p)) {
-						if(blue < red && blue < green && blue < yellow) {
-							Rule.team.teamJoin("BLUE", p);
-							blue++;
-						} else if(red < green && red < yellow) {
-							Rule.team.teamJoin("RED", p);
-							red++;
-						}  else if(yellow < green) {
-							Rule.team.teamJoin("YELLOW", p);
-							yellow++;
-						} else {
-							Rule.team.teamJoin("GREEN", p);
-							green++;
-						}
-					}
-				}
-			}
-			Random(i,map);
-		}
-		
+
+		Random(i,map);
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			p.sendTitle(Main.GetText("map:map_1"), name, 40, 80, 80);
 		}
@@ -257,11 +103,12 @@ public class Map {
 			}
 			Location loff_ = loc_f.clone();
 			loff_.setY(loc_l.getY());
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg9") +" -"+(size*2));
-			}
 			
-			if(loff_.distance(loc_l) > 15) {
+			if(loff_.distance(loc_l) > 30) {
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg9") +" -"+(size*2));
+				}
+				
 				int local = AMath.random(size*2)-size;
 				loc_f.add(local,0,local);
 				loc_l.add(local,0,local);
@@ -334,8 +181,13 @@ public class Map {
 		mapid = i;
 		name = Main.GetText("map:map"+i);
 		type = Main.GetText("map:map"+i+"type");
-		loc_f = new Location(world,Text.getTextint("map:map"+i+"x1"),Text.getTextint("map:map"+i+"y1"),Text.getTextint("map:map"+i+"z1"));
-		loc_l = new Location(world,Text.getTextint("map:map"+i+"x2"),Text.getTextint("map:map"+i+"y2"),Text.getTextint("map:map"+i+"z2"));
+		loc_f = new Location(world,Text.getI("map:map"+i+"x1"),Text.getI("map:map"+i+"y1"),Text.getI("map:map"+i+"z1"));
+		loc_l = new Location(world,Text.getI("map:map"+i+"x2"),Text.getI("map:map"+i+"y2"),Text.getI("map:map"+i+"z2"));
+		if(mapid == 9) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
+				spawn("daizin"+AMath.random(2), 1);
+			},40);
+		}
 		if(i >= 100 && i <= 999) {
 			int x = (loc_f.getBlockX() + ((loc_l.getBlockX() - loc_f.getBlockX())/2));
 			int z = (loc_f.getBlockZ() + ((loc_l.getBlockZ() - loc_f.getBlockZ())/2));
@@ -419,22 +271,31 @@ public class Map {
 		Location loc = null;
 
 		boolean While = true;
+		int count = 0;
 		while(While) {
 			Location ploc = loc_f.clone();
 			Location plocs = loc_l.clone().subtract(loc_f.clone());
-			ploc.add(AMath.random(plocs.getBlockX()), AMath.random(plocs.getBlockY()/2), AMath.random(plocs.getBlockZ()));
+			if(count > 1000) break;
+			if(count > 300 ) {
+				ploc.add(AMath.random(plocs.getBlockX()), AMath.random(plocs.getBlockY()), AMath.random(plocs.getBlockZ()));
+			} else if(count > 100) {
+				ploc.add(AMath.random(plocs.getBlockX()), AMath.random((int)(plocs.getBlockY()*0.8)), AMath.random(plocs.getBlockZ()));
+			} else {
+				ploc.add(AMath.random(plocs.getBlockX()), AMath.random(plocs.getBlockY()/2), AMath.random(plocs.getBlockZ()));
+			}
 			ploc.setYaw(AMath.random(360));
-			while(true) {
-				if(ploc.getBlock().isEmpty() && ploc.getY() > loc_f.getY()) {
+			for(int i = ploc.getBlockY(); i > 0 ;i--) {
+				if(ploc.getBlock().isEmpty() && ploc.getY() >= loc_f.getY()) {
 					ploc.add(0, -1, 0);
 				} else {
 					break;
 				}
 			}
-			ploc.add(0, 1, 0);
-			if(ploc.getBlock().isEmpty() && inMap(ploc)) {
+			if(BlockUtil.isPathable(ploc.clone().add(0,1,0).getBlock()) && !BlockUtil.isPathable(ploc.getBlock()) && inMap(ploc)) {
+				ploc.add(0, 1, 0);
 				return ploc;
 			}
+			count++;
 		}
 		return loc;
 	}
@@ -442,6 +303,7 @@ public class Map {
 	static public void loby() {
 		getMapinfo(0);
 		playerTpall();
+		ARSystem.killall();
 		Player player = null;
 		Rule.team.reload();
 		
@@ -449,7 +311,9 @@ public class Map {
 			player = pl;
 		}
 		if(player != null) {
-			ARSystem.spellLocCast(player, new Location(world,-7,33.5,-108), "heIp");
+			Location loc = new Location(world,-7,33.5,-108);
+			loc.setYaw(270);
+			ARSystem.spellLocCast(player, loc, "heIp");
 		}
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "mm m spawn sendback 1 world,-10.5,30,-52.5");
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "mm m spawn map5 1 world,11,30,-9.5");
@@ -526,22 +390,6 @@ public class Map {
 	}
 
 	public static void UniqeMap(Player player) {
-		if(name.equals("하늘섬") ) {
-			if(player.getLocation().getY() <= 30 && player.getVelocity().getY() <= 0) {
-				if(player.isSneaking()) player.setFallDistance(player.getFallDistance()/2);
-				if(player.getFallDistance() > 50) player.setFallDistance(50);
-				if(player.getFallDistance() < 10) {
-					player.setVelocity(player.getVelocity().setY(1.5));
-				} else {
-					float plus = ((player.getFallDistance()-10)/5);
-					player.setVelocity(player.getVelocity().setY(1.5+plus));
-					player.setVelocity(player.getVelocity().setX(player.getVelocity().getX()*(1+plus)*10));
-					player.setVelocity(player.getVelocity().setZ(player.getVelocity().getZ()*(1+plus)*10));
-				}
-				player.performCommand("c cloud");
-				player.setFallDistance(0);
-			}
-		}
 		if(type != null) {
 			if(type.contains("minecart")) {
 				Location loc = player.getLocation();
@@ -576,6 +424,10 @@ public class Map {
 		}
 	}
 	public static void spawn(String name,Location loc,int count) {
+		if(count == 1) {
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn "+name+" 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());
+			return;
+		}
 		for(int i = 0; i < count; i++) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule,()->{
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn "+name+" 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import ars.ARSystem;
 import ars.Rule;
-import c.c00main;
+import chars.c.c00main;
 import types.BuffType;
 
 public class Cindaella extends Buff{

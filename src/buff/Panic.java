@@ -12,9 +12,9 @@ import org.bukkit.util.Vector;
 import ars.ARSystem;
 import ars.Rule;
 import event.Skill;
-import manager.Holo;
 import types.BuffType;
 import util.AMath;
+import util.Holo;
 
 public class Panic extends Buff{
 	Location loc;

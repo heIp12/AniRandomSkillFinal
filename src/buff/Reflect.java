@@ -7,9 +7,9 @@ import org.bukkit.util.Vector;
 
 import ars.ARSystem;
 import ars.Rule;
-import manager.Holo;
 import types.BuffType;
 import util.AMath;
+import util.Holo;
 
 public class Reflect extends Buff{
 	String effect = "barrier";
@@ -61,7 +61,7 @@ public class Reflect extends Buff{
 					((Player)target).performCommand("c "+effect);
 				}
 				Holo.create(target.getLocation(),"§f§l☇ "+ AMath.round(e.getDamage()*value,1),20,new Vector(AMath.random(5)*0.02,0.1,AMath.random(5)*0.02));
-				
+				((LivingEntity)e.getDamager()).setNoDamageTicks(0);
 				((LivingEntity)e.getDamager()).damage(e.getDamage()*value,target);
 				if(!targetEffect.equals("") && target instanceof Player) ARSystem.spellLocCast((Player) target, e.getDamager().getLocation(), targetEffect);
 				if(nodamage) {

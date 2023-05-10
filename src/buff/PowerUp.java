@@ -7,9 +7,9 @@ import org.bukkit.util.Vector;
 
 import ars.ARSystem;
 import ars.Rule;
-import manager.Holo;
 import types.BuffType;
 import util.AMath;
+import util.Holo;
 
 public class PowerUp extends Buff{
 

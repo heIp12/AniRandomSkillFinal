@@ -13,9 +13,10 @@ import org.bukkit.util.Vector;
 
 import ars.Rule;
 import event.Skill;
-import manager.Holo;
 import types.BuffType;
 import util.AMath;
+import util.Holo;
+import util.ULocal;
 
 public class Timeshock extends Buff{
 	Location loc;
@@ -45,7 +46,8 @@ public class Timeshock extends Buff{
 	
 	@Override
 	public boolean onMove(PlayerMoveEvent e) {
-		e.setCancelled(true);
+		loc = e.getFrom();
+		if(!ULocal.isEqual(loc,e.getTo())) e.setCancelled(true);
 		return false;
 	}
 	
