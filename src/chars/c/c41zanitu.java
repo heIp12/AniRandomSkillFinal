@@ -179,6 +179,7 @@ public class c41zanitu extends c00main{
 			player.teleport(loc);
 			ARSystem.playSound((Entity)player, "c41s1");
 			ARSystem.playSound((Entity)player, "c41a");
+			ARSystem.playSound((Entity)player, "minecraft:entity.lightning.thunder",1.6f,2f);
 			player.removePotionEffect(PotionEffectType.INVISIBILITY);
 			ARSystem.potion(player, 14, 20, 1);
 			skill("c41_s1_am");

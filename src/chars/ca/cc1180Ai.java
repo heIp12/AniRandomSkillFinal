@@ -166,19 +166,19 @@ public class cc1180Ai extends c00main{
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f오레모!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f오레모!!",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 					}
 				}
 			},220);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f하이!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f하이!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						delay(()->{
-							Holo.create(locs, "§e하이!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+							Holo.create(locs, "§e하이!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						},10);
 						delay(()->{
-							Holo.create(locs, "§c하이! 하이! 후! 후!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+							Holo.create(locs, "§c하이! 하이! 후! 후!",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						},20);
 					}
 				}
@@ -186,57 +186,57 @@ public class cc1180Ai extends c00main{
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f후와후와!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f후와후와!!",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 					}
 				}
 			},560);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f손손손!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f손손손!!",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 					}
 				}
 			},660);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f훗후!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f훗후!!",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 					}
 				}
 			},720);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f훗후!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f훗후!!",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 					}
 				}
-			},770);
+			},765);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f오..",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f오..",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						delay(()->{
-							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
-						},20);
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
+						},15);
 					}
 				}
-			},790);
+			},795);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f오..",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f오..",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						delay(()->{
-							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
-						},20);
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
+						},15);
 					}
 				}
-			},820);
+			},825);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f하이!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f하이!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						delay(()->{
-							Holo.create(locs, "§f하이!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+							Holo.create(locs, "§f하이!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						},20);
 						delay(()->{
 							Holo.create(locs, "§f하이! 하이! 하이! 하이!",60, new Vector(0,0.1+AMath.random(4)*0.01,0));
@@ -247,78 +247,78 @@ public class cc1180Ai extends c00main{
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f후!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f후!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
 					}
 				}
-			},900);
+			},910);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f훗후!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f훗후!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
 					}
 				}
 			},940);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f오...",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f오...",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						delay(()->{
-							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
-						},20);
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
+						},15);
 					}
 				}
-			},1020);
+			},1015);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f오...",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f오...",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						delay(()->{
-							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
-						},20);
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
+						},15);
 					}
 				}
-			},1050);
+			},1045);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f오...",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f오...",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						delay(()->{
-							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
-						},20);
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
+						},15);
 					}
 				}
-			},1080);
+			},1075);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f오...",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						Holo.create(locs, "§f오...",40, new Vector(0,0.1+AMath.random(4)*0.05,0));
 						delay(()->{
-							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
-						},20);
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.1+AMath.random(4)*0.05,0));
+						},15);
 					}
 				}
-			},1110);
+			},1100);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f하잇! 세노",40, new Vector(0,0.2+AMath.random(4)*0.02,0));
+						Holo.create(locs, "§f하잇! 세노",40, new Vector(0,0.1+AMath.random(4)*0.02,0));
 					}
 				}
-			},1120);
+			},1135);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
-						Holo.create(locs, "§f하잇! 세노",40, new Vector(0,0.2+AMath.random(4)*0.02,0));
+						Holo.create(locs, "§f하잇! 세노",40, new Vector(0,0.1+AMath.random(4)*0.02,0));
 					}
 				}
-			},1140);
+			},1160);
 			delay(()->{
 				if(Bgm.bgmcode.equals("c1118sp")) {
 					for(Location locs : dance.values()) {
 						Holo.create(locs, "§cB!!",100, new Vector(0,0.01,0));
 					}
 				}
-			},1240);
+			},1260);
 			delay(()->{
 				skill("removemyall");
 			},1280);
