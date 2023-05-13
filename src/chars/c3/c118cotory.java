@@ -156,7 +156,7 @@ public class c118cotory extends c00main{
 	@Override
 	public boolean tick() {
 		if(tk%20 == 0 && psopen) scoreBoardText.add("&c ["+Main.GetText("c118:p1")+ "] : &f" + p +" / 50");
-		if(p >= 200) {
+		if(p >= 100) {
 			Rule.playerinfo.get(player).tropy(118, 1);
 		}
 		for(LivingEntity e : nodamage.get().keySet()) {

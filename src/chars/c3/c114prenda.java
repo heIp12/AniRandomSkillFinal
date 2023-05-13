@@ -150,7 +150,6 @@ public class c114prenda extends c00main{
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
 			ARSystem.giveBuff(target, new Stun(target), 20);
-			ARSystem.giveBuff(target, new Silence(target), 20);
 		}
 		if(n.equals("2")) {
 			if(Rule.c.get(target) != null && Rule.c.get(target).getCode() == 63) {
@@ -162,19 +161,15 @@ public class c114prenda extends c00main{
 				}
 			} else {
 				target.setNoDamageTicks(0);
-				target.damage(2,player);
+				target.damage(1,player);
 				delay(()->{
 					target.setNoDamageTicks(0);
-					target.damage(3,player);
+					target.damage(2,player);
 				},10);
 				delay(()->{
 					target.setNoDamageTicks(0);
-					target.damage(4,player);
+					target.damage(3,player);
 				},20);
-				delay(()->{
-					target.setNoDamageTicks(0);
-					target.damage(5,player);
-				},30);
 			}
 		}
 	}

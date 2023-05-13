@@ -3,29 +3,16 @@ package mode;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-
 import Main.Main;
-import ars.ARSinfo;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Noattack;
 import buff.Nodamage;
-import buff.Silence;
-import chars.c.c000humen;
 import chars.c.c001humen2;
-import chars.c.c001nb;
 import event.Skill;
 import manager.AdvManager;
-import manager.Bgm;
-import types.MapType;
-
-import util.AMath;
-import util.GetChar;
 import util.Map;
-import util.NpcPlayer;
 import util.Text;
 import util.ULocal;
 

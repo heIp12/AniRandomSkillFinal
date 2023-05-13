@@ -108,14 +108,10 @@ public class Skill {
 	}
 
 	public static void TimeLoop(LivingEntity target) {
-		if(Rule.c.get(target) != null) ARSystem.giveBuff(target, new Timeshock(target), 200);
+		if(Rule.c.get(target) == null) ARSystem.giveBuff(target, new Timeshock(target), 200);
 		int number = Rule.c.get(target).number;
 		if(number == 1084) return;
-		
-		if(number == 101) {
-			((c101aris)Rule.c.get(target)).sp();
-			return;
-		}
+
 		if(number == 84) {
 			Rule.c.put((Player) target, new c8400subi((Player) target, Rule.gamerule, null));
 			return;

@@ -80,11 +80,11 @@ public class c99giroro extends c00main{
 		float sp = 8f;
 		if(ps > 0) sp = 4f;
 		Location l = player.getLocation();
-
+		l = ULocal.offset(l, new Vector(1,0,0));
 		l.setPitch((float) (l.getPitch() - (sp/2) + AMath.random((int) (sp*100))/100.0f ));
 		l.setYaw((float) (l.getYaw() - (sp/2) + AMath.random((int) (sp*100))/100.0f ));
 		
-		ARSystem.spellLocCast(player, l, "c99_s1");
+		ARSystem.spellLocCast(player, l, "c99_s1-2");
 		ARSystem.playerAddRotate(player,0,(float) -1);
 	}
 	
@@ -93,6 +93,8 @@ public class c99giroro extends c00main{
 		ARSystem.playSound((Entity)player, "c99s1");
 		shrot();
 		if(!isps) {
+
+			skill("c99_s1");
 			delay(()->{shrot();}, 2);
 			delay(()->{shrot();}, 4);
 			delay(()->{shrot();}, 6);
@@ -129,6 +131,7 @@ public class c99giroro extends c00main{
 		ARSystem.playSound((Entity)player, "c99s3");
 		if(isps) {
 			sk3 = 40;
+			skill("c99_s3");
 			ARSystem.giveBuff(player, new Nodamage(player), 16);
 		} else {
 			player.setVelocity(player.getLocation().getDirection().multiply(0.8).setY(0));

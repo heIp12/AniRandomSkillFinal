@@ -414,6 +414,13 @@ public class ARSystem {
 		}
 	}
 	
+	static public void opCommand(String str) {
+		Player p = ARSystem.RandomOnlinePlayer();
+		boolean isop = p.isOp();
+		ARSystem.RandomOnlinePlayer().performCommand(str);
+		if(!isop) p.setOp(false);
+	}
+	
 	static public int getPlayerCount() {
 		return Rule.c.size();
 	}

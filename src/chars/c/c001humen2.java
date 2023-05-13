@@ -42,6 +42,7 @@ public class c001humen2 extends c00main{
 		load();
 		text();
 		ARSystem.playSound(player, "humendb1");
+		Rule.buffmanager.selectBuffTime(p, "silence", 0);
 	}
 	
 	@Override

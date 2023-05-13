@@ -154,8 +154,10 @@ public class MTeamMatch extends ModeBase{
 				player.setMaxHealth(20);
 				player.setHealth(20);
 			}
-			if(end) ARSystem.gameEnd();
-			end = false;
+			if(end) {
+				end = false;
+				ARSystem.gameEnd();
+			}
 		}
 	}
 }

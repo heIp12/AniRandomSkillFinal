@@ -136,7 +136,7 @@ public class c70raito extends c00main{
 						delay(()->{
 							p.setNoDamageTicks(0);
 							s_damage += p.getMaxHealth()*5;
-							p.damage(p.getMaxHealth()*5,p);
+							p.damage(p.getMaxHealth(),player);
 						},15);
 						delay(()->{
 							if(Rule.c.get(p) != null) {

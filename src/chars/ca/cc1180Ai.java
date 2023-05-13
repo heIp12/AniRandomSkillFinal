@@ -58,6 +58,7 @@ import types.TargetMap;
 import types.box;
 
 import util.AMath;
+import util.BlockUtil;
 import util.GetChar;
 import util.Holo;
 import util.InvSkill;
@@ -73,6 +74,10 @@ public class cc1180Ai extends c00main{
 	int s3 = 0;
 	
 	double s3Damage = 0;
+	
+	Location local;
+	
+	HashMap<LivingEntity,Location> dance = new HashMap<>();
 	
 	public cc1180Ai(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -136,7 +141,9 @@ public class cc1180Ai extends c00main{
 
 	@Override
 	public boolean skill4() {
-		if(p >= 50 && skillCooldown(0)) {
+		if(p >= 100 && skillCooldown(0)) {
+			local = player.getLocation();
+			dance.clear();
 			spskillon();
 			spskillen();
 			tr = 0;
@@ -147,7 +154,175 @@ public class cc1180Ai extends c00main{
 			loc.setPitch(0);
 			loc= ULocal.offset(loc, new Vector(6,0,0));
 			ARSystem.spellLocCast(player, loc, "c1118_sp");
-		}
+			
+			loc = player.getLocation();
+			loc.setPitch(0);
+			loc= ULocal.offset(loc, new Vector(6,0,0));
+			loc = ULocal.lookAt(loc, player.getLocation());
+			ARSystem.spellLocCast(player, loc, "c1118_o");
+			dance.put(player,loc.add(0,1,0));
+			skill("c1118_sproom");
+			player.teleport(player.getLocation().add(0,1,0));
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f오레모!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+					}
+				}
+			},220);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f하이!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						delay(()->{
+							Holo.create(locs, "§e하이!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						},10);
+						delay(()->{
+							Holo.create(locs, "§c하이! 하이! 후! 후!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						},20);
+					}
+				}
+			},410);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f후와후와!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+					}
+				}
+			},560);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f손손손!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+					}
+				}
+			},660);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f훗후!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+					}
+				}
+			},720);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f훗후!!",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+					}
+				}
+			},770);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f오..",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						delay(()->{
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						},20);
+					}
+				}
+			},790);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f오..",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						delay(()->{
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						},20);
+					}
+				}
+			},820);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f하이!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						delay(()->{
+							Holo.create(locs, "§f하이!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						},20);
+						delay(()->{
+							Holo.create(locs, "§f하이! 하이! 하이! 하이!",60, new Vector(0,0.1+AMath.random(4)*0.01,0));
+						},40);
+					}
+				}
+			},840);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f후!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+					}
+				}
+			},900);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f훗후!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+					}
+				}
+			},940);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f오...",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						delay(()->{
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						},20);
+					}
+				}
+			},1020);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f오...",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						delay(()->{
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						},20);
+					}
+				}
+			},1050);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f오...",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						delay(()->{
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						},20);
+					}
+				}
+			},1080);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f오...",40, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						delay(()->{
+							Holo.create(locs, "§f하잇!",20, new Vector(0,0.2+AMath.random(4)*0.05,0));
+						},20);
+					}
+				}
+			},1110);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f하잇! 세노",40, new Vector(0,0.2+AMath.random(4)*0.02,0));
+					}
+				}
+			},1120);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§f하잇! 세노",40, new Vector(0,0.2+AMath.random(4)*0.02,0));
+					}
+				}
+			},1140);
+			delay(()->{
+				if(Bgm.bgmcode.equals("c1118sp")) {
+					for(Location locs : dance.values()) {
+						Holo.create(locs, "§cB!!",100, new Vector(0,0.01,0));
+					}
+				}
+			},1240);
+			delay(()->{
+				skill("removemyall");
+			},1280);
+		}			
 		return true;
 	}
 	
@@ -167,7 +342,7 @@ public class cc1180Ai extends c00main{
 			target.damage(1,player);
 		}
 	}
-	
+	int sptick = 0;
 	@Override
 	public boolean tick() {
 		if(s3 > 0) {
@@ -177,11 +352,17 @@ public class cc1180Ai extends c00main{
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c1118:sk3")+ "] : &f" + AMath.round(s3Damage,2));
 		}
-		if(Bgm.bgmcode.equals("c1118sp")) {
+		if(Bgm.bgmcode.equals("c1118sp") && p >= 100) {
+			if(sptick%60 == 0) {
+				skill("c1118_sai"+AMath.random(4));
+			}
+			sptick++;
+			ARSystem.potion(player, 14, 20, 1);
 			ARSystem.giveBuff(player, new Stun(player), 10);
 			ARSystem.giveBuff(player, new Silence(player), 10);
 			ARSystem.giveBuff(player, new Nodamage(player), 10);
 			boolean beam = false;
+			if(!ULocal.isEqual(local, player.getLocation())) player.teleport(local);
 			if(Bgm.getTime() <= 30) {
 				beam = (Bgm.getTime()*20)%40==0;
 				if(tk%10 == 0 && AMath.random(100) < 20) {
@@ -198,6 +379,33 @@ public class cc1180Ai extends c00main{
 						ARSystem.giveBuff(target, new Fascination(target, player), 60, 0.5);
 					}
 				}
+			}			
+			for(Entity e : ARSystem.box(player, new Vector(8,2,8), box.TARGET)) {
+				if(e.getLocation().distance(player.getLocation()) < 5) {
+					e.teleport(ULocal.offset(player.getLocation(), new Vector(6+AMath.random(10)*0.1,0,1-AMath.random(20)*0.1)));
+					e.teleport(ULocal.lookAt(e.getLocation(), player.getLocation()));
+				}
+				if(!dance.keySet().contains(e)) {
+					int tick = (int) (Bgm.getTime()*20);
+					ARSystem.giveBuff((LivingEntity) e, new Stun((LivingEntity) e), tick);
+					ARSystem.potion((LivingEntity)e, 14, tick, 1);
+					
+					Location loc = e.getLocation();
+					loc = ULocal.lookAt(loc, player.getLocation());
+					ARSystem.spellLocCast(player, loc, "c1118_o");
+					try {
+					while(BlockUtil.isPathable(loc.clone().getBlock())) {
+						if(loc.getBlockX() == 1) break;
+						loc.add(0,-1,0);
+					}
+						dance.put((LivingEntity) e,loc.add(0,1,0));
+					} catch (Exception ee) {
+						
+					}
+				}
+			}
+			if(tk%20 == 0) {
+				skill("c1118_dance"+AMath.random(2));
 			}
 			if(beam) {
 				Location loc = player.getLocation();
@@ -207,9 +415,12 @@ public class cc1180Ai extends c00main{
 				ARSystem.spellLocCast(player, loc, "c1118_sp");
 			}
 			if(Bgm.getTime() <= 0.1) {
-				skill("removemyall");
 				Bgm.bgmlock = false;
 				Bgm.randomBgm();
+			}
+		} else {
+			if(tk%40 == 0) {
+				skill("removemyall");
 			}
 		}
 		return true;

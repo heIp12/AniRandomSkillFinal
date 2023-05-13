@@ -1,14 +1,8 @@
 package util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -17,14 +11,10 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Minecart;
-import buff.Noattack;
-import buff.Nodamage;
 import buff.Silence;
 import event.Skill;
 import types.MapType;
 import manager.AdvManager;
-import manager.Bgm;
-import util.Holo;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 

@@ -130,11 +130,21 @@ public class c102sid extends c00main{
 			skill("c102_sp1");
 			delay(()->{
 				skill("c102_sp2");
+				delay(()->{
+					skill("c102_sp4");
+				},40);
 			},100);
 			delay(()->{
 				skill("c102_sp3");
-			},300);
+				delay(()->{
+					skill("c102_sp5");
+				},40);
+			},200);
 			delay(()->{
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					ARSystem.giveBuff(p, new Stun(p), 30);
+					ARSystem.spellLocCast(player, p.getLocation(), "c102_room");
+				}
 				delay(()->{
 					ARSystem.playSoundAll("c102sp2");
 				},10);

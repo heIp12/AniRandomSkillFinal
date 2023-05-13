@@ -36,7 +36,7 @@ public class MSupply extends ModeBase{
 	
 	@Override
 	public void option() {
-		ARSystem.RandomOnlinePlayer().performCommand("as despawn ItemBox");
+		ARSystem.opCommand("as despawn ItemBox");
 	}
 	@Override
 	public void firstTick() {
@@ -47,22 +47,36 @@ public class MSupply extends ModeBase{
 	public void tick(int time) {
 		if((time+1)%50 == 0) {
 			loc = Map.randomLoc();
-			ARSystem.RandomOnlinePlayer().performCommand("as despawn ItemBox");
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{ ARSystem.opCommand("as despawn ItemBox");});
 			Bukkit.broadcastMessage("§a§l[ARSystem] §f"+ Text.get("main:mode10-1") + " §c["+loc.getBlockX()+ ","+loc.getBlockY()+ ","+loc.getBlockZ()+"]");
 			randomCode();
 		}
-		if((time+11)%50 == 0) {
+		
+		if(loc != null &&time > 40 &&(time+41)%50 == 0) {
+			if(!Map.inMap(loc)) {
+				loc = Map.randomLoc();
+			}
 			Bukkit.broadcastMessage("§a§l[ARSystem] §f"+ Text.get("main:mode10-2") + " §c["+loc.getBlockX()+ ","+loc.getBlockY()+ ","+loc.getBlockZ()+"]");
-			ARSystem.RandomOnlinePlayer().performCommand("as spawn ItemBox");
-			ARSystem.RandomOnlinePlayer().performCommand("as cmd ItemBox ars supply "+code);
-			ARSystem.RandomOnlinePlayer().performCommand("as setloc ItemBox "+(loc.getX()+0.5)+","+(loc.getY()-1)+","+(loc.getZ()+0.5));
+			Player p = ARSystem.RandomOnlinePlayer();
+			boolean isop = p.isOp();
+			p.setOp(true);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{ p.performCommand("as despawn ItemBox");});
+			p.performCommand("as cmd ItemBox ars supply "+code);
+			if(!isop) p.setOp(false);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
+				p.setOp(true);
+				p.performCommand("as setloc ItemBox "+(loc.getX()+0.5)+","+(loc.getY()-1)+","+(loc.getZ()+0.5));
+				p.performCommand("as spawn ItemBox");
+				p.performCommand("as setloc ItemBox "+(loc.getX()+0.5)+","+(loc.getY()-1)+","+(loc.getZ()+0.5));
+				if(!isop) p.setOp(false);
+			},10);
 		}
 		
 	}
 	
 	public void isSupply(Player p, String code) {
 		if(code.equals(this.code) && Rule.c.get(p) != null) {
-			ARSystem.RandomOnlinePlayer().performCommand("as despawn ItemBox");
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{ ARSystem.opCommand("as despawn ItemBox");});
 			ARSystem.giveBuff(p, new TimeStop(p), 200);
 			randomCode();
 			new G_Supply(p);
@@ -77,7 +91,7 @@ public class MSupply extends ModeBase{
 	
 	@Override
 	public void end() {
-		ARSystem.RandomOnlinePlayer().performCommand("as despawn ItemBox");
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{ ARSystem.opCommand("as despawn ItemBox");});
 	}
 
 }

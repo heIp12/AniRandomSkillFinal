@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import Main.Main;
-import util.AMath;
 import ars.ARSystem;
 import ars.Rule;
 import chars.c.c000humen;
@@ -177,9 +175,7 @@ import chars.ca.c6500cohina;
 import chars.ca.c6600akame;
 import chars.ca.c6800origami;
 import chars.ca.c7200plan;
-import chars.ca.c8400subi;
 import chars.ca.cc1000kuroko;
-import chars.ch.e001mary;
 import chars.ch.h001chruno;
 import chars.ch.h002claw;
 import chars.ch.h003rentaro;

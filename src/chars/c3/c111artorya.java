@@ -68,6 +68,8 @@ public class c111artorya extends c00main{
 	int sk3 = 0;
 	int damage = stack;
 	
+	double hp = 20;
+	
 	@Override
 	public void setStack(float f) {
 		stack = (int)f;
@@ -90,6 +92,7 @@ public class c111artorya extends c00main{
 		skill("c111_s3-1");
 		damage = stack;
 		stack = 0;
+		hp = player.getHealth();
 		return true;
 	}
 	
@@ -158,9 +161,53 @@ public class c111artorya extends c00main{
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c111:p")+ "] : &f" + stack +"");
 		}
+		if(sk3 > 0 && player.getHealth() < hp) {
+			sp();
+		}
 		return true;
 	}
 	
+	public void sp() {
+		ARSystem.giveBuff(player, new Nodamage(player), 15+sk3);
+		ARSystem.giveBuff(player, new Silence(player), 15+sk3);
+		ARSystem.giveBuff(player, new Stun(player), 15+sk3);
+		Location loc = player.getLocation();
+		loc.setPitch(0);
+		player.teleport(loc);
+		stack = (int) (damage*1.5);
+		cooldown[3] *= 0.5;
+		delay(()->{
+			ARSystem.giveBuff(player, new Nodamage(player), 60);
+			ARSystem.giveBuff(player, new Silence(player), 20);
+			int count = 0;
+			List<Entity> targets = ARSystem.PlayerBeamBox(player, 13, 5, box.TARGET);
+			for(Entity t : ARSystem.box(player, new Vector(8,8,8), box.TARGET)) {
+				if(!targets.contains(t)) targets.add(t);
+			}
+			
+			for(Entity entity : targets){
+				if(Rule.c.get(entity) != null) count++;
+			}
+			
+			if(Rule.c.size() > 1 && Rule.c.size() -1 == count && damage >= 200) {
+				spskillen();
+				spskillon();
+				WinEvent event = new WinEvent(player);
+				Bukkit.getPluginManager().callEvent(event);
+				if(!event.isCancelled()) {
+					skillsp();
+				}
+			} else {
+				skill("c111_s3-2");
+				ARSystem.playSound((Entity)player, "c111s32");
+				for(Entity entity : targets){
+					((LivingEntity)entity).setNoDamageTicks(0);
+					((LivingEntity)entity).damage(5+(damage * 0.2),player);
+				}
+			}
+		},10+sk3);
+		sk3 = 0;
+	}
 	
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
@@ -168,45 +215,7 @@ public class c111artorya extends c00main{
 			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 		} else {
 			if(sk3 > 0) {
-				ARSystem.giveBuff(player, new Nodamage(player), 15+sk3);
-				ARSystem.giveBuff(player, new Silence(player), 15+sk3);
-				ARSystem.giveBuff(player, new Stun(player), 15+sk3);
-				Location loc = player.getLocation();
-				loc.setPitch(0);
-				player.teleport(loc);
-				stack = (int) (damage*1.5);
-				cooldown[3] *= 0.5;
-				delay(()->{
-					ARSystem.giveBuff(player, new Nodamage(player), 60);
-					ARSystem.giveBuff(player, new Silence(player), 20);
-					int count = 0;
-					List<Entity> targets = ARSystem.PlayerBeamBox(player, 13, 5, box.TARGET);
-					for(Entity t : ARSystem.box(player, new Vector(8,8,8), box.TARGET)) {
-						if(!targets.contains(t)) targets.add(t);
-					}
-					
-					for(Entity entity : targets){
-						if(Rule.c.get(entity) != null) count++;
-					}
-					
-					if(Rule.c.size() > 1 && Rule.c.size() -1 == count && damage >= 200) {
-						spskillen();
-						spskillon();
-						WinEvent event = new WinEvent(player);
-						Bukkit.getPluginManager().callEvent(event);
-						if(!event.isCancelled()) {
-							skillsp();
-						}
-					} else {
-						skill("c111_s3-2");
-						ARSystem.playSound((Entity)player, "c111s32");
-						for(Entity entity : targets){
-							((LivingEntity)entity).setNoDamageTicks(0);
-							((LivingEntity)entity).damage(5+(damage * 0.2),player);
-						}
-					}
-				},10+sk3);
-				sk3 = 0;
+				sp();
 				e.setDamage(0);
 				e.setCancelled(true);
 				return false;

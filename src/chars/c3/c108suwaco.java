@@ -153,8 +153,8 @@ public class c108suwaco extends c00main{
 	@Override
 	public boolean tick() {
 		time++;
-		if(time%(70 - Math.min(50,10.0*(skillmult+sskillmult))) == 0) {
-			if(p < 10) p++;
+		if(time%(110 - Math.min(90,10.0*(skillmult+sskillmult))) == 0) {
+			if(p < 8) p++;
 		}
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c108:ps")+ "] : &f" + p);

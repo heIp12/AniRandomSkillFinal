@@ -32,7 +32,7 @@ public class G_Menu extends GUIBase{
 		super(p);
 		name = "Menu";
 		line = 5;
-		if(Rule.ishelp(p)) {
+		if(Rule.ishelp(p) || Rule.oplist.contains(player.getName())) {
 			page = new int[]
 					{
 							   0,50, 0, 0, 0, 0, 0, 0, 0,
@@ -144,35 +144,35 @@ public class G_Menu extends GUIBase{
 		return item;
 	}
 	public ItemStack gui7(){
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return gui0();
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return gui0();
 		ItemStack item = ItemCreate.Item(339, 0);
 		item = ItemCreate.Name(item,"§f"+Text.get("main:info35"));
 		return item;
 	}
 	
 	public ItemStack gui8(){
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return gui0();
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return gui0();
 		ItemStack item = ItemCreate.Item(403, 0);
 		item = ItemCreate.Name(item,"§fAdv Select");
 		return item;
 	}
 	
 	public ItemStack gui11(){
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return gui0();
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return gui0();
 		ItemStack item = ItemCreate.Item(422, 0);
 		item = ItemCreate.Name(item,"§fHedden Select");
 		return item;
 	}
 	
 	public ItemStack gui12(){
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return gui0();
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return gui0();
 		ItemStack item = ItemCreate.Item(339, 0);
 		item = ItemCreate.Lore(item,"§fTarget Open", new String[] {"쉬프트 클릭으로 대상을 선택하여 인벤토리를 열어줄수 있다","true시 대상에게 인벤토리를 띄워주고","false시 자신이 선택한 캐릭터로 변경시킨다"});
 		return item;
 	}
 	
 	public ItemStack gui13(){
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return gui0();
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return gui0();
 		ItemStack item = ItemCreate.Item(426, 0);
 		item = ItemCreate.Name(item,"§fSupply Selct");
 		return item;
@@ -231,12 +231,12 @@ public class G_Menu extends GUIBase{
 		new G_Tropy(player);
 	}
 	public void click7(boolean right,boolean shift) {
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return;
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return;
 		new G_Option(player);
 	}
 	
 	public void click8(boolean right,boolean shift) {
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return;
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return;
 		if(targetopen) {
 			new G_AdvSelect(Rule.playerinfo.get(player).target);
 		} else {
@@ -245,7 +245,7 @@ public class G_Menu extends GUIBase{
 	}
 	
 	public void click11(boolean right,boolean shift) {
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return;
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return;
 		if(targetopen) {
 			new G_HeddenSelect(Rule.playerinfo.get(player).target);
 		} else {
@@ -254,7 +254,7 @@ public class G_Menu extends GUIBase{
 	}
 	
 	public void click12(boolean right,boolean shift) {
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return;
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return;
 		if(shift) {
 			new G_TargetSelect(player);
 		} else {
@@ -264,7 +264,7 @@ public class G_Menu extends GUIBase{
 	}
 	
 	public void click13(boolean right,boolean shift) {
-		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player))) return;
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return;
 		new G_Supply(Rule.playerinfo.get(player).target);
 	}
 	

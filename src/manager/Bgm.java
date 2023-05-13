@@ -122,6 +122,9 @@ public class Bgm {
 	public static double getTime() {
 		return bgmTime*0.05;
 	}
+	public static double getPlayTime() {
+		return (bgmFrstTime-bgmTime)*0.05;
+	}
 	public static void setTime(int tick) {
 		bgmTime = tick;
 	}

@@ -225,7 +225,7 @@ public class c115stunk extends c00main{
 				
 				int time = chating.length()*2;
 				if(time > 200) time = 200;
-				int damage = 80 - p1;
+				int damage = 70 - p1;
 				if(damage > 0) {
 					Holo.create(sps.getLocation(), ""+damage,200,new Vector(0,0.01,0));
 					if(sps.getHealth()-damage < 1) {

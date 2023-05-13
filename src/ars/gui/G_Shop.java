@@ -245,8 +245,11 @@ public class G_Shop extends GUIBase{
 		ItemStack item = ItemCreate.Item(339, 0);
 		List<String> list = new ArrayList<String>();
 		list.add(j());
-		list.add("§7"+t("shop15"));
-		list.add("§7"+t("shop16"));
+		int i = Integer.parseInt(Main.GetText("general:adv_chance"));
+		int j = Integer.parseInt(Main.GetText("general:adv_pick_chance"));
+		float k = Float.parseFloat(Main.GetText("general:adv_code_mult"));
+		list.add("§7"+t("shop15") +" "+ i+"% > "+ AMath.round(i*k,0) +"%");
+		list.add("§7"+t("shop16") +" "+ j+"% > "+ AMath.round(j*k,0) +"%");
 		list.add("§7"+t("shop14"));
 		list.add("§c§l"+ Rule.playerinfo.get(player).abchar);
 		

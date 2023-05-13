@@ -63,7 +63,7 @@ public class Rule extends JavaPlugin{
 	public static int[] Score2 = new int[10];
     public static long startTime = System.currentTimeMillis();
     
-    static public List<Player> oplist = new ArrayList<Player>();
+    static public List<String> oplist = new ArrayList<String>();
     
     public static List<Player> removePlayers = new ArrayList<Player>();
 	
@@ -150,7 +150,7 @@ public class Rule extends JavaPlugin{
 			}
 			
 			if(!cmdtr) {
-				if(oplist.contains(p) || ishelp(p)) {
+				if(oplist.contains(p.getName()) || ishelp(p)) {
 					p.sendMessage("§a§l[ARSystem] : §f§l/ars cradit <Name/all> <Number> §7");
 					p.sendMessage("§a§l[ARSystem] : §f§l/ars admin <Name> §7");
 				}
@@ -334,7 +334,7 @@ public class Rule extends JavaPlugin{
 				}
 				return true;
 			}
-			if(a[0].equalsIgnoreCase("cradit")&& (ishelp(p) || oplist.contains(p))) {
+			if(a[0].equalsIgnoreCase("cradit")&& (ishelp(p) || oplist.contains(p.getName()))) {
 				if(!a[1].equals("all")) {
 					Rule.playerinfo.get(Bukkit.getPlayer(a[1])).addcradit(Integer.parseInt(a[2]),Main.GetText("main:msg102"));
 					ARSystem.playSound(Bukkit.getPlayer(a[1]),"0event3");
@@ -383,13 +383,13 @@ public class Rule extends JavaPlugin{
 				ARSystem.AniRandomSkill.time = Integer.parseInt(a[1]);
 				return true;
 			}
-			if(a[0].equalsIgnoreCase("admin") && (ishelp(p) || oplist.contains(p) || p == null)) {
-				if(oplist.contains(Bukkit.getPlayer(a[1]))) {
-					oplist.remove(Bukkit.getPlayer(a[1]));
+			if(a[0].equalsIgnoreCase("admin") && (p == null || ishelp(p) || oplist.contains(p.getName()))) {
+				if(oplist.contains(Bukkit.getPlayer(a[1]).getName())) {
+					oplist.remove(Bukkit.getPlayer(a[1]).getName());
 					if(p != null) p.sendMessage("§a§l[ARSystem] : §c§l Remove Admin : "+a[1]);
 					else System.out.println("[ARSystem] : Remove Admin : "+a[1]);
 				} else {
-					oplist.add(Bukkit.getPlayer(a[1]));
+					oplist.add(Bukkit.getPlayer(a[1]).getName());
 					if(p != null) p.sendMessage("§a§l[ARSystem] : §a§l Give Admin : "+a[1]);
 					else System.out.println("[ARSystem] : Give Admin : "+a[1]);
 				}

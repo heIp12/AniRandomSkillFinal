@@ -87,6 +87,7 @@ public class c116yumira extends c00main{
 					player.setVelocity(player.getLocation().getDirection().multiply(0.5).setY(0));
 				}
 				skill("c116_s1-"+AMath.random(3));
+				if(isps) skill("c116_spe");
 			},i*s1_delay);
 		}
 		s1 = 1;
@@ -158,10 +159,13 @@ public class c116yumira extends c00main{
 					delay(()->{
 						ARSystem.playSound(e, "0attack",0.5f);
 						e.setVelocity(new Vector((AMath.random(10)-5)*0.05,0,(AMath.random(10)-5)*0.05));
-						if(e instanceof Player) {
-							ARSystem.playerRotate((Player)e, AMath.random(100)-200, AMath.random(30)-15);
-							ARSystem.spellCast(player, e, "c116_s3e");
-						}
+						if(e instanceof Player) ARSystem.playerRotate((Player)e, AMath.random(100)-200, AMath.random(30)-15);
+						
+						ARSystem.spellCast(player, e, "c116_s3e");
+						Location locs = e.getLocation().clone();
+						locs.setYaw(AMath.random(360));
+						locs = ULocal.lookAt(ULocal.offset(locs, new Vector(1.5,0,0)),e.getLocation());
+						ARSystem.spellLocCast(player, locs, "c116_s1-4");
 					},4);
 				}
 			},20+14*i);
@@ -190,7 +194,11 @@ public class c116yumira extends c00main{
 	
 	@Override
 	public boolean tick() {
-
+		if(isps && tk%10 == 0) {
+			if(!MSUtil.isbuff(player, "c116_sp")) {
+				skill("c116_sp");
+			}
+		}
 		if(tk%20 == 0 && psopen) scoreBoardText.add("&c ["+Main.GetText("c116:sk1")+ "] : &f"  + s1);
 
 		return true;

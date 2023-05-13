@@ -333,6 +333,7 @@ public class c00main implements Listener {
 			AdvManager.set(p, 399, 0 , "§f§l"+player.getName() +"§a("+ n +") §f§l" + Main.GetText("c"+number+":sk0"));
 		}
 		String na = "c"+number+":sk0"+"/&c!!!";
+		
 		player.performCommand("tm anitext "+player.getName()+" SUBTITLE true 40 "+na);
 	}
 	

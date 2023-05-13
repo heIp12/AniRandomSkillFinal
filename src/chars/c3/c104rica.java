@@ -94,7 +94,7 @@ public class c104rica extends c00main{
 		for(int i=0;i<4;i++) {
 			delay(()->{
 				for(Entity e : ARSystem.box(player, new Vector(6,6,6), box.TARGET)) {
-					cooldown[3] -= 0.5;
+					cooldown[3] -= 1;
 					LivingEntity en =((LivingEntity)e);
 					en.setNoDamageTicks(0);
 					en.damage(2,player);
@@ -109,16 +109,16 @@ public class c104rica extends c00main{
 		player.setVelocity(player.getLocation().getDirection().multiply(2).setY(0.2));
 		skill("c104_s3");
 		ARSystem.playSound((Entity)player, "c104s3");
-		delay(()->{
-			player.setVelocity(new Vector(0,0,0));
-			for(Entity e : ARSystem.box(player, new Vector(7,5,7), box.TARGET)) {
-				ps = 0;
-				LivingEntity en =((LivingEntity)e);
-				en.setNoDamageTicks(0);
-				en.damage(5,player);
-			}
-		},20);
 		return true;
+	}
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			player.setVelocity(new Vector(0,0,0));
+			ps = 0;
+			target.setNoDamageTicks(0);
+			target.damage(5,player);
+		}
 	}
 	
 
@@ -161,7 +161,7 @@ public class c104rica extends c00main{
 				sp = true;
 				for(Player p : Rule.c.keySet()) {
 					if(p != player) {
-						p.setHealth(p.getMaxHealth() * (AMath.random(30)*0.01 + 0.3));
+						p.setHealth(p.getMaxHealth() * (AMath.random(70)*0.01 + 0.1));
 					}
 					p.teleport(Map.randomLoc());
 				}
@@ -175,14 +175,14 @@ public class c104rica extends c00main{
 		if(sp && tk%20 == 0) {
 			for(Player p : Rule.c.keySet()) {
 				if(p!= player) {
-					if(p.getHealth() -0.2 <= 1) {
+					if(p.getHealth() -0.4 <= 1) {
 						p.setNoDamageTicks(0);
 						p.damage(1,player);
 						p.setNoDamageTicks(0);
 						p.damage(10,player);
 					} else {
-						p.setHealth(p.getHealth() -0.2);
-						s_damage += 0.2;
+						p.setHealth(p.getHealth() -0.4);
+						s_damage += 0.4;
 					}
 				}
 			}

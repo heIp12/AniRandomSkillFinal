@@ -73,6 +73,7 @@ public class c101aris extends c00main{
 		if(!isps) {
 			spskillon();
 			spskillen();
+			for(int i=1; i<10; i++) cooldown[i] = 0;
 			setcooldown[1] = setcooldown[2] = setcooldown[3] = 2;
 		}
 	}
@@ -202,9 +203,20 @@ public class c101aris extends c00main{
 		}
 		if(en != null) {
 			if(en instanceof Player && Rule.c.get(en) == null) en = null;
-			if(en.isDead()) en = null;
+			else if(en.isDead()) en = null;
 		}
 		ps--;
+		
+		for(int i =1; i<10; i++) {
+			if(cooldown[i] > 15 && skillCooldown(0)) {
+				sp();
+			}
+		}
+		if(isps && tk%10 == 0) {
+			if(!MSUtil.isbuff(player, "c101_sp")) {
+				skill("c101_sp");
+			}
+		}
 		return true;
 	}
 	
@@ -214,7 +226,7 @@ public class c101aris extends c00main{
 		if(isAttack) {
 			en = (LivingEntity) e.getEntity();
 			ps = 100;
-
+			if(isps) e.setDamage(e.getDamage() + 1);
 			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*5);
 		} else {
 			ps = 100;

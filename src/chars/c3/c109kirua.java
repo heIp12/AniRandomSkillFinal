@@ -178,7 +178,7 @@ public class c109kirua extends c00main{
 			scoreBoardText.add("&c ["+Main.GetText("c109:ps")+ "] : &f" + stack);
 		}
 		if(sp && stack > 0) {
-			if(tk%2==0) stack--;
+			if(tk%2==0) stack -=5;
 			if(stack == 0) sp = false;
 			if(tk%20 == 0) {
 				ARSystem.playSound((Entity)player, "0lightning", 1.4f);
