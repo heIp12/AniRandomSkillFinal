@@ -61,7 +61,7 @@ public class c41zanitu extends c00main{
 		Rule.buffmanager.selectBuffTime(player, "sleep", 0);
 		ptick = 0;
 		LivingEntity target = this.target;
-		ARSystem.playSound((Entity)player, "c41s");
+		ARSystem.playSoundAll("c41s");
 		ARSystem.potion(player, 14, 60, 60);
 		ARSystem.giveBuff(target, new Stun(target), 60);
 		ARSystem.giveBuff(target, new Silence(target), 60);
@@ -70,7 +70,7 @@ public class c41zanitu extends c00main{
 		
 		delay(()->{
 			target.teleport(player.getLocation().add(0,2,0));
-			ARSystem.playSound((Entity)player, "c41sp");
+			ARSystem.playSoundAll("c41sp");
 			
 			for(int k=0;k<5;k++) {
 				target.teleport(target.getLocation().add(0,2,0));
@@ -133,6 +133,8 @@ public class c41zanitu extends c00main{
 				ARSystem.playSound((Entity)player, "c41a");
 			}
 			ARSystem.giveBuff(player, new Stun(player), 20);
+			ARSystem.giveBuff(target, new Stun(target), 50);
+			ARSystem.giveBuff(target, new Silence(target), 50);
 			delay(()->{
 				for(LivingEntity e : targets) {
 					ARSystem.playSound(e, "0katana6");
@@ -140,7 +142,7 @@ public class c41zanitu extends c00main{
 					e.damage(120,player);
 					ARSystem.spellCast(player,e, "bload");
 				}
-			},30);
+			},50);
 		},20);
 	}
 	
