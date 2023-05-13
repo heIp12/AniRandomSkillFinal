@@ -34,6 +34,7 @@ public class G_AdvSelect extends GUIBase{
 		count.add(1021);
 		count.add(1023);
 		count.add(1024);
+		count.add(1040);
 		count.add(1068);
 		count.add(1118);
 		line = 6;

@@ -56,7 +56,7 @@ public class G_CharInfo extends GUIBase{
 				meta.setDisplayName("§f§l["+j+"]");
 			}
 			is.setItemMeta(meta);
-			ItemRep(j, is);
+			ItemRep(j, ItemCreate.Lore(is, new String[] {"§f§lBan: "+ GetChar.charban.get("normal").contains(j)}));
 			j++;
 		}
 		ScrollInvCreate(6,0);

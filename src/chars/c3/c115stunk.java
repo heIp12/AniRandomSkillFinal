@@ -222,7 +222,7 @@ public class c115stunk extends c00main{
 			}
 			if(sp == 0) {
 				player.performCommand("tm sound all 0gun/2.0/0.5");
-				
+				if(chating.length() > 20) chating = chating.substring(0,20);
 				int time = chating.length()*2;
 				if(time > 200) time = 200;
 				int damage = 70 - p1;

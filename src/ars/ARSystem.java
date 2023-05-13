@@ -101,7 +101,7 @@ public class ARSystem {
 		Bgm.randomBgm();
 		AniRandomSkill.player = 0;
 		float score = 0;
-		for(Player player : Bukkit.getOnlinePlayers()) {
+		for(Player player : RandomPlayers()) {
 			if(Rule.playerinfo.get(player).gamejoin) {
 				AniRandomSkill.player++;
 				score += Rule.playerinfo.get(player).getScore();
@@ -127,7 +127,7 @@ public class ARSystem {
 		chars = new boolean[GetChar.getCount()+1];
 		
 		if(AniRandomSkill.player > 1 || (Bukkit.getOnlinePlayers().size() == 1 && AniRandomSkill.player == 1 )) {
-			for(Player player : Bukkit.getOnlinePlayers()) {
+			for(Player player : RandomPlayers()) {
 				if(Rule.c.get(player) == null) {
 					if(Rule.playerinfo.get(player).gamejoin) {
 						Rule.playerinfo.get(player).addcradit(1,Main.GetText("main:msg106"));
@@ -597,6 +597,18 @@ public class ARSystem {
 			}
 		}
 		return e;
+	}
+	
+	static public List<Player> RandomPlayers(){
+		List<Player> players = new ArrayList<>();
+		while(Bukkit.getOnlinePlayers().size() != players.size()) {
+			Player p = RandomOnlinePlayer();
+			if(!players.contains(p)) {
+				players.add(p);
+			}
+		}
+		
+		return players;
 	}
 	
 	static public String code(String str) {

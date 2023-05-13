@@ -201,7 +201,7 @@ public class GetChar {
 			{1,1},{2,2},{3,1},{4,1},{5,1},
 			{7,2},{8,1},{9,1},{11,1},{13,1},
 			{15,1},{17,1},{18,1},{19,1},{20,1},{22,1},{26,1},
-			{30,1},{39,1},{40,1},{42,1},{44,1},{48,1},
+			{30,1},{39,1},{42,1},{44,1},{48,1},
 			{50,1},{56,1},{65,1},{66,1},{72,1},{100,1}};
 	
 	static public int getCount() {
@@ -284,14 +284,15 @@ public class GetChar {
 			}
 			if(i > 0) i *=  Float.parseFloat(Main.GetText("general:adv_code_mult"));
 			
-			int i2 = 0;
-			if(name.equals("23") || name.equals("118")) i2 = Integer.parseInt(Main.GetText("general:adv_pick_chance"));
-			
+			int i2 = i;
 			if(name.equals("23") && Rule.playerinfo.get(p).isTropy(23, 1)&& AMath.random(500) <= i2) {
 				return new c2300madoka(p,pl,crt);
 			}
 			if(name.equals("118") && Rule.playerinfo.get(p).isTropy(118, 1)&& AMath.random(100) <= i2) {
 				return new cc1180Ai(p,pl,crt);
+			}
+			if(name.equals("40") && AMath.random(100) <= i2) {
+				return new c4000megumin(p,pl,crt);
 			}
 		}
 		if(AMath.random(100) <= i) {

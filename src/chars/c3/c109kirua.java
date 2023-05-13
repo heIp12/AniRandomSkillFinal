@@ -210,10 +210,12 @@ public class c109kirua extends c00main{
 				for(int i=0; i<5;i++) ARSystem.spellLocCast(player, e.getEntity().getLocation(), "c109_s3e");
 			}
 		} else {
-			int code = Rule.c.get(e.getDamager()).number;
-			if(code == 98 || code == 63) {
-				stack += e.getDamage()*5;
-				e.setDamage(e.getDamage() * 0.3);
+			if(Rule.c.get(e.getDamager()) != null) {
+				int code = Rule.c.get(e.getDamager()).number;
+				if(code == 98 || code == 63) {
+					stack += e.getDamage()*5;
+					e.setDamage(e.getDamage() * 0.3);
+				}
 			}
 			if(sp && e.getDamager().getLocation().distance(player.getLocation()) <= 5) {
 				e.setDamage(0);
