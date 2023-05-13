@@ -284,14 +284,19 @@ public class GetChar {
 			}
 			if(i > 0) i *=  Float.parseFloat(Main.GetText("general:adv_code_mult"));
 			
-			int i2 = i;
+			int i2 = 0;
+			if(name.equals("23") || name.equals("118") || name.equals("40")) {
+				i2 = Integer.parseInt(Main.GetText("general:adv_pick_chance")) ;
+				i2 *=  Float.parseFloat(Main.GetText("general:adv_code_mult"));
+			}
+
 			if(name.equals("23") && Rule.playerinfo.get(p).isTropy(23, 1)&& AMath.random(500) <= i2) {
 				return new c2300madoka(p,pl,crt);
 			}
 			if(name.equals("118") && Rule.playerinfo.get(p).isTropy(118, 1)&& AMath.random(100) <= i2) {
 				return new cc1180Ai(p,pl,crt);
 			}
-			if(name.equals("40") && AMath.random(100) <= i2) {
+			if(name.equals("40") && Rule.playerinfo.get(p).isTropy(118, 1)&& AMath.random(100) <= i2) {
 				return new c4000megumin(p,pl,crt);
 			}
 		}
