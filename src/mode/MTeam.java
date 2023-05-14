@@ -30,6 +30,7 @@ import util.NpcPlayer;
 import util.Text;
 
 public class MTeam extends ModeBase{
+	boolean end = true;
 	public MTeam(){
 		super();
 		modeName = "team";
@@ -156,7 +157,10 @@ public class MTeam extends ModeBase{
 				player.setMaxHealth(20);
 				player.setHealth(20);
 			}
-			ARSystem.gameEnd();
+			if(end) {
+				end = false;
+				ARSystem.gameEnd();
+			}
 		}
 	}
 }
