@@ -48,6 +48,7 @@ import util.Inventory;
 import util.ULocal;
 import util.MSUtil;
 import util.Map;
+import util.Text;
 
 public class c65cohina extends c00main{
 	double crit = 1.5;
@@ -156,6 +157,15 @@ public class c65cohina extends c00main{
 					((LivingEntity)e).damage(3,player);
 					ARSystem.giveBuff((LivingEntity) e, new Stun((LivingEntity) e), 20);
 				}
+			}
+		}
+		Entity e = ARSystem.boxSOne(player, new Vector(8,8,8), box.TARGET);
+		if(e != null) {
+			double range = AMath.round(e.getLocation().distance(player.getLocation()),2);
+			if(range < 5 && range > 3) {
+				player.sendTitle("§4<§c "+e.getName()+" §4>", "§c"+Text.get("c65:p1") +" : " + range,0,10,0);
+			} else {
+				player.sendTitle("< "+e.getName()+" >", Text.get("c65:p1") +" : " + range,0,10,0);
 			}
 		}
 		if(tk%20 == 0) {

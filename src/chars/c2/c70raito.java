@@ -135,9 +135,8 @@ public class c70raito extends c00main{
 						ARSystem.spellCast(player, p, "bload");
 						delay(()->{
 							p.setNoDamageTicks(0);
-							s_damage += p.getMaxHealth()*5;
 							p.damage(p.getMaxHealth(),player);
-						},15);
+						},30);
 						delay(()->{
 							if(Rule.c.get(p) != null) {
 								ARSystem.playSoundAll("c70t1");
@@ -151,7 +150,7 @@ public class c70raito extends c00main{
 									ARSystem.AniRandomSkill.playerkill.put(player, ARSystem.AniRandomSkill.playerkill.get(player)+1);
 								}
 							}
-						},20);
+						},35);
 					}
 				} else {
 					remove = p;

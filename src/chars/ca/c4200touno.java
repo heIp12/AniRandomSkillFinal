@@ -40,7 +40,7 @@ import util.MSUtil;
 import util.Map;
 
 public class c4200touno extends c00main{
-	int cr = 1;
+	int cr = 3;
 	int p_tick = 0;
 	
 	public c4200touno(Player p,Plugin pl,c00main ch) {
@@ -90,7 +90,7 @@ public class c4200touno extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
-			if(p_tick <=0 && AMath.random(50) == cr) {
+			if(p_tick <=0 && AMath.random(100) <= cr) {
 				ARSystem.giveBuff((LivingEntity) e.getEntity(), new TimeStop((LivingEntity) e.getEntity()), 40);
 				delay(()->{
 					ARSystem.playSound(e.getEntity(), "c1042p");

@@ -575,13 +575,16 @@ public class Rule extends JavaPlugin{
 		        		}
 		        		if(Rule.buffmanager.getBuffs(e) != null && Rule.buffmanager.getBuffs(e).getBuff() != null) {
 		        			// Error
-				        	for(Buff buff : Rule.buffmanager.getBuffs(e).getBuff()) {
-				        		if(buff != null) {
-				        			buff.onTick();
-				        		}
-				    		}
-				        	Rule.buffmanager.getBuffs(e).bufforder();
-
+		        			try {
+					        	for(Buff buff : Rule.buffmanager.getBuffs(e).getBuff()) {
+					        		if(buff != null) {
+					        			buff.onTick();
+					        		}
+					    		}
+					        	Rule.buffmanager.getBuffs(e).bufforder();
+		        			} catch (Exception ee) {
+		        				
+		        			}
 		        		}
 		        	}
 		        	for(LivingEntity e : el) {

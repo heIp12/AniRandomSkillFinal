@@ -99,7 +99,7 @@ public class c38hajime extends c00main{
 		if(!mygun.isEmpty() && heal > 0) {
 			heal--;
 			skill("c38_s3");
-			ARSystem.heal(player, 10000);
+			ARSystem.heal(player, player.getMaxHealth()*0.5f);
 		}
 		return true;
 	}
@@ -312,7 +312,7 @@ public class c38hajime extends c00main{
 				spskillen();
 				heal = 2;
 				ARSystem.giveBuff(player, new TimeStop(player), 480);
-				player.setMaxHealth(30);
+				player.setMaxHealth(24);
 				player.setHealth(player.getMaxHealth());
 				ARSystem.playSoundAll("c38sp");
 				delay(new Runnable() {

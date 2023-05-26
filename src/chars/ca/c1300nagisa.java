@@ -1,5 +1,7 @@
 package chars.ca;
 
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -13,7 +15,7 @@ import ars.ARSystem;
 import ars.Rule;
 import buff.Stun;
 import chars.c.c00main;
-
+import types.box;
 import util.MSUtil;
 
 public class c1300nagisa extends c00main{
@@ -43,10 +45,16 @@ public class c1300nagisa extends c00main{
 	
 	@Override
 	public boolean skill2() {
-		count = 0;
-		shdows();
-		
-		skill("c"+number+"_s2");
+
+		List<Entity> en = ARSystem.PlayerBeamBox(player, 27, 5,box.TARGET);
+		if(en.size() > 0) {
+			skill("c"+number+"_s2");
+			ARSystem.spellCast(player, en.get(0), "c1013_s2_s");
+			count = 0;
+			shdows();
+		} else {
+			cooldown[2] = 0;
+		}
 		return true;
 	}
 	

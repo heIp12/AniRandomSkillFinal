@@ -61,8 +61,8 @@ public class c40megumin extends c00main{
 			sc();
 			damage+=6;
 			cooldown[1] = setcooldown[1];
-			cooldown[2] = setcooldown[2];
-			cooldown[3] = setcooldown[3];
+			cooldown[2] = setcooldown[1];
+			cooldown[3] = setcooldown[1];
 			if(damage >= 30 && c == 5 &&skillCooldown(0)) {
 				spskillon();
 				spskillen();
@@ -80,9 +80,9 @@ public class c40megumin extends c00main{
 			count--;
 			sc();
 			range+=5;
-			cooldown[1] = setcooldown[1];
+			cooldown[1] = setcooldown[2];
 			cooldown[2] = setcooldown[2];
-			cooldown[3] = setcooldown[3];
+			cooldown[3] = setcooldown[2];
 			if(c > 5) range*=1.75;
 		} else {
 			cooldown[1] = 0;
@@ -98,10 +98,10 @@ public class c40megumin extends c00main{
 			sten+=1;
 			range+=2;
 			damage+=3;
-			cooldown[1] = setcooldown[1];
-			cooldown[2] = setcooldown[2];
+			cooldown[1] = setcooldown[3];
+			cooldown[2] = setcooldown[3];
 			cooldown[3] = setcooldown[3];
-			for(int i=0;i<4;i++) setcooldown[i] -=1;
+			for(int i=0;i<4;i++) setcooldown[i] -=1.5;
 		} else {
 			cooldown[1] = 0;
 		}

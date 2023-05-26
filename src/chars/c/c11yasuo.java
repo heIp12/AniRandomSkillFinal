@@ -1,5 +1,7 @@
 package chars.c;
 
+import java.util.List;
+
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -7,12 +9,16 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 import ars.ARSystem;
 import ars.Rule;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.Silence;
+import types.box;
+import util.BlockUtil;
+import util.ULocal;
 
 
 public class c11yasuo extends c00main{
@@ -53,7 +59,6 @@ public class c11yasuo extends c00main{
 	
 	@Override
 	public boolean skill4() {
-		skill("c"+number+"_s4");
 		boolean airbone = false;
 		boolean allairbone = false;
 		if(ARSystem.getPlayerCount() < 3) {
@@ -82,13 +87,14 @@ public class c11yasuo extends c00main{
 				}
 			}
 		} else {
-			for(Entity entity : player.getNearbyEntities(40, 40, 40)) {
-				if(entity.getFallDistance() > 1 && entity.getType() != EntityType.ARMOR_STAND) {
-					if(entity instanceof Player && ((Player) entity).getGameMode() == GameMode.SPECTATOR) {
-						
-					} else {
-						airbone = true;
-					}
+			List<Entity> en = ARSystem.box(player, new Vector(40,100,40), box.TARGET);
+			for(Entity entity : en) {
+				if(BlockUtil.isAirbone(entity.getLocation(), 5) ) {
+					airbone = true;
+					player.teleport(ULocal.offset(entity.getLocation(), new Vector(-1,0,0)));
+					ARSystem.spellCast(player, entity, "YasuoR_TM");
+					ARSystem.playSound((Entity)player, "c11r");
+					ARSystem.playSound((Entity)player, "c11r01");
 				}
 			}
 			if(!airbone) {

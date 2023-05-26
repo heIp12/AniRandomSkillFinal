@@ -99,7 +99,7 @@ public class c54patel extends c00main{
 		if(n.equals("1")) {
 			sk1 = 100;
 			entity = target;
-			ARSystem.addBuff(target, new Panic(target), (int) (setcooldown[1]*6));
+			ARSystem.addBuff(target, new Panic(target), (int) (setcooldown[1]*3));
 		}
 		if(n.equals("2")) {
 			if(!Rule.buffmanager.isBuff(target, "wound")) {
@@ -111,7 +111,7 @@ public class c54patel extends c00main{
 				Rule.buffmanager.selectBuffAddTime(target, "wound", (int) (Rule.buffmanager.selectBuff(target, "wound").getTime()*1.5));
 				Rule.buffmanager.selectBuffAddValue(target, "wound", 0.2f);
 			}
-			ARSystem.addBuff(target, new Panic(target), (int) (setcooldown[2]*6));
+			ARSystem.addBuff(target, new Panic(target), (int) (setcooldown[2]*3));
 		}
 		if(n.equals("3")) {
 			Wound w = new Wound(target);
@@ -119,7 +119,7 @@ public class c54patel extends c00main{
 			w.setDelay(player,10,0);
 			ARSystem.giveBuff(target, w, 60);
 			
-			ARSystem.addBuff(target, new Panic(target), (int) (setcooldown[3]*6));
+			ARSystem.addBuff(target, new Panic(target), (int) (setcooldown[3]*3));
 			ARSystem.addBuff(target, new Rampage(target), 60);
 		}
 	}

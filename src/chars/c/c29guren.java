@@ -37,7 +37,7 @@ import util.Map;
 
 public class c29guren extends c00main{
 	int ticks = 0;
-	int mana = 1865;
+	int mana = 0;
 	int type = 1;
 	int cast = 0;
 	boolean arukana = false;

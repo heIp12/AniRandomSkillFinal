@@ -20,7 +20,7 @@ public class Dancing extends Buff{
 	public Dancing(LivingEntity target) {
 		super(target);
 		bufftype.add(BuffType.DEBUFF);
-		bufftype.add(BuffType.HEADCC);
+		bufftype.add(BuffType.CC);
 		buffName = "dancing";
 		color = "§a";
 		order = 40;

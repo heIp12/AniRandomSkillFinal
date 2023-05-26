@@ -207,11 +207,14 @@ public class c72plan extends c00main{
 			for(Entity e : ARSystem.box(player, new Vector(16,10,16), box.TARGET)) {
 				Location loc = e.getLocation();
 				loc = ULocal.lookAt(loc, player.getLocation());
-				if(loc.distance(player.getLocation()) < 5) {
-					e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(0.3)));
+				if(loc.distance(player.getLocation()) < 3) {
 					ARSystem.giveBuff((LivingEntity)e, new Silence((LivingEntity)e), 10);
-				} else if(loc.distance(player.getLocation()) < 8)  {
+				}
+				
+				if(loc.distance(player.getLocation()) < 5) {
 					e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(0.1)));
+				} else if(loc.distance(player.getLocation()) < 8)  {
+					e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(0.05)));
 				} else {
 					e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(0.01)));
 				}

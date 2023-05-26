@@ -152,7 +152,7 @@ public class c80aqit extends c00main{
 		if(myhp < player.getHealth()) myhp = player.getHealth();
 		if(player.getHealth() > myhp) player.setHealth(myhp);
 		
-		if(t>10 && t%160 == 0 && mydamage >= 0.6) {
+		if(t>10 && t%140 == 0 && mydamage >= 0.4) {
 			mydamage= mydamage-0.1;
 		}
 		if(tk%20 == 0) {

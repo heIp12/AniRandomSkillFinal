@@ -65,10 +65,13 @@ import util.Text;
 
 public class c111artorya extends c00main{
 	int stack = 0;
-	int sk3 = 0;
-	int damage = stack;
+	int sk1 = 0;
+	boolean start = false;
+	Entity target = null;
 	
-	double hp = 20;
+	boolean remove = false;
+	
+	float s3 = 1;
 	
 	@Override
 	public void setStack(float f) {
@@ -86,19 +89,35 @@ public class c111artorya extends c00main{
 	@Override
 	public boolean skill1() {
 		ARSystem.playSound((Entity)player, "c111s3");
-		sk3 = 10;
-		ARSystem.giveBuff(player, new Stun(player), 10);
-		ARSystem.giveBuff(player, new Silence(player), 10);
+		sk1 = 30;
+		target = null;
+		remove = false;
+		if(s3 == -1) {
+			s3 = 1+ stack*0.01f;
+			stack = 0;
+		}
+		
+		ARSystem.giveBuff(player, new Stun(player), 30);
+		ARSystem.giveBuff(player, new Silence(player), 30);
+		
 		skill("c111_s3-1");
-		damage = stack;
-		stack = 0;
-		hp = player.getHealth();
+		delay(()->{
+			if(target != null) {
+				ARSystem.heal(player, 9999);
+				player.teleport(ULocal.lookAt(player.getLocation(), target.getLocation()));
+				skill("c111_s3-2");
+				ARSystem.playSound((Entity)player, "c111s32");
+			}
+			delay(()->{
+				s3 = 1;
+			},10);
+		},30);
 		return true;
 	}
 	
 	@Override
 	public boolean skill2() {
-		stack += 20;
+		stack += 100;
 		skill("c111_s2");
 		return true;
 	}
@@ -107,20 +126,7 @@ public class c111artorya extends c00main{
 	@Override
 	public boolean skill3() {
 		ARSystem.playSound((Entity)player, "c111s1");
-		skill("c111_s1");
-		damage = stack;
-		stack = 0;
-		for(Entity e : ARSystem.box(player, new Vector(8,5,8), box.TARGET)) {
-			for(int i =0; i<5;i++) {
-				delay(()->{
-					Location loc = e.getLocation();
-					loc = ULocal.lookAt(loc, player.getLocation());
-					e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(Math.min(0,e.getLocation().distance(player.getLocation())-8)/4)));
-					((LivingEntity)e).setNoDamageTicks(0);
-					((LivingEntity)e).damage(damage*0.02,player);
-				},i*2);
-			}
-		}
+		s3 = -1;
 		return true;
 	}
 
@@ -150,63 +156,51 @@ public class c111artorya extends c00main{
 	
 	@Override
 	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			target.setNoDamageTicks(0);
+			if(remove) {
+				target.damage(16 * s3,player);
+			} else {
+				target.damage(8 * s3,player);
+			}
+		}
 	}
 	
 	@Override
+	public boolean firsttick() {
+		if(start && sk1 <= 0) {
+			if(Rule.buffmanager.selectBuffType(player, BuffType.HEADCC) != null) {
+				for(Buff buff : Rule.buffmanager.selectBuffType(player, BuffType.DEBUFF)) {
+					if(stack > 20) {
+						stack -=20;
+						buff.setTime(0);
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	@Override
 	public boolean tick() {
-		if(tk%4 == 0 && sk3 <= 0 && stack > 0) stack--;
-		if(sk3 > 0) sk3--;
-		if(tk%20 == 0 && stack > 0) ARSystem.heal(player, 1);
+		start = true;
+		if(sk1 > 0) sk1--;
 		
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c111:p")+ "] : &f" + stack +"");
 		}
-		if(sk3 > 0 && player.getHealth() < hp) {
-			sp();
-		}
 		return true;
 	}
+
 	
-	public void sp() {
-		ARSystem.giveBuff(player, new Nodamage(player), 15+sk3);
-		ARSystem.giveBuff(player, new Silence(player), 15+sk3);
-		ARSystem.giveBuff(player, new Stun(player), 15+sk3);
-		Location loc = player.getLocation();
-		loc.setPitch(0);
-		player.teleport(loc);
-		stack = (int) (damage*1.5);
-		cooldown[3] *= 0.5;
-		delay(()->{
-			ARSystem.giveBuff(player, new Nodamage(player), 60);
-			ARSystem.giveBuff(player, new Silence(player), 20);
-			int count = 0;
-			List<Entity> targets = ARSystem.PlayerBeamBox(player, 13, 5, box.TARGET);
-			for(Entity t : ARSystem.box(player, new Vector(8,8,8), box.TARGET)) {
-				if(!targets.contains(t)) targets.add(t);
-			}
-			
-			for(Entity entity : targets){
-				if(Rule.c.get(entity) != null) count++;
-			}
-			
-			if(Rule.c.size() > 1 && Rule.c.size() -1 == count && damage >= 200) {
-				spskillen();
-				spskillon();
-				WinEvent event = new WinEvent(player);
-				Bukkit.getPluginManager().callEvent(event);
-				if(!event.isCancelled()) {
-					skillsp();
-				}
-			} else {
-				skill("c111_s3-2");
-				ARSystem.playSound((Entity)player, "c111s32");
-				for(Entity entity : targets){
-					((LivingEntity)entity).setNoDamageTicks(0);
-					((LivingEntity)entity).damage(5+(damage * 0.2),player);
-				}
-			}
-		},10+sk3);
-		sk3 = 0;
+	@Override
+	public boolean remove(Entity caster) {
+		if(sk1 > 0) {
+			target = caster;
+			remove = true;
+			return false;
+		}
+		return true;
 	}
 	
 	@Override
@@ -214,8 +208,8 @@ public class c111artorya extends c00main{
 		if(isAttack) {
 			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 		} else {
-			if(sk3 > 0) {
-				sp();
+			if(sk1 > 0) {
+				target = e.getDamager();
 				e.setDamage(0);
 				e.setCancelled(true);
 				return false;
@@ -225,13 +219,6 @@ public class c111artorya extends c00main{
 			}
 		}
 		return true;
-	}
-	@Override
-	public boolean damage(EntityDamageEvent e) {
-		if(e.getDamage() >= player.getMaxHealth()) {
-			e.setDamage(player.getMaxHealth() - 1);
-		}
-		return super.damage(e);
 	}
 	
 	@Override

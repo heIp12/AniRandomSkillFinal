@@ -92,7 +92,10 @@ public class PlayerInfo {
 		if(craditlog.size() > 50) {
 			craditlog.remove(0);
 		}
-		
+
+		if(max(player.getName()+".c","Win") > 0) {
+			tropy(0,1);
+		}
 		if(max(player.getName()+".c","Win") > 4) {
 			tropy(0,2);
 		}

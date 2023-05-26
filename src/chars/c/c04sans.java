@@ -76,7 +76,7 @@ public class c04sans extends c00main{
 				}
 			}
 				
-			if(AMath.random(100) > (e.getDamage()*1.4)) {
+			if(AMath.random(100) > (e.getDamage()*1.4)+1) {
 				Location loc = player.getLocation().clone().add(0,1,0);
 				loc.setPitch(0);
 				cooldown[3]-=1;
@@ -103,7 +103,7 @@ public class c04sans extends c00main{
 	@Override
 	public boolean damage(EntityDamageEvent e) {
 		if(e.getCause() != DamageCause.ENTITY_ATTACK) {
-			if(AMath.random(100) > (e.getDamage()*1.4)) {
+			if(AMath.random(100) > (e.getDamage()*1.4)+1) {
 				cooldown[3]-=1;
 				skill("c4_s0");
 				player.setNoDamageTicks(2);

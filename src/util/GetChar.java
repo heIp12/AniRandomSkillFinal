@@ -139,6 +139,15 @@ import chars.c3.c115stunk;
 import chars.c3.c116yumira;
 import chars.c3.c117kanade;
 import chars.c3.c118cotory;
+import chars.c3.c119kayaba;
+import chars.c3.c120nitory;
+import chars.c3.c121cocoro;
+import chars.c3.c122yuyuco;
+import chars.c3.c123rin;
+import chars.c3.c124satory;
+import chars.c3.c125iskandal;
+import chars.c3.c126hera;
+import chars.c3.c127jack;
 import chars.ca.c0100minato;
 import chars.ca.c0200kirito;
 import chars.ca.c0202kirito;
@@ -192,7 +201,7 @@ import mode.ModeBase;
  *
  */
 public class GetChar {
-	static int count = 118;
+	static int count = 127;
 	public static HashMap<String,List<Integer>> charban;
 	/**
 	 * {어벤번호,그 번호 어벤 갯수}
@@ -237,7 +246,7 @@ public class GetChar {
 		charban.put("mirror",ca(new int[]{3,12,17,25,28,37,43,52,53,59,74,89,92,112,118}));
 		charban.put("teammatch",ca(new int[]{12,28,35,37,43,53,58,79,90}));
 		charban.put("team",ca(new int[] {43,53,58,79}));
-		charban.put("lobotomy",ca(new int[]{12,16,17,18,23,28,30,35,37,46,53,59,70,78,79,81,90,95,100,107}));
+		charban.put("lobotomy",ca(new int[]{12,16,17,18,23,28,30,35,37,46,53,59,70,78,79,81,90,95,100,107,121}));
 		
 		for(int i=0;i<count;i++) {
 			if((Boolean)Rule.Var.Load("#ARS.ban.normal"+(i+1))) charban.get("normal").add(i+1);
@@ -424,6 +433,15 @@ public class GetChar {
 		if(name.equals("116")) return new c116yumira(p,pl,crt);
 		if(name.equals("117")) return new c117kanade(p,pl,crt);
 		if(name.equals("118")) return new c118cotory(p,pl,crt);
+		if(name.equals("119")) return new c119kayaba(p,pl,crt);
+		if(name.equals("120")) return new c120nitory(p,pl,crt);
+		if(name.equals("121")) return new c121cocoro(p,pl,crt);
+		if(name.equals("122")) return new c122yuyuco(p,pl,crt);
+		if(name.equals("123")) return new c123rin(p,pl,crt);
+		if(name.equals("124")) return new c124satory(p,pl,crt);
+		if(name.equals("125")) return new c125iskandal(p,pl,crt);
+		if(name.equals("126")) return new c126hera(p,pl,crt);
+		if(name.equals("127")) return new c127jack(p,pl,crt);
 		
 		if(name.equals("86f1")) return new c8601iriya(p,pl, crt);
 		if(name.equals("86f2")) return new c8602iriya(p,pl, crt);

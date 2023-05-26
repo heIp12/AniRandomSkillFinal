@@ -69,6 +69,7 @@ public class BuffManager {
 		}
 		return buff.keySet();
 	}
+	
 	public List<Buff> selectBuffType(LivingEntity target, BuffType bufftype) {
 		List<Buff> bf = new ArrayList<Buff>();
 		if(buff.get(target) != null && buff.get(target).getBuff() != null) {

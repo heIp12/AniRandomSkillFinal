@@ -108,6 +108,10 @@ public class c43yuno extends c00main{
 
 	@Override
 	public boolean skill1() {
+		if(yuki == null) {
+			cooldown[1] = 0;
+			return true;
+		}
 		player.teleport(yuki);
 		tick = 160;
 		skill("c43_s1");

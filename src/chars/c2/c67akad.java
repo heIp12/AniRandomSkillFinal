@@ -145,15 +145,15 @@ public class c67akad extends c00main{
 		if(ARSystem.AniRandomSkill != null && tk%20==0 && ARSystem.AniRandomSkill.time%30 == 0 && ARSystem.AniRandomSkill.time > 10 && p < 4) {
 			p++;
 			if(p == 1) {
-				damage+=0.05;
+				damage+=0.03;
 				skillmult += 0.2;
 			}
 			if(p == 2) {
-				damage+=0.08;
+				damage+=0.05;
 				skillmult += 0.25;
 			}
 			if(p == 3) {
-				damage+=0.12;
+				damage+=0.10;
 				skillmult += 0.3;
 			}
 			if(p == 4) {
@@ -162,8 +162,8 @@ public class c67akad extends c00main{
 				ARSystem.playSound((Entity)player,"c67sp");
 			} else {
 				ARSystem.playSound((Entity)player, "c67p"+p);
-				setcooldown[1]-=0.2;
-				setcooldown[2]-=0.2;
+				setcooldown[1]-=0.1;
+				setcooldown[2]-=0.1;
 				player.setMaxHealth(player.getMaxHealth()+5);
 				ARSystem.heal(player, 5);
 			}

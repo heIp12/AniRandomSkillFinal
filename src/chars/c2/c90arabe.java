@@ -81,7 +81,7 @@ public class c90arabe extends c00main{
 		if(tick > 0) {
 			tick--;
 			if(tick == 0) {
-				tick = 200 + AMath.random(100);
+				tick = 200 + AMath.random(200);
 				count2++;
 				if(count2 > 2) {
 					count2 = 0;

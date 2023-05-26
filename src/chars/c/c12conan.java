@@ -59,7 +59,7 @@ public class c12conan extends c00main{
 	public boolean tick() {
 		ticks++;
 		
-		if(ticks >= 400) {
+		if(ticks >= 1000) {
 			ticks = 0;
 			Set<Player> ob = Rule.c.keySet();
 			Player[] play = ob.toArray(new Player[ob.size()]);

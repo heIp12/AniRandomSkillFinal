@@ -42,7 +42,7 @@ public class c32sanji extends c00main{
 
 	String skill = "";
 	
-	boolean sp = false;
+	int sp = 0;
 	public c32sanji(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 32;
@@ -157,13 +157,14 @@ public class c32sanji extends c00main{
 
 	@Override
 	public boolean tick() {
-		if(isps) {
+		if(sp > 0) {
 			skill("c32_sp");
 		}
 		if(!isps && ARSystem.AniRandomSkill !=null && ARSystem.AniRandomSkill.time <= 20 && count > 30) {
 			spskillon();
 			spskillen();
 			skill("c32_e");
+			sp = 900;
 		}
 
 		if(tk%20==0) {
@@ -178,6 +179,7 @@ public class c32sanji extends c00main{
 		if(tk%20==0 && psopen && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time <= 20) {
 			scoreBoardText.add("&c "+Main.GetText("c32:sk0")+ "&f : " + count + "/ 30");
 		}
+		if(tk%20 == 0 && sp > 0)scoreBoardText.add("&c "+Main.GetText("c32:sk0")+ "&f : " + AMath.round(sp*0.05,1));
 		if(timer%2==0) {
 			for(int i = 0; i < cooldownc.length; i++) {
 				if(cooldownc[i] > 0) {
@@ -188,13 +190,14 @@ public class c32sanji extends c00main{
 				}
 			}
 		}
+		if(sp > 0) sp--;
 		return true;
 	}
 
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(isps) {
+			if(sp > 0) {
 				e.setDamage(e.getDamage()+1.5);
 				ARSystem.addBuff((LivingEntity) e.getEntity(), new Silence((LivingEntity) e.getEntity()), 5);
 			}

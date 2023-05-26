@@ -42,6 +42,8 @@ import buff.Timeshock;
 import buff.Wound;
 import chars.c.c000humen;
 import chars.c.c00main;
+import chars.c3.c111artorya;
+import chars.c3.c126hera;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
@@ -101,12 +103,6 @@ public class c8604iriya extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
-		ARSystem.playSound((Entity)player, "c86db");
-		return true;
-	}
-	
-	@Override
 	public boolean tick() {
 		if(sk1 > 0) {
 			sk1--;
@@ -126,7 +122,33 @@ public class c8604iriya extends c00main{
 		if(isAttack) {
 			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*5);
 		} else {
+			if(Rule.c.get(e.getDamager()) != null && Rule.c.get(e.getDamager()).number%1000 == 126) {
+				e.setDamage(0.1);
+				e.setCancelled(true);
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c126hera) {
+					is = "h";
+					break;
+				}
 
+			}
+		}
+
+		if(is.equals("h")) {
+			ARSystem.playSound((Entity)player, "c126iriya");
+		} else {
+			ARSystem.playSound((Entity)player, "c86db");
 		}
 		return true;
 	}

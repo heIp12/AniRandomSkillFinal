@@ -153,7 +153,7 @@ public class c28enma extends c00main{
 			}	
 		}
 		if(delay <= 0 && ticks%10==0 && player.getGameMode() != GameMode.SPECTATOR) {
-			for(Entity e : player.getNearbyEntities(5, 5, 5)) {
+			for(Entity e : player.getNearbyEntities(4, 4, 4)) {
 				if(e instanceof Player && ((Player) e).getGameMode() != GameMode.SPECTATOR && playlist.contains(e)) {
 					playlist.remove(e);
 					ARSystem.spellCast(player, e, "look1");
@@ -173,7 +173,7 @@ public class c28enma extends c00main{
 						@Override
 						public void run() {
 							ARSystem.playSoundAll("c28s3");
-							delay = 100;
+							delay = 160;
 						}
 					},260);
 					
@@ -184,7 +184,8 @@ public class c28enma extends c00main{
 							player.setGameMode(GameMode.ADVENTURE);
 							player.teleport(e);
 							Skill.remove(e,player);
-							delay = 100;
+							delay = 160;
+							if(cooldown[2] <= 3)cooldown[2] = 3;
 						}
 					},300);
 				}

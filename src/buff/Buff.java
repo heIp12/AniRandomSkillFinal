@@ -38,7 +38,8 @@ public class Buff {
 		buff.setValue(value);
 		return buff;
 	}
-	
+	 
+	                                                                                   
 	public Buff(LivingEntity target){
 		this.target = target;
 		start(100000);

@@ -214,8 +214,11 @@ public class c68origami extends c00main{
 					}
 				}
 				Location loc = player.getLocation().clone().add(3-AMath.random(6),3-AMath.random(6),3-AMath.random(6));
+				int i = 0;
 				while(!loc.getBlock().isEmpty() || !loc.clone().add(0,1,0).getBlock().isEmpty()) {
 					loc = player.getLocation().clone().add(3-AMath.random(6),3-AMath.random(6),3-AMath.random(6));
+					if(i > 100) break;
+					i++;
 				}
 				skill("c68_s3");
 				ARSystem.playSound((Entity)player, "c68s3");

@@ -34,6 +34,7 @@ import manager.AdvManager;
 import types.box;
 
 import util.AMath;
+import util.BlockUtil;
 import util.InvSkill;
 import util.Inventory;
 import util.MSUtil;
@@ -44,7 +45,7 @@ public class c41zanitu extends c00main{
 	Location loc = null;
 	LivingEntity target;
 	
-	int spcount = 3;
+	int spcount = 1;
 	int ptick = 0;
 	int delay = 20;
 	
@@ -139,7 +140,7 @@ public class c41zanitu extends c00main{
 				for(LivingEntity e : targets) {
 					ARSystem.playSound(e, "0katana6");
 					e.setNoDamageTicks(0);
-					e.damage(120,player);
+					e.damage(15*6,player);
 					ARSystem.spellCast(player,e, "bload");
 				}
 			},50);
@@ -150,11 +151,11 @@ public class c41zanitu extends c00main{
 	@Override
 	public boolean skill1() {
 		if(Rule.buffmanager.GetBuffTime(player, "sleep") > 0 && target != null) {
-			if(!target.isOnGround()) {
+			if(BlockUtil.isAirbone(target.getLocation(), 1)) {
 				if(AMath.random(10) <= spcount && skillCooldown(0)) {
 					spskillon();
 					spskillen();
-					spcount = 3;
+					spcount = 1;
 					sp();
 					return true;
 				} else {
@@ -194,7 +195,7 @@ public class c41zanitu extends c00main{
 					delay(()->{
 						ARSystem.playSound(e, "0katana6");
 						e.setNoDamageTicks(0);
-						e.damage(20,player);
+						e.damage(15,player);
 						ARSystem.spellCast(player,e, "bload");
 					},2*i);
 				}

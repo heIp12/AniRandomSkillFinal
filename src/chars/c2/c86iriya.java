@@ -129,7 +129,7 @@ public class c86iriya extends c00main{
 	@Override
 	public boolean tick() {
 		if(Mp < 500) {
-			Mp +=(0.5f * (skillmult + sskillmult));
+			Mp +=(0.25f * (skillmult + sskillmult));
 			if(ARSystem.isGameMode("lobotomy")) Mp += 1.5f;
 		}
 		if(tk%20 == 0) {
@@ -144,7 +144,7 @@ public class c86iriya extends c00main{
 				}
 			}
 		}
-		if(player.getHealth() <= 3 && Mp >= 100 && Mp <= 120) {
+		if(player.getHealth() <= 3 && Mp >= 400 && Mp <= 420) {
 			ARSystem.heal(player, 5);
 			ARSystem.giveBuff(player, new TimeStop(player), 200);
 			ARSystem.playSound((Entity)player, "c86sp");

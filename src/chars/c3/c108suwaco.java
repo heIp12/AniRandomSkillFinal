@@ -153,12 +153,12 @@ public class c108suwaco extends c00main{
 	@Override
 	public boolean tick() {
 		time++;
-		if(time%(110 - Math.min(90,10.0*(skillmult+sskillmult))) == 0) {
+		if(time%(170 - Math.min(90,10.0*(skillmult+sskillmult))) == 0) {
 			if(p < 8) p++;
 		}
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c108:ps")+ "] : &f" + p);
-			if(psopen && target !=null)	scoreBoardText.add("&c ["+Main.GetText("c108:sk0")+ "] &f" + target.getName() +" &f: " + count +"/10");
+			if(psopen && target !=null)	scoreBoardText.add("&c ["+Main.GetText("c108:sk0")+ "] &f" + target.getName() +" &f: " + count +"/14");
 		}
 		if(sk4>0 && sk4%6 == 0) ARSystem.heal(player, 1);
 		if(player.isSneaking() && sk4 > 0) {
@@ -187,7 +187,7 @@ public class c108suwaco extends c00main{
 			}
 			if(e.getDamage() >= 2 && e.getEntity() == target){
 				count++;
-				if(count >=10 && skillCooldown(0)) {
+				if(count >=14 && skillCooldown(0)) {
 					damage = 0.01f;
 					spskillon();
 					spskillen();

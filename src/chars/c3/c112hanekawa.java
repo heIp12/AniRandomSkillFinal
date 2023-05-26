@@ -184,7 +184,7 @@ public class c112hanekawa extends c00main{
 						ARSystem.spellCast(player, e, "c112p");	
 					}
 					entity.setHealth(entity.getHealth() -size);
-					ARSystem.overheal(player, size*1.3);
+					ARSystem.overheal(player, size);
 					s_damage+=size;
 				} else {
 					Skill.remove(entity, player);

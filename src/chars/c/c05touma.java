@@ -171,7 +171,7 @@ public class c05touma extends c00main{
 		if(!isAttack) {
 			bf = 1;
 			if(MSUtil.isbuff(player, "c5_s3_d")) {
-				bf = 5;
+				bf = 3;
 			}
 			damage = e.getDamage()*bf;
 			if(((LivingEntity)e.getEntity()).getMaxHealth() <= e.getDamage()*bf) {

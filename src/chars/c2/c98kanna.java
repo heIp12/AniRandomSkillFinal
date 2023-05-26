@@ -205,10 +205,12 @@ public class c98kanna extends c00main{
 				light += e.getDamage();
 			}
 		} else {
-			int code = Rule.c.get(e.getDamager()).number;
-			if(Rule.c.get(e.getDamager()) != null && (code == 63 || code == 109)) {
-				light += e.getDamage()*2;
-				e.setDamage(e.getDamage()* 0.1);
+			if(Rule.c.get(e.getDamager()) != null) {
+				int code = Rule.c.get(e.getDamager()).number;
+				if(code == 63 || code == 109) {
+					light += e.getDamage()*2;
+					e.setDamage(e.getDamage()* 0.1);
+				}
 			}
 			double damage = e.getDamage()*0.9;
 			if(light >= damage) {

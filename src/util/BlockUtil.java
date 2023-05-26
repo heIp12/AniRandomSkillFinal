@@ -1,5 +1,6 @@
 package util;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -50,5 +51,23 @@ public class BlockUtil {
 				material.name().contains("door".toUpperCase()) || 
 				material.name().contains("gate".toUpperCase()) || 
 				material == Material.CARPET;
+	}
+	
+	public static boolean isAirbone(Location loc,int size) {
+		loc = loc.clone();
+		for(int i=0;i<size+1;i++) {
+			if(loc.getY() > 0) {
+				if(!isPathable(loc.getBlock())) {
+					if(loc.getBlock().getType() == Material.WATER) continue;
+					if(loc.getBlock().getType() == Material.STATIONARY_WATER) continue;
+					if(loc.getBlock().getType() == Material.STATIONARY_LAVA) continue;
+					if(loc.getBlock().getType() == Material.LAVA) continue;
+					return false;
+				}
+			}
+			loc.add(0,-1,0);
+		}
+		
+		return true;
 	}
 }

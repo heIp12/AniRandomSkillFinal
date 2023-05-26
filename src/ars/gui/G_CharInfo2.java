@@ -101,8 +101,6 @@ public class G_CharInfo2 extends GUIBase{
 		return ItemCreate.Lore(is, getLine("c"+j+":ps_lore"));
 	}
 	public ItemStack gui3() {
-		
-
 		ItemStack is = null;
 		if(info.spopen[j]) {
 			is = ItemCreate.Item(426);
@@ -121,16 +119,17 @@ public class G_CharInfo2 extends GUIBase{
 		List<String> lore = new ArrayList<String>();
 		lore.add("§e=====================================");
 		if(info.spopen[j] || Main.GetText("general:spopen").equalsIgnoreCase("true")) {
-			for(int k=0;k<100;k++) {
-				if(Main.GetText("c"+j+":sk0_lore"+k)!= null) {
-					if(Main.GetText("c"+j+":sk0_lore"+k).indexOf(":") != -1) {
-						lore.add("§a§l"+Main.GetText("c"+j+":sk0_lore"+k));
-					} else {
-						lore.add("§f"+Main.GetText("c"+j+":sk0_lore"+k));
-					}
-				}
+			for(String str : getLine("c"+j+":sk0")) {
+				lore.add(str);
 			}
 		} else {
+			for(String str : getLine("c"+j+":sk0")) {
+				String s = "";
+				for(char c : str.toCharArray()) {
+					s+="a";
+				}
+				lore.add("§f§k"+s);
+			}
 			lore.add("§7"+Main.GetText("main:msg11"));
 			lore.add("§7"+Main.GetText("main:msg12"));
 			lore.add("§c"+info.getSpopencradit()+Main.GetText("main:msg13"));
@@ -143,32 +142,35 @@ public class G_CharInfo2 extends GUIBase{
 	public ItemStack gui4() {
 		if(Text.get("c"+j+":sk1") == null) return gui0();
 		ItemStack is = ItemCreate.Name(ItemCreate.Item(339), "§6§l[Skill1] §f" + Text.get("c"+j+":sk1"));
-		return ItemCreate.Lore(is, getLine("c"+j+":sk1_lore"));
+		return ItemCreate.Lore(is, getLine("c"+j+":sk1"));
 	}
 	public ItemStack gui5() {
 		if(Text.get("c"+j+":sk2") == null) return gui0();
 		ItemStack is = ItemCreate.Name(ItemCreate.Item(339), "§6§l[Skill2] §f" + Text.get("c"+j+":sk2"));
-		return ItemCreate.Lore(is, getLine("c"+j+":sk2_lore"));
+		return ItemCreate.Lore(is, getLine("c"+j+":sk2"));
 	}
 	public ItemStack gui6() {
 		if(Text.get("c"+j+":sk3") == null) return gui0();
 		ItemStack is = ItemCreate.Name(ItemCreate.Item(339), "§6§l[Skill3] §f" + Text.get("c"+j+":sk3"));
-		return ItemCreate.Lore(is, getLine("c"+j+":sk3_lore"));
+		return ItemCreate.Lore(is, getLine("c"+j+":sk3"));
 	}
 	public ItemStack gui7() {
 		if(Text.get("c"+j+":sk4") == null) return gui0();
 		ItemStack is = ItemCreate.Name(ItemCreate.Item(339), "§6§l[Skill4] §f" + Text.get("c"+j+":sk4"));
-		return ItemCreate.Lore(is, getLine("c"+j+":sk4_lore"));
+		return ItemCreate.Lore(is, getLine("c"+j+":sk4"));
 	}
 	public ItemStack gui8() {
 		if(Text.get("c"+j+":sk5") == null) return gui0();
 		ItemStack is = ItemCreate.Name(ItemCreate.Item(339), "§6§l[Skill5] §f" + Text.get("c"+j+":sk5"));
-		return ItemCreate.Lore(is, getLine("c"+j+":sk5_lore"));
+		return ItemCreate.Lore(is, getLine("c"+j+":sk5"));
 	}
 	
 	public List<String> getLine(String str){
 		List<String> line = new ArrayList<String>();
-		for(String s : Text.getLine(str,1)) line.add("§7"+s);
+		if(Text.get(str+"_cooldown") != null) {
+			line.add("§a§lCooldown : §c" + AMath.round(Float.parseFloat(Text.get(str+"_cooldown"))*0.1,2));
+		}
+		for(String s : Text.getLine(str+"_lore",1)) line.add("§7"+s);
 		return line;
 	}
 	
@@ -177,7 +179,7 @@ public class G_CharInfo2 extends GUIBase{
 	}
 	
 	public void click3(boolean right, boolean shift) {
-		if(info.getSpopencradit() <= info.getCradit()) {
+		if(info.getSpopencradit() <= info.getCradit() && !(boolean)Rule.Var.Load(player.getName()+".Sp.c"+j)) {
 			info.addcradit(-info.getSpopencradit(),Main.GetText("main:msg101")+" "+Main.GetText("c"+j+":sk0"));
 			info.setAddcradit(info.getAddcradit() + 1);
 			Rule.Var.open(player.getName()+".Sp.c"+j,true);

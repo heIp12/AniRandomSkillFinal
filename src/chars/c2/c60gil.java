@@ -32,10 +32,12 @@ import buff.Cindaella;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.Panic;
+import buff.PowerUp;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
 import chars.c.c00main;
+import chars.c3.c126hera;
 import event.Skill;
 import manager.AdvManager;
 import types.box;
@@ -56,6 +58,7 @@ public class c60gil extends c00main{
 	Entity target = null;
 	int count = 0;
 	int sp = 0;
+	boolean h = true;
 	
 	public c60gil(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -217,6 +220,32 @@ public class c60gil extends c00main{
 					ARSystem.spellLocCast(player, loc, "c60_p1"+AMath.random(3));
 				}
 			}
+		}
+		return true;
+	}
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c126hera) {
+					is = "h";
+					break;
+				}
+
+			}
+		}
+
+		if(is.equals("h")) {
+			ARSystem.playSound((Entity)player, "c126gil");
+			if(h) {
+				sword += 30;
+				ARSystem.giveBuff(player, new PowerUp(player), 200, 2);
+				h = false;
+			}
+		} else {
+			ARSystem.playSound((Entity)player, "c60db");
 		}
 		return true;
 	}
