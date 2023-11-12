@@ -157,7 +157,7 @@ public class c0100minato extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 3);
+			
 		} else {
 			
 		}

@@ -73,7 +73,7 @@ public class c1300nagisa extends c00main{
 	@Override
 	public boolean skill4() {
 		shdows();
-		count = 15;
+		count = 60;
 		ARSystem.playSound((Entity)player, "c13sp");
 		return true;
 	}
@@ -101,16 +101,16 @@ public class c1300nagisa extends c00main{
 	@Override
 	public boolean tick() {
 		ticks++;
-		if(ticks%2==0) {
-			if(count > 0) {
-				ARSystem.giveBuff(player, new Stun(player), 2);
-				count--;
-				skill("c"+number+"_s4");
-			}
-			if(shdow) {
-				ARSystem.potion(player, 14, 10, 10);
-			}
+
+		if(count > 0) {
+			ARSystem.giveBuff(player, new Stun(player), 2);
+			count--;
+			skill("c"+number+"_s4");
 		}
+		if(shdow) {
+			ARSystem.potion(player, 14, 10, 10);
+		}
+		
 		ticks%=20;
 		if(shdow) {
 			if(loc != null && player.getLocation().distance(loc) > 0.1) {
@@ -123,7 +123,7 @@ public class c1300nagisa extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
+			
 		} else {
 
 		}

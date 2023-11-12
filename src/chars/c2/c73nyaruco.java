@@ -99,27 +99,11 @@ public class c73nyaruco extends c00main{
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
 			if(AMath.random(10) == 1) {
-				if(ARSystem.isGameMode("lobotomy")) {
-					if(s1 < 10) {
-						s1+=0.1;
-					} else {
-						s1+=0.02;
-					}
-				} else {
-					s1+=0.5;
-				}
+				s1+=0.5;
 				target.damage(s1*5,player);
 				ARSystem.playSound((Entity)player, "c71s11");
 			} else {
-				if(ARSystem.isGameMode("lobotomy")) {
-					if(s1 < 10) {
-						s1+=0.1;
-					} else {
-						s1+=0.02;
-					}
-				} else {
-					s1+=0.5;
-				}
+				s1+=0.5;
 				target.damage(s1,player);
 			}
 		}

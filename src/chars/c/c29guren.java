@@ -118,20 +118,19 @@ public class c29guren extends c00main{
 			return false;
 		}
 		if(mana >= 800 -(skillmult+sskillmult)) {
-			if(!ARSystem.isGameMode("lobotomy")) {
-				ARSystem.giveBuff(player, new Stun(player), (int) ((4 - (skillmult+sskillmult))*20));
-				ARSystem.giveBuff(player, new Silence(player), (int) ((4 - (skillmult+sskillmult))*20));
-			}
 			mana-=800-(skillmult+sskillmult);
 			cast++;
+			ARSystem.giveBuff(player, new Stun(player), (int) ((4 - (skillmult+sskillmult))*20));
+			ARSystem.giveBuff(player, new Silence(player), (int) ((4 - (skillmult+sskillmult))*20));
 			if(cast == 7) {
 				spskillon();
 			}
 			if(cast > 7) {
+				ARSystem.giveBuff(player, new Stun(player), 80);
+				ARSystem.giveBuff(player, new Nodamage(player), 80);
 				spskillen();
 				cast = 0;
 				mana = 0;
-				if(ARSystem.isGameMode("lobotomy")) ARSystem.heal(player, 1000);
 				ARSystem.playSound((Entity)player,"c29sp8");
 				skill("c29_sp");
 			}
@@ -179,7 +178,6 @@ public class c29guren extends c00main{
 			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c29:sk0")+ "]&f : "+ cast + "/8");
 		}
 		if(ticks%40==0) {
-			if(ARSystem.isGameMode("lobotomy")) mana+=200;
 			if(mana < 1865) {
 				if(!ARSystem.gameMode2) mana += 182 *(skillmult+sskillmult);
 				
@@ -214,13 +212,4 @@ public class c29guren extends c00main{
 		return true;
 	}
 
-	@Override
-	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
-		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
-		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.5);
-		}
-		return true;
-	}
 }

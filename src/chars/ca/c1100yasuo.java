@@ -28,8 +28,6 @@ public class c1100yasuo extends c00main{
 		number = 1011;
 		load();
 		text();
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[1] *= 0.5;
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[4] *= 0.3;
 	}
 	
 	@Override

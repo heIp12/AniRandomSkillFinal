@@ -244,7 +244,6 @@ public class c24sinobu extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(Rule.c.get(e.getEntity()) != null) {
 				String s = Main.GetText("c"+Rule.c.get(e.getEntity()).getCode()+":tag");
 				if(s.indexOf("tg4") == -1) {

@@ -143,6 +143,7 @@ public class c59nero extends c00main{
 				Map.mapType = MapType.NORMAL;
 				player.setMaxHealth(player.getMaxHealth()*2);
 				ARSystem.heal(player,100);
+				if(ARSystem.AniRandomSkill != null) ARSystem.AniRandomSkill.modes.clear();
 				player.performCommand("tm anitext all SUBTITLE true 20 c59:t6/c59:t5");
 				if(ARSystem.gameMode2) {
 					for(Player p : Bukkit.getOnlinePlayers()) {

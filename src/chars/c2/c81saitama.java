@@ -59,13 +59,15 @@ import util.Map;
 
 public class c81saitama extends c00main{
 
+	int sp = 0;
+	
 	public c81saitama(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 81;
 		load();
 		text();
 		c = this;
-		p.setGameMode(GameMode.SPECTATOR);
+		if(p != null) p.setGameMode(GameMode.SPECTATOR);
 	}
 
 	@Override
@@ -85,6 +87,19 @@ public class c81saitama extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(player.getGameMode() != GameMode.SPECTATOR) {
+			sp++;
+			if(sp > 600) {
+				sp = -99999;
+				spskillon();
+				spskillen();
+				ARSystem.giveBuff(player, new TimeStop(player), 160);
+				ARSystem.playSoundAll("c81sp");
+				delay(()->{
+					Skill.quit(player);
+				},150);
+			}
+		}
 		if(tk%20 == 0) {
 			int c = 0;
 			for(Entity e : Rule.c.keySet()) {
@@ -93,10 +108,37 @@ public class c81saitama extends c00main{
 				}
 			}
 			if(ARSystem.AniRandomSkill != null) {
-			boolean ok = (ARSystem.AniRandomSkill.getTime() >= 180 || ARSystem.isGameMode("mirror") || (Rule.c.size()-c < 1 && c > 0));
+				boolean ok = (ARSystem.AniRandomSkill.getTime() >= 180 || ARSystem.isGameMode("mirror"));
+				if(!ok) {
+					int size = 0;
+					for(Player p : Rule.c.keySet()) {
+						if(p.getGameMode() != GameMode.SPECTATOR && Rule.c.get(p).number != 81) size++;
+					}
+					if(size <= 1 && ARSystem.AniRandomSkill.getTime() < 180) {
+						ARSystem.playSoundAll("c81s");
+						Skill.remove(player, player);
+						return false;
+					}
+				}
 				if(ARSystem.AniRandomSkill != null && !isps && ok && ARSystem.AniRandomSkill.getTime() >= 5) {
 					spskillon();
-					spskillen();
+					
+					for(Player p: Rule.c.keySet()) {
+						Rule.c.get(p).PlayerSpCast(player);
+					}
+					String n = Main.GetText("c"+number+":name1") + " ";
+					if(n.equals("-")) {
+						n = "";
+					}
+					n +=Main.GetText("c"+number+":name2");
+					
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						AdvManager.set(p, 399, 0 , "§f§l"+player.getName() +"§a("+ n +") §f§l" + Main.GetText("c"+number+":ps"));
+					}
+					String na = "c"+number+":ps"+"/&c!!!";
+					
+					player.performCommand("tm anitext "+player.getName()+" SUBTITLE true 40 "+na);
+					
 					ARSystem.playSoundAll("c81sel");
 					player.setGameMode(GameMode.SURVIVAL);
 					Rule.playerinfo.get(player).tropy(81,1);

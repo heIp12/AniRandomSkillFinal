@@ -25,6 +25,10 @@ import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
+import chars.c2.c62shinon;
+import chars.c2.c64hisoka;
+import chars.c3.c133yukina;
+import types.box;
 import util.AMath;
 import util.MSUtil;
 import util.Text;
@@ -77,18 +81,34 @@ public class c18misogi extends c00main{
 		return true;
 	}
 
-	
+
 	@Override
-	protected boolean skill9(){
-		if(dbcount) {
-			player.getWorld().playSound(player.getLocation(), "c"+number+"db", 1, 1);
-		} else {
-			player.getWorld().playSound(player.getLocation(), "c"+number+"db2", 1, 1);
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c64hisoka) {
+					is = "hisoka";
+					break;
+				}
+			}
 		}
-		dbcount = !dbcount;
-		return false;
+		
+		if(is.equals("hisoka")) {
+			ARSystem.playSound((Entity)player, "c18hisoka");
+		} else  {
+			if(dbcount) {
+			player.getWorld().playSound(player.getLocation(), "c"+number+"db", 1, 1);
+			} else {
+				player.getWorld().playSound(player.getLocation(), "c"+number+"db2", 1, 1);
+			}
+			dbcount = !dbcount;
+		}
+		
+		return true;
 	}
-	
+
 	@Override
 	public boolean tick() {
 		ticks++;
@@ -201,4 +221,7 @@ public class c18misogi extends c00main{
 		}
 		return true;
 	}
+	
+	
+	
 }

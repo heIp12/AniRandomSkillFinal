@@ -113,9 +113,6 @@ public class c76naohumi extends c00main{
 
 	@Override
 	public boolean tick() {
-		if(ARSystem.isGameMode("lobotomy")) {
-			if(damage > 100) damage = 100;
-		}
 		
 		if(isps && AMath.random(600) == 6) {
 			ARSystem.giveBuff(player, new Panic(player), 100);
@@ -145,13 +142,9 @@ public class c76naohumi extends c00main{
 				
 			}
 			if(d) {
-				if(ARSystem.isGameMode("lobotomy")) {
-					e.setDamage(e.getDamage()*0.5);
-				} else {
-					e.setDamage(e.getDamage()*0.1);
-				}
 				if(isps) skill("c76_p2");
 				if(!isps) skill("c76_p1");
+				e.setDamage(e.getDamage() * 0.1);
 			}
 			damage++;
 			if(damage > 100) Rule.playerinfo.get(player).tropy(76,1);

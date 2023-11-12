@@ -57,7 +57,6 @@ public class h001chruno extends c00main{
 			skill("chruno_s01-"+skill1);
 			if(skill1 < 3) {
 				cooldown[1] = 0.2f;
-				if(ARSystem.isGameMode("lobotomy")) cooldown[1] = 0.1f;
 				ARSystem.playSound((Entity)player, "c_chrunos3");
 			} else {
 				skill1 = 0;
@@ -93,9 +92,6 @@ public class h001chruno extends c00main{
 			spskillen();
 			ARSystem.playSound((Entity)player, "c_chrunos6");
 			skill("chruno");
-			if(ARSystem.isGameMode("lobotomy")) setcooldown[1]*= 0.5f;
-			if(ARSystem.isGameMode("lobotomy")) setcooldown[2]*= 0.5f;
-			if(ARSystem.isGameMode("lobotomy")) setcooldown[3]*= 0.5f;
 		}
 		return true;
 	}
@@ -149,24 +145,17 @@ public class h001chruno extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(e.getDamage() >= 2) {
-				if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 3);
 				LivingEntity entity = (LivingEntity) e.getEntity();
 				if(entity.getPotionEffect(PotionEffectType.SLOW) != null && entity.getPotionEffect(PotionEffectType.SLOW).getDuration() > 0) {
 					if(entity != null && !entity.isDead()) {
 						entity.setNoDamageTicks(0);
 						entity.damage(1,player);
-						if(ARSystem.isGameMode("lobotomy")) {
-							entity.setNoDamageTicks(0);
-							entity.damage(1,player);
-							entity.setNoDamageTicks(0);
-							entity.damage(1,player);
-						}
 					}
 				}
 				ARSystem.potion(entity, 2, 20, 1);
 			}
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.4);
+			
 		}
 		return true;
 	}

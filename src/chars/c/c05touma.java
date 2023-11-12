@@ -62,13 +62,6 @@ public class c05touma extends c00main{
 		}
 		if(ctime > 0) ctime--;
 		
-		if(tk% 10 == 0) {
-			for(Entity e : ARSystem.box(player, new Vector(5, 5, 5), box.TARGET)) {
-				if(e != null && Rule.c.get(e) != null && Rule.c.get(e).number == 25) {
-					Skill.remove(e, player);
-				}
-			}
-		}
 		return true;
 	}
 	

@@ -87,7 +87,7 @@ public class c36kaneki extends c00main{
 	
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
-		if(e == player || ARSystem.isGameMode("lobotomy")) {
+		if(e == player) {
 			player.setMaxHealth(player.getMaxHealth()+4);
 			ARSystem.heal(player, 8);
 			count++;

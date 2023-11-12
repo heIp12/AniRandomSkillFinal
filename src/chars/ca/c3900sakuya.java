@@ -122,7 +122,6 @@ public class c3900sakuya extends c00main{
 				skill("c1039_p");
 				ARSystem.playSound((Entity)player, "0slash2");
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*5);
 		} else {
 
 		}

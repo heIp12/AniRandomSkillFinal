@@ -26,6 +26,7 @@ import event.WinEvent;
 import manager.Bgm;
 import types.BuffType;
 import util.MSUtil;
+import util.Map;
 
 public class c23madoka extends c00main{
 	int ticks = 0;
@@ -148,7 +149,7 @@ public class c23madoka extends c00main{
 	}
 	
 	public void buf(Buff bf) {
-		if(bf.getTime() > 0) {
+		if(bf.getTime() > 0 && Map.inMap(player)) {
 			double val = bf.getTime()/20;
 			ARSystem.heal(player, val);
 			skillmult += val*0.01;
@@ -179,11 +180,21 @@ public class c23madoka extends c00main{
 		}
 		return true;
 	}
-	
+	boolean majo = true;
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			e.setDamage(e.getDamage() * damage);
+			if(Rule.c.get(e.getEntity()) != null) {
+				int n = Rule.c.get(e.getEntity()).number;
+				if(n%1000 == 21 || n%1000 == 46 || n == 1050) {
+					if(majo) {
+						majo = false;
+						ARSystem.playSound((Entity)player, "c23majo");
+					}
+					e.setDamage(e.getDamage() * 2 + ((LivingEntity)e.getEntity()).getMaxHealth()*0.33);
+				}
+			}
 		} else {
 
 		}

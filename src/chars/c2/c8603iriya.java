@@ -322,10 +322,8 @@ public class c8603iriya extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			attackT = 0;
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.7);
 			if(isps) {
 				if(e.getDamager().getLocation().distance(player.getLocation()) > 8 && AMath.random(10) <= 7) {
 					e.setDamage(0);

@@ -49,6 +49,7 @@ import buff.Wound;
 import chars.c.c000humen;
 import chars.c.c00main;
 import chars.c.c10bell;
+import chars.c.c18misogi;
 import chars.c.c30siro;
 import chars.c2.c60gil;
 import event.Skill;
@@ -130,13 +131,13 @@ public class c119kayaba extends c00main{
 	
 	@Override
 	public boolean skill3() {
-		if(card >= 5) {
-			card -= 5;
+		if(card >= 10) {
+			card -= 10;
 		} else {
 			cooldown[3] = 0;
 			return true;
 		}
-		sk3 = 20;
+		sk3 = 14;
 		return true;
 	}
 	
@@ -176,11 +177,16 @@ public class c119kayaba extends c00main{
 				sk3 = 0;
 				skill("c119_s3");
 				ARSystem.playSound((Entity)player, "c119s3");
-				delay(()->{ARSystem.playSound((Entity)player, "c119s32");},30);
-				ARSystem.giveBuff(player, new Nodamage(player), 50);
-				ARSystem.giveBuff((LivingEntity) e.getDamager(), new MindControl((LivingEntity) e.getDamager(),player), 160);
-				e.setDamage(0);
-				e.setCancelled(true);
+				
+				if(Rule.c.get(e.getDamager()) != null && Rule.c.get(e.getDamager()) instanceof c18misogi) {
+					ARSystem.playSound(e.getDamager(), "c18nomind");
+				} else {
+					delay(()->{ARSystem.playSound((Entity)player, "c119s32");},30);
+					ARSystem.giveBuff(player, new Nodamage(player), 50);
+					ARSystem.giveBuff((LivingEntity) e.getDamager(), new MindControl((LivingEntity) e.getDamager(),player), 160);
+					e.setDamage(0);
+					e.setCancelled(true);
+				}
 				return false;
 			}
 		}

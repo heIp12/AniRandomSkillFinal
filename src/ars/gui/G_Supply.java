@@ -98,7 +98,7 @@ public class G_Supply extends GUIBase{
 	}
 	public void click3(boolean right,boolean shift) {
 		int r = AMath.random(5)-1;
-		for(int i =0; i<4; i++) {
+		for(int i =0; i<5; i++) {
 			if(i == r) {
 				int c = Rule.c.get(player).getCode();
 				if(Text.get("c"+c+":sk"+i) != null) {

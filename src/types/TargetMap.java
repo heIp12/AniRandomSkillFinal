@@ -9,6 +9,11 @@ public class TargetMap<K,V extends Double> {
 	HashMap<K,Double> target = new HashMap<>();
 	List<K> removeList = new ArrayList<>();
 	
+	public TargetMap(){
+		target = new HashMap<>();
+		removeList = new ArrayList<>();
+	}
+	
 	public HashMap<K,Double> get() { return target; }
 	
 	public void add(K k,double v) {

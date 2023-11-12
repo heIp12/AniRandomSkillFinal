@@ -1,5 +1,8 @@
 package chars.c;
 
+import java.util.List;
+
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -14,8 +17,9 @@ import ars.ARSystem;
 import ars.Rule;
 import buff.Silence;
 import buff.TimeStop;
-import net.minecraft.server.v1_12_R1.Entity;
-
+import chars.c2.c62shinon;
+import chars.c3.c133yukina;
+import types.box;
 import util.AMath;
 import util.MSUtil;
 
@@ -55,9 +59,10 @@ public class c07shana extends c00main{
 	
 	@Override
 	public boolean tick() {
-		if(remit > 0) remit--;
+		if(remit < 5 && tk%3 == 0) remit++;
 		
 		if(tk%20==0&&psopen) {
+			scoreBoardText.add("&c ["+Main.GetText("c7:ps")+ "]&f : " + remit +" / 5");
 			scoreBoardText.add("&c ["+Main.GetText("c7:sk0")+ "]&f : " + attack +" / 50");
 		}
 		if(MSUtil.isbuff(player, "c7_s3_b")) {
@@ -83,17 +88,9 @@ public class c07shana extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() + 2);
-			
-			
-			if(remit <= 0) {
-				tpsdelay(()->{
-					((LivingEntity)e.getEntity()).setNoDamageTicks(0);
-				},0);
-				remit = 3;
-				if(skillmult+sskillmult > 2) remit = 2;
-				if(skillmult+sskillmult > 4) remit = 1;
-				if(skillmult+sskillmult > 6) remit = 0;
+			if(remit > 0) {
+				delay(()->{((LivingEntity)e.getEntity()).setNoDamageTicks(0);},0);
+				remit--;
 				ARSystem.spellCast(player, e.getEntity(), "c7_p");
 			}
 			
@@ -118,6 +115,28 @@ public class c07shana extends c00main{
 				}
 			}
 		}
+		return true;
+	}
+	
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c02kirito) {
+					is = "kirito";
+					break;
+				}
+			}
+		}
+		
+		if(is.equals("kirito")) {
+			ARSystem.playSound((Entity)player, "c7kirito");
+		} else {
+			ARSystem.playSound((Entity)player, "c7db");
+		}
+		
 		return true;
 	}
 }

@@ -137,7 +137,6 @@ public class c19sinjjan extends c00main{
 				}
 			}
 			
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.3);
 			if(player.getNoDamageTicks() <= 0) {
 				attack++;
 			}

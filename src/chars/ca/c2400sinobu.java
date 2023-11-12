@@ -124,10 +124,9 @@ public class c2400sinobu extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 2);
 			ARSystem.overheal(player, e.getDamage()/2);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.4);
+			
 		}
 		return true;
 	}

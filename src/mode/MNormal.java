@@ -23,6 +23,7 @@ import util.NpcPlayer;
 import util.Text;
 
 public class MNormal extends ModeBase{
+	static float time = 0;
 	public MNormal(){
 		super();
 		modeName = "normal";
@@ -30,6 +31,7 @@ public class MNormal extends ModeBase{
 	}
 	
 	public void tick(int time) {
+		MNormal.time = time;
 		if(Map.mapid == 15) {
 			if(Bgm.bgmcode.equals("mk16")) {
 				ARSystem.AniRandomSkill.time-=2;
@@ -106,11 +108,11 @@ public class MNormal extends ModeBase{
 		if(Map.mapType == MapType.NORMAL &&time >= 120 && time%30 == 0) {
 			ARSystem.playSoundAll("0select2");
 			if(time <= 180) {
-				RandomEvent(AMath.random(8));
-			} else if(time <= 240)  {
 				RandomEvent(AMath.random(9));
+			} else if(time <= 240)  {
+				RandomEvent(AMath.random(10));
 			} else if(time <= 300) {
-				RandomEvent(8+AMath.random(2));
+				RandomEvent(9+AMath.random(2));
 			} else {
 				RandomEvent(10);
 			}
@@ -170,6 +172,24 @@ public class MNormal extends ModeBase{
 		}
 		
 		if(i == 8) {
+			for(Player p :Rule.c.keySet()) {
+				AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg55"));
+			}
+			float power = 1;
+			power += (int)(time*0.01d);
+			switch (AMath.random(3)) {
+			case 1:
+				Map.spawn("hime1",(int) (5*power));
+				break;
+			case 2:
+				Map.spawn("hime2",(int) (2*power));
+				break;
+			default:
+				Map.spawn("hime1",(int) power);
+				break;
+			}
+		}
+		if(i == 9) {
 			Player pls = ARSystem.RandomPlayer();
 			for(Player p :Rule.c.keySet()) {
 				p.teleport(pls);
@@ -178,15 +198,14 @@ public class MNormal extends ModeBase{
 				AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg6"));
 			}
 		}
-		
-		if(i == 9) {
+		if(i == 10) {
 			Player pls = ARSystem.RandomPlayer();
 			for(Player p :Rule.c.keySet()) {
 				AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg7"));
 			}
 			ARSystem.Death(ARSystem.RandomPlayer(),ARSystem.RandomPlayer());
 		}
-		if(i == 10) {
+		if(i == 11) {
 			Player pls = ARSystem.RandomPlayer();
 			for(Player p :Rule.c.keySet()) {
 				AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg7"));

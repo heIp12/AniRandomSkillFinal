@@ -50,6 +50,8 @@ public class MLoboTomy extends ModeBase{
 		for(Player p :Rule.c.keySet()) {
 			AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg53") +" Adv");
 		}
+		Bukkit.broadcastMessage("- 없데이트중 - ");
+		ARSystem.gameEnd();
 	}
 	
 	public void tick(int time) {

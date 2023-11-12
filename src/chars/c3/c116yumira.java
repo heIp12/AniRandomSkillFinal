@@ -141,6 +141,11 @@ public class c116yumira extends c00main{
 
 	@Override
 	public boolean skill3() {
+		if(isps) {
+			skill("c116_s3");
+			ARSystem.playSound((Entity)player, "c116s3");
+			return true;
+		}
 		Location loc = player.getLocation();
 		loc.setPitch(0);
 		List<LivingEntity> targets = new ArrayList<>();
@@ -182,6 +187,26 @@ public class c116yumira extends c00main{
 			if(!isps &&s1 < 3) s1++;
 			if(isps &&s1 < 5) s1++;
 		}
+		if(n.equals("2")) {
+			for(int i = 0; i<4;i++) {
+				delay(()->{
+					LivingEntity e = target;
+					e.setNoDamageTicks(0);
+					e.damage(1,player);
+					delay(()->{
+						ARSystem.playSound(e, "0attack",0.5f);
+						e.setVelocity(new Vector((AMath.random(10)-5)*0.05,0,(AMath.random(10)-5)*0.05));
+						if(e instanceof Player) ARSystem.playerRotate((Player)e, AMath.random(100)-200, AMath.random(30)-15);
+						
+						ARSystem.spellCast(player, e, "c116_s3e");
+						Location locs = e.getLocation().clone();
+						locs.setYaw(AMath.random(360));
+						locs = ULocal.lookAt(ULocal.offset(locs, new Vector(1.5,0,0)),e.getLocation());
+						ARSystem.spellLocCast(player, locs, "c116_s1-4");
+					},4);
+				},20+14*i);
+			}
+		}
 	}
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
@@ -208,7 +233,6 @@ public class c116yumira extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			ARSystem.giveBuff((LivingEntity) e.getEntity(), new Stun((LivingEntity) e.getEntity()), 2);
 			ARSystem.giveBuff((LivingEntity) e.getEntity(), new NoHeal((LivingEntity) e.getEntity()), 100);
 		} else {

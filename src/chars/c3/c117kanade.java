@@ -156,7 +156,7 @@ public class c117kanade extends c00main{
 			LivingEntity t = target;
 			delay(()->{
 				ARSystem.addBuff(t, new Stun(t), 20);
-				ARSystem.addBuff(t, new Silence(t), 100);
+				ARSystem.addBuff(t, new Silence(t), 160);
 			},10);
 		}
 	}
@@ -212,7 +212,6 @@ public class c117kanade extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			e.setDamage(e.getDamage() * adddamage);
 		} else {
 			if(plt > 3&& e.getDamager().getLocation().distance(player.getLocation()) > 5) {

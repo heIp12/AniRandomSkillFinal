@@ -41,7 +41,11 @@ public class G_Nitory extends GUIBase{
 						   0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0
 				};
-		page[10] = page[13] = page[16] = AMath.random(item);
+		if(AMath.random(10) <= 2) {
+			page[10] = page[13] = page[16] = AMath.random(item);
+		} else {
+			page[10] = page[13] = page[16] = AMath.random(item-1)+1;
+		}
 		while(page[10] == page[13]) page[13] = AMath.random(item);
 		while(page[13] == page[16] || page[10] == page[16]) page[16] = AMath.random(item);
 		info = Rule.playerinfo.get(player);

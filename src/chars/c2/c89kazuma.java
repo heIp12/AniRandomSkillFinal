@@ -169,13 +169,13 @@ public class c89kazuma extends c00main{
 			} else {
 				ARSystem.playSound((Entity)player, "c89s4");
 				int number = Rule.c.get(target).number;
-				while(number%1000 == 5 || number%1000 == 24 || number%1000 == 57 || number%1000 == 86 || number%1000 == 52 || (number < 1000 && number >= 900)) number = AMath.random(GetChar.getCount());
+				while(number%1000 == 5 || number%1000 == 16 || number%1000 == 24 || number%1000 == 57 || number%1000 == 86 || number%1000 == 52 || (number < 1000 && number >= 900)) number = AMath.random(GetChar.getCount());
 				
 				try {
 					stil = GetChar.get(null, Rule.gamerule, ""+number);
 				} catch (Exception e) {
 					number = AMath.random(GetChar.getCount());
-					while(number%1000 == 5 || number%1000 == 24 || number%1000 == 57 || number%1000 == 86 ||number%1000 == 52 || (number < 1000 && number >= 900)) number = AMath.random(GetChar.getCount());
+					while(number%1000 == 5 || number%1000 == 16 || number%1000 == 24 || number%1000 == 57 || number%1000 == 86 ||number%1000 == 52 || (number < 1000 && number >= 900)) number = AMath.random(GetChar.getCount());
 					stil = GetChar.get(null, Rule.gamerule, ""+number);
 				}
 				stil.player = player;
@@ -277,7 +277,7 @@ public class c89kazuma extends c00main{
 		}
 		for(c00main c : charlist.get().keySet()) {
 			try {
-			c.tick();
+				c.ticks();
 			} catch (Exception e) {
 				
 			}
@@ -319,9 +319,8 @@ public class c89kazuma extends c00main{
 
 		
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
+			
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.4);
 			if(player.getHealth() - e.getDamage() < 1 && AMath.random(100) <= ps) {
 				ps-=5;
 				ARSystem.playSound((Entity)player, "0miss");

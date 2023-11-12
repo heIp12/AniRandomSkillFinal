@@ -65,7 +65,9 @@ public class c49aria extends c00main{
 	public boolean skill3() {
 		cooldown[1] = 0;
 		cooldown[2] = 0;
-		skill("c49_s3");
+		if(!player.isSneaking()) {
+			skill("c49_s3");
+		}
 		return true;
 	}
 	
@@ -82,6 +84,7 @@ public class c49aria extends c00main{
 
 	@Override
 	public boolean tick() {
+		dt = true;
 		if(target != null  && target.getLocation().distance(player.getLocation()) > 15) target = null;
 		if(tk%20 == 0 && target != null) scoreBoardText.add("&c ["+Main.GetText("c49:sk3")+ "] : "+ target.getName() + " : " + AMath.round(target.getLocation().distance(player.getLocation()),2));
 		
@@ -93,38 +96,41 @@ public class c49aria extends c00main{
 		if(n.equals("1")) {
 			target.damage(1,player);
 			if(i == 1) {
-				for(int i=0;i<10;i++) if(cooldown[i] > 0)cooldown[i] -= 0.5;
-				ARSystem.heal(player, 1);
+				int size = 1;
+				if(isps) size= 2;
+				for(int i=0;i<10;i++) if(cooldown[i] > 0)cooldown[i] -= 0.5*size;
+				ARSystem.heal(player, 2);
 				i = 0;
 			}
 		}
 		if(n.equals("2")) {
 			target.damage(2,player);
 			if(i == 0) {
-				for(int i=0;i<10;i++) if(cooldown[i] > 0)cooldown[i] -= 0.5;
-				ARSystem.heal(player, 1);
+				int size = 1;
+				if(isps) size= 2;
+				for(int i=0;i<10;i++) if(cooldown[i] > 0)cooldown[i] -= 0.5*size;
+				ARSystem.heal(player, 2);
 				i = 1;
 			}
 		}
 	}
-
+	boolean dt = false;
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			target = (LivingEntity) e.getEntity();
-			if(e.getEntity().getLocation().distance(player.getLocation()) > 8 && ps) {
-				ps = false;
-				ARSystem.giveBuff(target, new Silence(target), 60);
-			} else if(e.getEntity().getLocation().distance(player.getLocation()) < 8 && !ps) {
-				ps = true;
-				e.setDamage(e.getDamage()*2);
-			}
+			target = (LivingEntity)e.getEntity();
 			if(isps) {
+				if(dt) {
+					dt = false;
+					target.setNoDamageTicks(0);
+					target.damage(0.5f,player);
+				}
 				if(hit.get(e.getEntity())== null) {
 					hit.put(target,1);
 				} else {
 					hit.put(target,1 + hit.get(target));
-					if(hit.get(target) >= 12) {
+					player.sendTitle(target.getName(),hit.get(target)+ " / 30");
+					if(hit.get(target) >= 30) {
 						Skill.remove(target, player);
 						tropy++;
 						if(tropy >= 2) {

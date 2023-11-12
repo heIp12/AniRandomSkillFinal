@@ -120,7 +120,7 @@ public class c8604iriya extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*5);
+			
 		} else {
 			if(Rule.c.get(e.getDamager()) != null && Rule.c.get(e.getDamager()).number%1000 == 126) {
 				e.setDamage(0.1);

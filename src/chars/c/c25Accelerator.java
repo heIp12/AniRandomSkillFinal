@@ -27,13 +27,18 @@ import buff.Nodamage;
 import buff.Reflect;
 import buff.Silence;
 import buff.Stun;
+import buff.TimeStop;
+import chars.c2.c62shinon;
+import chars.c2.c63micoto;
+import event.Skill;
 import manager.AdvManager;
 import types.BuffType;
-
+import types.box;
 import util.AMath;
 import util.Holo;
 import util.MSUtil;
 import util.Text;
+import util.ULocal;
 
 public class c25Accelerator extends c00main{
 	int cc = 0;
@@ -41,14 +46,18 @@ public class c25Accelerator extends c00main{
 	int fly = 400;
 	boolean white = false;
 	
+	boolean touma = false;
+	
 	public c25Accelerator(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 25;
 		load();
 		text();
 
-		((Barrier)Rule.buffmanager.selectBuff(player, "barrier")).SetEffect("c25_p");
-		Rule.buffmanager.selectBuffValue(player, "barrier",50);
+		if(p != null) {
+			((Barrier)Rule.buffmanager.selectBuff(player, "barrier")).SetEffect("c25_p");
+			Rule.buffmanager.selectBuffValue(player, "barrier",50);
+		}
 	}
 	
 	@Override
@@ -213,14 +222,33 @@ public class c25Accelerator extends c00main{
 				scoreBoardText.add("&c ["+Main.GetText("c25:sk0")+ "]&f : "+ cc + " / 20");
 			}
 		}
+		
+		if(tk% 10 == 0) {
+			for(Entity e : ARSystem.box(player, new Vector(5, 5, 5), box.TARGET)) {
+				touma(e);
+			}
+		}
 		return true;
 	}
 	
+	void touma(Entity e) {
+		if(!touma && e != null && Rule.c.get(e) != null && Rule.c.get(e).number%1000 == 5) {
+			touma = true;
+			ARSystem.giveBuff(player, new TimeStop(player), 100);
+			ARSystem.giveBuff((LivingEntity)e, new TimeStop((LivingEntity)e), 100);
+			e.teleport(ULocal.lookAt(e.getLocation(), player.getLocation()));
+			player.teleport(ULocal.lookAt(player.getLocation(), e.getLocation()));
+			ARSystem.playSound((Entity)player, "c25touma");
+			delay(()->{
+				Skill.remove(player, e);
+			},90);
+		}
+	}
 	
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
+			touma(e.getEntity());
 		} else {
 			if(Rule.buffmanager.GetBuffValue(player, "barrier") > e.getDamage()) {
 				Rule.buffmanager.selectBuff(player, "barrier").addValue(-e.getDamage());
@@ -239,6 +267,29 @@ public class c25Accelerator extends c00main{
 				}
 			}
 		}
+		return true;
+	}
+	
+	
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c63micoto) {
+					is = "micoto";
+					break;
+				}
+			}
+		}
+		
+		if(is.equals("micoto")) {
+			ARSystem.playSound((Entity)player, "c25micoto");
+		} else {
+			ARSystem.playSound((Entity)player, "c25db");
+		}
+		
 		return true;
 	}
 }

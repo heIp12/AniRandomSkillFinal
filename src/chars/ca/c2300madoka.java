@@ -22,6 +22,7 @@ import buff.Buff;
 import buff.Nodamage;
 import buff.TimeStop;
 import chars.c.c00main;
+import chars.c2.c61tyana;
 import event.Skill;
 import manager.Bgm;
 import util.Holo;
@@ -95,6 +96,9 @@ public class c2300madoka extends c00main{
 	}
 	
 	public void delect(LivingEntity e) {
+		if(Rule.c.get(e) != null && Rule.c.get(e) instanceof c61tyana) {
+			ARSystem.playSound(e, "c61kami2");
+		}
 		ARSystem.playSound((Entity)e, "c1023p1");
 		ARSystem.spellCast(player, e, "c1023_p");
 		ARSystem.giveBuff(e, new TimeStop(e), 220);

@@ -226,7 +226,6 @@ public class c51zenos extends c00main{
 				attack++;
 				Holo.create(e.getEntity().getLocation(), "§e<Critical>", 40, new Vector(0, -0.1, 0));
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 		} else {
 			if(!sk[1]&& tick > 0 && AMath.random(100) <= 70) {
 				e.setCancelled(true);

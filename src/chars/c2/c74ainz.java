@@ -70,7 +70,6 @@ public class c74ainz extends c00main{
 		load();
 		text();
 		c = this;
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[1] *= 0.3;
 	}
 
 	@Override
@@ -170,7 +169,7 @@ public class c74ainz extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
+			
 		} else {
 			if(e.getDamage() <= 3) e.setDamage(0);
 		}

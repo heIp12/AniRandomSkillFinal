@@ -43,6 +43,8 @@ import buff.Timeshock;
 import buff.Wound;
 import chars.c.c000humen;
 import chars.c.c00main;
+import chars.ca.c9200susu;
+import chars.ca.c9201flan;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
@@ -73,8 +75,7 @@ public class c92susu extends c00main{
 		load();
 		text();
 		c = this;
-		ARSystem.potion(player, 14, 100000, 1);
-		if(ARSystem.isGameMode("lobotomy")) maxtick = 1800;
+		if(p != null) ARSystem.potion(player, 14, 100000, 1);
 	}
 	
 
@@ -134,11 +135,7 @@ public class c92susu extends c00main{
 			ARSystem.Stop();
 		}
 	}
-	@Override
-	public boolean remove(Entity caster) {
-		if(owner != null) return false;
-		return true;
-	}
+
 	@Override
 	public boolean tick() {
 		inGame = true;
@@ -167,19 +164,34 @@ public class c92susu extends c00main{
 		if(owner == null) {
 			notick++;
 			if(notick == 300) ARSystem.playSound(player, "c92p1");
-			ARSystem.giveBuff(player, new Stun(player), 4);
+			int size = 14;
+			if(notick < 600) {
+				ARSystem.giveBuff(player, new Stun(player), 4);
+			} else {
+				player.setVelocity(new Vector(0,-3,0));
+				size = 6;
+			}
 			ARSystem.giveBuff(player, new Silence(player), 4);
 			if(tk%10 == 0) {
-				for(Entity e : ARSystem.box(player, new Vector(14,14,14), box.ALL)) {
+				for(Entity e : ARSystem.box(player, new Vector(size,size,size), box.ALL)) {
 					if(e.getLocation().distance(player.getLocation()) < 3) {
 						ARSystem.playSound(player, "c92p3");
 						owner = (LivingEntity)e;
 						skill("c92_move");
-						if(!(owner instanceof Player)) owner.setMaxHealth(owner.getMaxHealth() + 200);
-						owner.setMaxHealth(owner.getMaxHealth()*1.6);
-						owner.setHealth(owner.getMaxHealth());
-						if(Rule.c.get(owner) != null) {
-							for(int i=0;i<10;i++) Rule.c.get(owner).setcooldown[i] *= 0.6;
+						
+						if(owner instanceof Player && ((AMath.random(10) <= 3 && notick < 200 )|| notick < 60)) {
+							Rule.c.put((Player)owner,new c9201flan((Player)owner,Rule.gamerule,null));
+							((c9201flan)Rule.c.get((Player)owner)).owner = player;
+							Rule.c.put(player,new c9200susu(player,Rule.gamerule,null));
+							((c9200susu)Rule.c.get(player)).owner = (Player)owner;
+
+						} else {
+							if(!(owner instanceof Player)) owner.setMaxHealth(owner.getMaxHealth() + 200);
+							owner.setMaxHealth(owner.getMaxHealth()*1.6);
+							owner.setHealth(owner.getMaxHealth());
+							if(Rule.c.get(owner) != null) {
+								for(int i=0;i<10;i++) Rule.c.get(owner).setcooldown[i] *= 0.6;
+							}
 						}
 					} else {
 						if(psound <= 0) {
@@ -229,7 +241,6 @@ public class c92susu extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			if(e.getEntity() == owner && Rule.c.size() > 2) {
 				e.setDamage(0);
 				e.setCancelled(true);
@@ -237,11 +248,15 @@ public class c92susu extends c00main{
 				tick = 0;
 			}
 		} else {
-			if(owner != null) {
+			if(owner == null) {
+				e.setDamage(e.getDamage() * 10);
+				if(player.getHealth() - e.getDamage() <= 1) {
+					Rule.playerinfo.get(player).tropy(92,1);
+				}
+			}
+			if(e.getDamager() == owner && Rule.c.size() > 2) {
 				e.setDamage(0);
 				e.setCancelled(true);
-			} else if(player.getHealth() - e.getDamage() <= 1) {
-				Rule.playerinfo.get(player).tropy(92,1);
 			}
 		}
 		return true;

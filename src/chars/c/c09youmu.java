@@ -93,7 +93,6 @@ public class c09youmu extends c00main{
 	public boolean tick() {
 		tick++;
 		s3c+= (skillmult + sskillmult);
-		if(ARSystem.isGameMode("lobotomy")) s3c+= skillmult + sskillmult;
 		if(tk%20 ==0) {
 			scoreBoardText.add("&c ["+Main.GetText("c9:sk2")+ "]&f : " + sk3count);
 		}
@@ -174,7 +173,6 @@ public class c09youmu extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(e.getEntity() instanceof LivingEntity) {
 				if(attack.get(e.getEntity()) == null) {
 					attack.put(e.getEntity(),1);

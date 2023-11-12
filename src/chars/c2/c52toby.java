@@ -167,7 +167,6 @@ public class c52toby extends c00main{
 					camui = entitys;
 					camui.add(player);
 					for(Entity e : entitys) {
-						if(ARSystem.isGameMode("lobotomy") && entitys instanceof Player) ARSystem.giveBuff((LivingEntity) e, new Nodamage((LivingEntity) e), 200);
 						ARSystem.giveBuff((LivingEntity) e, new Stun((LivingEntity) e), 20);
 					}
 					
@@ -301,9 +300,7 @@ public class c52toby extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*4);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.3);
 		}
 		return true;
 	}

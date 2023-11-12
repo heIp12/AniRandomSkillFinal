@@ -55,7 +55,7 @@ public class c41zanitu extends c00main{
 		load();
 		text();
 
-		loc = player.getLocation();
+		if(p != player) loc = player.getLocation();
 	}
 	
 	void sp() {
@@ -216,6 +216,7 @@ public class c41zanitu extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(loc == null) loc = player.getLocation();
 		if(player.isSneaking() && loc.distance(player.getLocation()) <= 0.1 && cooldown[1] <= 0) {
 			ptick++;
 			if(ptick > 10 && Rule.buffmanager.GetBuffTime(player, "sleep") < 3) {
@@ -249,7 +250,7 @@ public class c41zanitu extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*4);
+			
 		} else {
 
 		}

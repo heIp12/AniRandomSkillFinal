@@ -13,6 +13,9 @@ import ars.ARSystem;
 import ars.Rule;
 import buff.Timeshock;
 import chars.c3.c101aris;
+import chars.ca.c2400sinobu;
+import chars.ca.c3002siro;
+import chars.ca.c5600enju;
 import chars.ca.c8400subi;
 import manager.AdvManager;
 import manager.BuffManager;
@@ -24,7 +27,7 @@ import util.Map;
 public class Skill {
 	static public void remove(Entity entity,Entity player) {
 		if(Rule.c.get(player) == null) return;
-		Holo.create(entity.getLocation(),"§c§l<< Delect >>",100,new Vector(0,0.01,0));
+		Holo.create(entity.getLocation(),"§c§l<< Delete >>",100,new Vector(0,0.01,0));
 		if(entity instanceof Player) {
 			if(Rule.c.get(entity) != null) {
 				if(Rule.c.get(entity).remove(player)) {
@@ -95,6 +98,7 @@ public class Skill {
 			p.setMaxHealth(20);
 			p.setHealth(20);
 		}
+		ARSystem.playSoundAll("0win");
 		ARSystem.killall();
 		ARSystem.AniRandomSkill = null;
 		Rule.c.clear();
@@ -111,12 +115,24 @@ public class Skill {
 		if(Rule.c.get(target) == null) ARSystem.giveBuff(target, new Timeshock(target), 200);
 		int number = Rule.c.get(target).number;
 		if(number == 1084) return;
-
+		if(number == 1056) return;
+		if(number == 1024) return;
+		if(number == 2030) return;
+		
+		if(number == 30) {
+			Rule.c.put((Player) target, new c3002siro((Player) target, Rule.gamerule, null));
+			return;
+		}
 		if(number == 84) {
 			Rule.c.put((Player) target, new c8400subi((Player) target, Rule.gamerule, null));
 			return;
 		}
-		
+		if(number == 24) {
+			Rule.c.put((Player) target, new c2400sinobu((Player) target, Rule.gamerule, null));
+		}
+		if(number == 56) {
+			Rule.c.put((Player) target, new c5600enju((Player) target, Rule.gamerule, null));
+		}
 		if(number > 999) {
 			Rule.c.put((Player) target, GetChar.get((Player) target, Rule.gamerule, ""+(number%1000)));
 		} else {

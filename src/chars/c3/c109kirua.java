@@ -201,7 +201,6 @@ public class c109kirua extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			if(p <= 0) {
 				p = 60;
 				stack +=30;

@@ -79,8 +79,6 @@ public class c108suwaco extends c00main{
 		load();
 		text();
 		c = this;
-
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[0] = 400;
 	}
 
 	@Override
@@ -175,7 +173,6 @@ public class c108suwaco extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(p > 0) {
 				p--;
 				ARSystem.spellCast(player, e.getEntity(), "c108_p");

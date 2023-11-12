@@ -2,6 +2,7 @@ package chars.c;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,9 +21,11 @@ import buff.TimeStop;
 import event.Skill;
 import event.WinEvent;
 import manager.Bgm;
+import types.box;
 import util.AMath;
 import util.Holo;
 import util.MSUtil;
+import util.Map;
 
 public class c03remuru extends c00main{
 	int ticks = 0;
@@ -84,8 +87,9 @@ public class c03remuru extends c00main{
 			skill("c"+number+"_sps1");
 			Rule.buffmanager.selectBuffValue(player, "plushp",0);
 			Bgm.setBgm("c3");
+			
 			delay(new Runnable(){@Override public void run() {
-				ARSystem.giveBuff(player, new TimeStop(player), 1200);
+				ARSystem.giveBuff(player, new TimeStop(player), 600);
 				}}, 20);
 			delay(()-> { ARSystem.playSoundAll("c3g2");}, 120);
 			delay(()-> { 
@@ -93,9 +97,35 @@ public class c03remuru extends c00main{
 				Bukkit.getPluginManager().callEvent(event);
 				if(!event.isCancelled()) {
 					skill("c"+number+"_sp_a");
+					for(int i=0; i<60;i++) {
+						Location l = Map.randomLoc();
+						int j = 0;
+						while(l.distance(player.getLocation()) > 60 + (j*0.001)) {
+							j++;
+							l = Map.randomLoc();
+						}
+						Location loc = l;
+						delay(()->{
+							ARSystem.spellLocCast(player, loc, "c3_spb");
+						},i);
+						
+					}
+					delay(()-> { 
+						for(Entity en : ARSystem.box(player, new Vector(99,99,99),box.ALL)) {
+							LivingEntity le = (LivingEntity)en;
+							if(le instanceof Player) {
+								((Player) le).setGameMode(GameMode.SPECTATOR);
+							} else {
+								Skill.quit(le);
+							}
+						}
+					}, 40);
 					delay(()-> { 
 						Skill.win(player);
-					}, 40);
+						tpsdelay(()->{
+							ARSystem.playSoundAll("c3win");
+						},40);
+					}, 100);
 				}
 			}, 320);
 			 

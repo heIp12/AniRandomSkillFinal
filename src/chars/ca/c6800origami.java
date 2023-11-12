@@ -154,9 +154,9 @@ public class c6800origami extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*4);
+			
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.4);
+			
 			if(at1<=0) {
 				at1 = 100;
 			} else if(at2<=0) {

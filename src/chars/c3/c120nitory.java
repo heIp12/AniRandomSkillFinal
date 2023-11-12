@@ -71,7 +71,7 @@ import util.Map;
 import util.Text;
 
 public class c120nitory extends c00main{
-	TargetMap<LivingEntity, Double> target = new TargetMap<>();
+	TargetMap<LivingEntity, Double> target;
 	int s1 = 0;
 	
 	int spcount = 0;
@@ -82,6 +82,7 @@ public class c120nitory extends c00main{
 		load();
 		text();
 		c = this;
+		target = new TargetMap<>();
 	}
 	
 	@Override
@@ -125,17 +126,19 @@ public class c120nitory extends c00main{
 	
 	@Override
 	public boolean skill5() {
-		if((score-200) >= 100 + (spcount*200)) {
+		List<Entity> entitys = ARSystem.PlayerBeamBox(player, 20, 10, box.TARGET);
+		
+		if((score-200) >= 100 + (spcount*200) && ((player.isSneaking() && entitys.size() > 0 && Rule.c.get(entitys.get(0)) != null) || !player.isSneaking())) {
 			s_score -= (400 + (spcount*200));
 			spcount++;
 			spskillon();
 			spskillen();
 			
 			if(player.isSneaking()) {
-				ARSystem.playSound((Entity)player, "c120sp");
-				new G_Nitory(player);
-			} else {
 				ARSystem.playSound((Entity)player, "c120sp2");
+				new G_Nitory((Player)entitys.get(0));
+			} else {
+				ARSystem.playSound((Entity)player, "c120sp");
 				new G_Nitory(player);
 				
 			}

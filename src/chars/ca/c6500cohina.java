@@ -233,9 +233,7 @@ public class c6500cohina extends c00main{
 			if(tg.getHealth() - e.getDamage() < 1) {
 				ARSystem.heal(player, tg.getMaxHealth()/2);
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(3);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(0.5);
 
 		}
 		return true;

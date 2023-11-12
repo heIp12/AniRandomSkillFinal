@@ -116,6 +116,51 @@ public class c70raito extends c00main{
 		return true;
 	}
 	
+	void sp() {
+		spskillen();
+		spskillon();
+		ARSystem.playSoundAll("c70sp");
+		WinEvent event = new WinEvent(player);
+		Bukkit.getPluginManager().callEvent(event);
+		if(!event.isCancelled()) {
+			Bgm.setBgm("c70");
+			
+			Map.getMapinfo(1011);
+			Location loc = Map.getCenter();
+			loc.setY(4);
+			loc.setPitch(0);
+			float i = 1;
+			for(Player p :Rule.c.keySet()) {
+				if(p != player) Rule.c.put(p, new c000humen(p, plugin, null));
+				ARSystem.giveBuff(p,new TimeStop(p), 480);
+				Location l = loc.clone();
+				l.setYaw(360 * (i/Rule.c.size()));
+				p.teleport(ULocal.lookAt(ULocal.offset(l, new Vector(5,0,0)),l));
+				i+=1.0f;
+			}
+			delay(()->{
+				skill("c70_sp");
+				ARSystem.potion(player, 14, 400, 400);
+			},40);
+			delay(()->{
+				for(int o=0;o<5;o++) {
+					delay(()->{
+						for(Player p :Rule.c.keySet()) {
+							if(p != player) ARSystem.spellCast(player, p, "bload");
+						}
+					},o*4);
+				}
+				delay(()->{
+					Skill.win(player);
+					tpsdelay(()->{
+						ARSystem.playSoundAll("c70win");
+					},40);
+				},20);
+			},460);
+		}
+	
+	}
+	
 	@Override
 	public boolean tick() {
 		if(tk%10 == 0 && AMath.random(40) == 4 && !ps) {
@@ -136,6 +181,7 @@ public class c70raito extends c00main{
 						delay(()->{
 							p.setNoDamageTicks(0);
 							p.damage(p.getMaxHealth(),player);
+							ARSystem.potion(player,24, 100, 1);
 						},30);
 						delay(()->{
 							if(Rule.c.get(p) != null) {
@@ -159,24 +205,7 @@ public class c70raito extends c00main{
 			if(remove != null) players.remove(remove);
 			
 			if(all && !isps && Rule.c.size() > 2 && skillCooldown(0)) {
-				spskillen();
-				spskillon();
-				ARSystem.playSoundAll("c70sp");
-				Bgm.setBgm("c70");
-				WinEvent event = new WinEvent(player);
-				Bukkit.getPluginManager().callEvent(event);
-				if(!event.isCancelled()) {
-					for(Player p :Rule.c.keySet()) {
-						ARSystem.giveBuff(p,new TimeStop(p), 480);
-						if(p != player) {
-							delay(()->{
-								delay(()-> { 
-									Skill.win(player);
-								},20);
-							},460);
-						}
-					}
-				}
+				sp();
 			}
 			for(Player p :players.keySet()) {
 				if(players.get(p) > 0) {

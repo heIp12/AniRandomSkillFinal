@@ -22,10 +22,13 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Curse;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
+import buff.Wound;
+import event.Skill;
 import types.box;
 
 import util.AMath;
@@ -35,336 +38,153 @@ import util.Text;
 
 public class c17shou extends c00main{
 	List<Entity> getab = new ArrayList<Entity>();
-	int ab[] = new int[8];
-	int abselect = 0;
+	boolean ab[] = new boolean[8];
 	int abcount = 0;
-	int spell[] = new int[21];
-	int spellcount = 0;
 	
-	int ticks = 0;
-	int select = 0;
-	int set = -1;
+	int sk[] = new int[5];
+	int sel = 1;
 	
+	int skill = 0;
+	
+	float damage = 1;
+
 	LivingEntity target = null;
 	int targettime = 0;
 	
-	float mult = 1;
 	
 	public c17shou(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 17;
 		load();
 		text();
-		for(int i=0; i<8;i++) {
-			ab[i] = -2;
-		}
-		abcount++;
-		ab[0]= AMath.random(7);
-		select = ab[0]+1;
-		if(ARSystem.AniRandomSkill == null) for(int i=0;i<8;i++) {
-			ab[i] = i+1;
-			abcount = 7;
-		}
-		if(ARSystem.isGameMode("lobotomy")) sskillmult += 1;
+		
 	}
 	
 	@Override
 	public boolean skill1() {
-		if(select > 0) skill(select-1);
+		damage = 1;
+		skill("c17_s1-"+sel);
+		if(sel == 2) player.setVelocity(player.getLocation().getDirection().multiply(2).setY(0.2));
+		if(sel == 3) ARSystem.heal(player, 3);
+		skill = sel;
 		return true;
 	}
-	
-	public boolean skill(int i) {
-		skill("c"+number+"_s"+i);
-		if(i == 4) sk4();
-		if(i == 5) sk5();
-		if(i == 6) sk6();
-		if(i == 7) sk7();
-		return true;
-	}
-	
-	int i = 0;
 	
 	@Override
 	public boolean skill2() {
-		if(spellcount == 0) {
+		damage = 1;
+		LivingEntity target;
+		int range = 5;
+		if(ab[3]) range = 10;
+		try {
+			target = (LivingEntity)ARSystem.PlayerBeamBox(player, 5, range, box.TARGET).get(0);
+		} catch(Exception e) {
 			cooldown[2] = 0;
-			return false;
+			return true;
 		}
-		i = 0;
+		player.teleport(ULocal.lookAt(ULocal.offset(target.getLocation(), new Vector(3,0,0)), target.getLocation()));
 		
+		int turn = 0;
 		int delay = 0;
-		int c = 0;
-		for(int j=0; j<spellcount;j++) {
+		ARSystem.playSound((Entity)player, "c17j");
+		while(turn < sk.length) {
+			int sks = sk[turn];
+			int cc = 0;
+			for(int i=1;i<3;i++) if(turn+i < sk.length && sk[turn+i] == sks) cc++;
+			int c = cc+1;
+			turn+=cc;
+			int d = 25;
+			if(isps) d = 15;
+			int tu = turn;
 			delay(()->{
-				skill20();
-				if(target == null) {
-					target = (LivingEntity) ARSystem.boxSOne(player, new Vector(5,5,5), box.TARGET);
-					targettime = 10;
-					if(target == null) {
-						targettime = 0;
-						i = 999;
-					}
-				}
-			},delay);
-			delay += Integer.parseInt(Main.GetText("c17:s"+spell[j]+"_delay"));
-			c += Integer.parseInt(Main.GetText("c17:s"+spell[j]+"_cooldown"));
-		}
-		cooldown[2] = setcooldown[2]+(c*0.1f);
-		return true;
-	}
-	
-	void skill20(){
-		if(targettime > 0) {
-			if(i >= 999) return;
-			int skill = spell[i];
-			if(skill == 1) {
-				Location loc = target.getLocation();
-				loc.setPitch(0);
-				player.teleport(ULocal.lookAt(ULocal.offset(loc, new Vector(2,0,0)),target.getLocation()));
-				targettime = 10;
-				delay(()->{
-					ARSystem.playSound(target, "0attack4");
-					ARSystem.spellLocCast(player, loc, "c17_y1_e");
-					ARSystem.giveBuff(target, new Silence(target), 20);
-					target.setNoDamageTicks(0);
-					target.damage(2,player);
-				},3);
-			}
-			if(skill == 2) {
-				targettime = 10;
-				for(int j=0;j<3;j++) {
-					delay(()->{
-						ARSystem.playSound(target, "0katana4",1.4f);
-						skill("c17_y_s2");
-					},j);
-				}
-			}
-			if(skill == 3) {
-				targettime = 10;
-				Location loc = player.getLocation();
-				player.teleport(loc);
-				player.setVelocity(loc.getDirection().multiply(-1).setY(0));
-				delay(()->{
-					ARSystem.playSound(target, "0sword2");
-					skill("c17_y_s3");
-				},2);
-			}
-			if(skill == 4) {
-				Location loc = ULocal.offset(player.getLocation(), new Vector(2,0,0));
-				ARSystem.spellLocCast(player, loc, "0bload");
-				for(Entity e : loc.getWorld().getNearbyEntities(loc, 3, 3, 3)){
-					if(ARSystem.isTarget(e, player, box.TARGET)) {
-						ARSystem.playSound(target, "0attack4", 2 - (i *0.1f));
-						target.setNoDamageTicks(0);
-						target.damage(i,player);
-						target = (LivingEntity) e;
-						targettime = 10;
-						ARSystem.heal(player, i/2);
-					}
-				}
-			}
-			if(skill == 5) {
-				targettime = 4;
-				mult *= (0.02 + AMath.random(0, 149)*0.02);
-				player.sendTitle("§cX"+mult, "");
-				skill("c17_y5");
-
-			}
-			if(skill == 6) {
-				Location loc = ULocal.offset(player.getLocation(), new Vector(2,0,0));
-				ARSystem.spellLocCast(player, loc, "c17_y6_e");
-				ARSystem.playSound(target, "0attack4",0.4f);
-				for(Entity e : loc.getWorld().getNearbyEntities(loc, 3, 3, 3)){
-					if(ARSystem.isTarget(e, player, box.TARGET)) {
-						target.setNoDamageTicks(0);
-						target.damage(4,player);
-						target = (LivingEntity) e;
-						targettime = 10;
-						delay(()->{
-							target.teleport(ULocal.lookAt(target.getLocation(), player.getLocation()));
-							target.setVelocity(player.getLocation().getDirection().multiply(1));
-						},2);
-					}
-				}
-
-			}
-			if(skill == 7) {
-				Location loc = target.getLocation();
-				loc.setPitch(0);
-				loc.setYaw(AMath.random(0,360));
-				ARSystem.spellLocCast(player, loc, "c17_y7_e");
-				ARSystem.giveBuff(player, new Nodamage(player), 20);
-				player.teleport(ULocal.lookAt(ULocal.offset(loc, new Vector(2.5,0,0)),target.getLocation()));
-				targettime = 10;
-				delay(()->{
-					ARSystem.playSound(target, "0attack2");
-					target.setNoDamageTicks(0);
-					target.damage(2,player);
-				},3);
-			}
-			i++;
-		} else {
-			if(i != 999) {
-				try {
-					skill(spell[i]);
-				} catch (Exception e) {
-					
-				}
-				i++;
-			}
-		}
-	}
-	
-	@Override
-	public boolean chat(PlayerChatEvent e) {
-		if(e.getPlayer() == player) {
-			try {
-				String msg = e.getMessage().replace(" ", "");
-				short o;
-				for(int i=0; i<msg.length(); i++) o = Short.parseShort(""+msg.charAt(i));
-				if(!isps && msg.length() <= abcount)  msg = msg.substring(0, abcount);
-				if(msg.length() > 21) msg = msg.substring(0, 21);
-				abselect = 0;
 				
-				for(int j=0;j<msg.length();j++) {
-					boolean issk = false;
-					for(int ii : ab) {
-						if(ii == Integer.parseInt(""+msg.charAt(j))) {
-							issk = true;
+				String s = "";
+				int count = 0;
+				for(int i=0;i<sk.length;i++) {
+					if(count <= 0) {
+						count = 0;
+						for(int j=1;j<3;j++) {
+							if(j+i<sk.length && sk[i] == sk[i+j]) {
+								count++;
+							} else {
+								break;
+							}
 						}
+						if(count == 0) s+= "§a";
+						if(count == 1) s+= "§e";
+						if(count == 2) s+= "§c";
+						if(tu-count == i) s +="【";
+					} else {
+						count--;
 					}
-					if(issk) spell[abselect++] = Integer.parseInt(""+msg.charAt(j));
+					s += Text.get("c17:p"+sk[i]);
+					if(tu == i) s +="】";
 				}
-				spellcount = abselect;
-				return false;
-			} catch(NumberFormatException nfe) {
+				player.sendTitle("",s);
 				
-			}
+				ARSystem.giveBuff(target, new Stun(target), 30);
+				ARSystem.giveBuff(player, new Stun(player), 30);
+				ARSystem.giveBuff(player, new Silence(player), 30);
+				if(ab[6]) ARSystem.giveBuff(target, new Nodamage(target), 0);
+				if(ab[7]) ARSystem.giveBuff(player, new Nodamage(player), 30);
+				
+				player.teleport(ULocal.lookAt(ULocal.offset(target.getLocation(), new Vector(3,0,0)), target.getLocation()));
+				
+				if(sks == 3) {
+					damage += 0.5f*c*c;
+					ARSystem.playSound((Entity)player, "0miss");
+				} else {
+					skill("c17_s2-"+sks+""+c);
+					skill = sks*10+c;
+				}
+			},d*delay++);
+			turn++;
 		}
 		return true;
 	}
-	
-	public void Skillmsg() {
-		String one = Main.GetText("main:tp"+(ab[abselect]));
-		String to = "";
-		
-		if(set > -1) {
-			to = "§cSave : "+Main.GetText("main:tp"+(set-1));
-		}
-		if(abcount > 1) {
-			int lk = abselect+1;
-			int rk = abselect-1;
-			if(lk == abcount) {
-				lk = 0;
-			}
-			if(rk == -1) {
-				rk = abcount-1;
-			}
-			lk = ab[lk];
-			rk = ab[rk];
-			one = "§7"+Main.GetText("main:tp"+rk)+"§a>>" +"§f§l" + one +"§a>>§f"+ Main.GetText("main:tp"+lk);
-		}
-		
-		player.sendTitle(one, to ,0,20,0);
-	}
-	public void sk4() {
-		List<Entity> entitys = ARSystem.box(player, new Vector(8, 4, 8),box.TARGET);
-		for(Entity e : entitys) {
-			if(Rule.buffmanager.OnBuffValue((LivingEntity) e, "barrier")) {
-				Rule.buffmanager.selectBuffAddValue(player, "barrier",(float) (Rule.buffmanager.GetBuffValue((LivingEntity) e, "barrier")*0.8));
-				Rule.buffmanager.selectBuffValue((LivingEntity) e, "barrier",0);
-			}
-			if(Rule.buffmanager.OnBuffValue((LivingEntity) e, "plushp")) {
-				Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) (Rule.buffmanager.GetBuffValue((LivingEntity) e, "plushp")*0.8));
-				Rule.buffmanager.selectBuffValue((LivingEntity) e, "plushp",0);
-			}
-			target = (LivingEntity) e;
-			targettime = 10;
-		}
-	}
-	public void sk5() {
-		
-		LivingEntity e = ((LivingEntity)ARSystem.boxRandom(player, new Vector(5,5,5),box.TARGET));
-		if(e != null) {
-			e.setNoDamageTicks(0);
-			e.damage(AMath.random(0, 10),player);
-			ARSystem.spellCast(player, e, "c17_s5-2");
-		}
-		target = e;
-		targettime = 10;
-	}
-	public void sk6() {
-		cooldown[1]+=2;
-		List<Entity> e = ARSystem.box(player, new Vector(8, 5, 8),box.TARGET);
-		for(Entity entity : e) {
-			ARSystem.giveBuff((LivingEntity) entity, new Silence((LivingEntity) entity), 60);
-			ARSystem.giveBuff((LivingEntity) entity, new Stun((LivingEntity) entity), 40);
-			target = (LivingEntity) entity;
-			targettime = 10;
-		}
-	}
-	public void sk7() {
-		cooldown[1]+=3;
-		ARSystem.giveBuff(player, new Nodamage(player), 60);
-		ARSystem.giveBuff(player, new Stun(player), 60);
-		ARSystem.giveBuff(player, new Silence(player), 60);
-		delay(()->{
-			List<Entity> entitys = ARSystem.box(player, new Vector(7, 5, 7),box.TARGET);
-			for(Entity en : entitys) {
-				((LivingEntity)en).damage(7,player);
-			}
-		},62);
-	}
-	
+
 	@Override
 	public boolean skill3() {
-		if(isps) {
-			if(abcount*3 > spellcount) {
-				spell[spellcount++] = select-1;
-			}
-		} else {
-			if(abcount > spellcount) {
-				spell[spellcount++] = select-1;
+		String s = "";
+		sk[0] = sel;
+		for(int i=1;i<sk.length;i++) {
+			sk[i] = AMath.random(5);
+			if(i > 0 && isps && AMath.random(10) <= 4) {
+				sk[i] = sk[i-1];
 			}
 		}
+		int count = 0;
+		for(int i=0;i<sk.length;i++) {
+			if(count <= 0) {
+				count = 0;
+				for(int j=1;j<3;j++) {
+					if(j+i<sk.length && sk[i] == sk[i+j]) {
+						count++;
+					} else {
+						break;
+					}
+				}
+
+				if(count == 0) s+= "§a";
+				if(count == 1) s+= "§e";
+				if(count == 2) s+= "§c";
+			} else {
+				count--;
+			}
+			s += " " + Text.get("c17:p"+sk[i]);
+		}
+		player.sendTitle("",s);
 		return true;
 	}
 
 	@Override
 	public boolean skill4() {
-		if(player.isSneaking()) {
-			if(abcount > 0) {
-				abselect--;
-				if(abselect <= -1) {
-					abselect = abcount-1;
-				}
-				select = (ab[abselect]+1);
-				Skillmsg();
-			}
-		} else {
-			if(abcount > 0) {
-				abselect++;
-				if(abselect >= abcount) {
-					abselect = 0;
-				}
-				select = (ab[abselect]+1);
-				Skillmsg();
-			}
-		}
+		int select = AMath.random(5);
+		while(sel == select) select = AMath.random(5);
+		sel = select;
+		player.sendTitle(Text.get("c17:p"+sel),"");
 		return true;
 	}
-	
-	@Override
-	public boolean skill5() {
-		if(player.isSneaking()) {
-			spellcount--;
-		} else {
-			spellcount = 0;
-		}
-		return true;
-	}
-
 	@Override
 	public boolean tick() {
 		if(targettime > 0) {
@@ -373,57 +193,37 @@ public class c17shou extends c00main{
 				target = null;
 			}
 		}
-		if(abcount > 7) {
-			abcount = 7;
-		}
-
-
-		scoreBoardText.add("&c ["+Main.GetText("c17:s3")+ "]&f : "+abcount);
-		if(tk%20==0&& abcount > 0) {
-
-			scoreBoardText.add("&c ["+Main.GetText("c17:s1")+ "]&f : "+Main.GetText("main:tp"+(select-1)));
-			
-			if(spellcount > 0) {
-				String n = "";
-				String n2 = "";
-				String n3 = "";
-				String n4 = "";
-				for(int i=0;i<spellcount;i++) {
-					if(n3.length() > 25) {
-						n4+=Main.GetText("main:tp"+spell[i])+">";
-					} else if(n2.length() > 25) {
-						n3+=Main.GetText("main:tp"+spell[i])+">";
-					} else if(n.length() > 15) {
-						n2+=Main.GetText("main:tp"+spell[i])+">";
-					} else {
-						n+=Main.GetText("main:tp"+spell[i])+">";
-					}
-				}
-				scoreBoardText.add("&c ["+Main.GetText("c17:s2")+ "]&f : "+ n);
-				if(!n2.equals("")) scoreBoardText.add("&f>"+ n2);
-				if(!n3.equals("")) scoreBoardText.add("&f>"+ n3);
-				if(!n4.equals("")) scoreBoardText.add("&f>"+ n4);
+		if(tk%20 == 0) {
+			String s = "";
+			for(int i = 1; i <ab.length; i++) {
+				if(ab[i]) s += "["+Main.GetText("main:tp"+i)+"]";
 			}
-			String n = "";
-			for(int i = 0; i < spellcount;i++) {
-				n += Main.GetText("main:tp"+spell[i]);
-			}
+			scoreBoardText.add(s);
 		}
-		ticks++;
-
-		if(ticks%10==0) {
-			if(abcount > 3) {
+	
+		if(tk%10==0) {
+			if(abcount > 3 || ARSystem.AniRandomSkill == null) {
 				if(!isps) {
 					spskillen();
 					spskillon();
+					sk = new int[sk.length+2];
+					skill3();
 					for(int i=1; i<ab.length;i++) {
-						ab[i-1] = i;
+						if(!ab[i]) {
+							if(i == 4) {
+								setcooldown[2] *= 0.7;
+							}
+							if(i == 5) {
+								sk = new int[sk.length+1];
+								skill3();
+							}
+						}
+						ab[i] = true;
 					}
 					abcount = 7;
-					hp = 50;
-					player.setMaxHealth(50);
 					ARSystem.heal(player, 22);
 					Rule.playerinfo.get(player).tropy(17,1);
+					ARSystem.playSoundAll("c17sp");
 				}
 			}
 			for(Entity e : player.getNearbyEntities(8, 8, 8)) {
@@ -431,29 +231,135 @@ public class c17shou extends c00main{
 					if(Rule.c.get(e) != null && ((Player)e).getGameMode() == GameMode.ADVENTURE) {
 						int nb = Rule.c.get(e).getCode();
 						ARSystem.giveBuff((LivingEntity) e, new Silence((LivingEntity) e), 100);
-						player.setMaxHealth(player.getMaxHealth()-1);
 						boolean ok = true;
 						int cd = Integer.parseInt(Main.GetText("c"+nb+":type").replace(" tp",""));
-						
-						for(int i = 0 ; i<ab.length;i++) {
-							if(ab[i] == cd) {
+						for(int i = 1 ; i<ab.length;i++) {
+							if(ab[cd]) {
 								ok = false;
 							}
 						}
-						
 						if(ok && !isps) {
-							if(abcount == 0) ARSystem.playSound(player, "c17fs");
-							ab[abcount++] = cd;
+							if(abcount == 0) ARSystem.playSound(player, "c17p");
+							ab[cd] = true;
+							if(cd == 4) {
+								setcooldown[2] *= 0.7;
+							}
+							if(cd == 5) {
+								sk = new int[sk.length+1];
+								skill3();
+							}
+							abcount++;
 						}
-						
 						getab.add(e);
 						skill("c"+number+"_p");
 					}
 				}
 			}
 		}
-		ticks%=60;
 		return false;
+	}
+	
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			if(skill == 1) {
+				Wound curse = new Wound(target);
+				curse.setDelay(player, 40, 0);
+				ARSystem.giveBuff(target, curse, 400, 0.5);
+				target.setNoDamageTicks(0);
+				target.damage(1,player);
+				ARSystem.spellCast(player, target, "bload");
+			} else if(skill == 2) {
+				target.setNoDamageTicks(0);
+				target.damage(3,player);
+				ARSystem.heal(target, 2);
+				ARSystem.spellCast(player, target, "c17_s2-2e");
+			} else if(skill == 4) {
+				target.setNoDamageTicks(0);
+				target.damage(5,player);
+				target.setVelocity(player.getLocation().getDirection().multiply(2));
+				ARSystem.spellCast(player, target, "c17_s2-4e");
+			} else if(skill == 5) {
+				if(target.getHealth() <= 6) {
+					Skill.remove(target, player);
+					Rule.buffmanager.selectBuffAddValue(player, "barrier", (float) target.getMaxHealth());
+					ARSystem.spellCast(player, target, "c17_s2-5e");
+				}
+			}
+			if(skill < 20) {
+				if(skill == 11) {
+					target.setNoDamageTicks(0);
+					target.damage(2,player);
+					ARSystem.spellCast(player, target, "bload");
+				}
+				if(skill == 12) {
+					target.setNoDamageTicks(0);
+					target.damage(2,player);
+					ARSystem.spellCast(player, target, "bload");
+				}
+				if(skill == 13) {
+					target.setNoDamageTicks(0);
+					target.damage(15,player);
+					ARSystem.spellCast(player, target, "bload");
+				}
+			} else if(skill < 30) {
+				if(skill == 21) {
+					ARSystem.heal(player, 1);
+					target.setNoDamageTicks(0);
+					target.damage(1,player);
+					ARSystem.spellCast(player, target, "c17_s2-2e");
+				}
+				if(skill == 22) {
+					ARSystem.heal(player, 1);
+					target.setNoDamageTicks(0);
+					target.damage(1.5,player);
+					ARSystem.spellCast(player, target, "c17_s2-2e");
+				}
+				if(skill == 23) {
+					ARSystem.heal(player, 2);
+					target.setNoDamageTicks(0);
+					target.damage(2.5,player);
+					ARSystem.spellCast(player, target, "c17_s2-2e");
+				}
+			} else if(skill < 50) {
+				if(skill == 41) {
+					target.setNoDamageTicks(0);
+					target.damage(1,player);
+					ARSystem.spellCast(player, target, "c17_s2-4e");
+				}
+				if(skill == 42) {
+					target.setNoDamageTicks(0);
+					target.damage(3,player);
+					ARSystem.spellCast(player, target, "c17_s2-4e");
+					target.teleport(target.getLocation().clone().add(player.getLocation().getDirection().multiply(0.2)));
+				}
+				if(skill == 43) {
+					target.setNoDamageTicks(0);
+					target.damage(1.5,player);
+					ARSystem.spellCast(player, target, "c17_s2-4e");
+				}
+			} else if(skill < 60) {
+				double hp = target.getMaxHealth() - target.getHealth();
+				if(skill == 51) {
+					target.setNoDamageTicks(0);
+					target.damage(hp * 0.2f,player);
+					ARSystem.spellCast(player, target, "c17_s2-5e");
+				}
+				if(skill == 52) {
+					target.setNoDamageTicks(0);
+					target.damage(hp * 0.3f,player);
+					ARSystem.spellCast(player, target, "c17_s2-5e");
+				}
+				if(skill == 53) {
+					target.setNoDamageTicks(0);
+					target.damage(hp * 0.35f,player);
+					ARSystem.spellCast(player, target, "c17_s2-5e");
+					target.teleport(target.getLocation().clone().add(new Vector(0,0.2,0)));
+				}
+			}
+			target.setNoDamageTicks(0);
+			target.damage(1,player);
+		}
 	}
 	
 	@Override
@@ -463,28 +369,17 @@ public class c17shou extends c00main{
 	}
 	
 	@Override
-	public void TargetSpell(SpellTargetEvent e, boolean mycaster) {
-		if(mycaster) {
-			target = (LivingEntity) e.getTarget();
-			targettime = 10;
-		}
-	}
-	
-	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			target = (LivingEntity) e.getEntity();
 			targettime = 10;
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
+			e.setDamage(e.getDamage()*damage);
+			if(ab[2]) e.setDamage(e.getDamage()*1.3);
 			if(isps) {
 				ARSystem.heal(player,e.getDamage()*0.25);
 			}
-			if(mult > 1) {
-				e.setDamage(e.getDamage()*mult);
-				mult = 1;
-			}
 		} else {
-
+			if(ab[1]) e.setDamage(e.getDamage()*0.7);
 		}
 		return true;
 	}

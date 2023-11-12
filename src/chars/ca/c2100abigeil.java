@@ -30,6 +30,7 @@ import buff.Stun;
 import buff.TimeStop;
 import chars.c.c000humen;
 import chars.c.c00main;
+import chars.c2.c61tyana;
 import event.Skill;
 import types.box;
 
@@ -53,13 +54,10 @@ public class c2100abigeil extends c00main{
 		repset();
 	}
 	public void passive() {
-		if(ARSystem.isGameMode("lobotomy")) {
-			skillmult += 0.01;
-			player.setMaxHealth(player.getMaxHealth()+1);
-		} else {
-			skillmult += 0.05;
-			player.setMaxHealth(player.getMaxHealth()+2);
-		}
+
+		skillmult += 0.05;
+		player.setMaxHealth(player.getMaxHealth()+2);
+		
 	}
 	@Override
 	public boolean skill1() {
@@ -145,7 +143,9 @@ public class c2100abigeil extends c00main{
 	public void sp(Entity e) {
 		spskillon();
 		spskillen();
-		
+		if(Rule.c.get(e) != null && Rule.c.get(e) instanceof c61tyana) {
+			ARSystem.playSound(e, "c61kami2");
+		}
 		ARSystem.spellCast(player, e, "look1");
 		ARSystem.spellCast(player, e, "look2");
 

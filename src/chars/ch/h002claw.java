@@ -51,8 +51,6 @@ public class h002claw extends c00main{
 		number = 998;
 		load();
 		text();
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[1] *= 0.3;
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[2] *= 0.5;
 	}
 	
 	int skill1 = 0;
@@ -266,7 +264,6 @@ public class h002claw extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*5);
 			
 			if((((LivingEntity)e.getEntity()).getHealth() - e.getDamage())/((LivingEntity)e.getEntity()).getMaxHealth() <= 0.1) {
 				Skill.remove(e.getEntity(), player);
@@ -278,7 +275,6 @@ public class h002claw extends c00main{
 			} else {
 				e.setDamage(e.getDamage()*0.7);
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.5);
 		}
 		return true;
 	}

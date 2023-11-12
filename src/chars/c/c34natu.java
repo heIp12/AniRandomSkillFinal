@@ -46,7 +46,7 @@ public class c34natu extends c00main{
 		number = 34;
 		load();
 		text();
-		loc = player.getLocation();
+		if(p != player) loc = player.getLocation();
 	}
 	
 	@Override
@@ -87,6 +87,7 @@ public class c34natu extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(loc == null) loc = player.getLocation();
 		if(tk%20==0) {
 			scoreBoardText.add("&c ["+Main.GetText("c34:ps")+ "]&f : "+ Math.round(damage*100)/100.0);
 		}
@@ -123,7 +124,6 @@ public class c34natu extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			e.setDamage(e.getDamage() * damage2);
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 		} else {
 
 		}

@@ -209,7 +209,6 @@ public class c32sanji extends c00main{
 			if(this.damage >= 50) {
 				Rule.playerinfo.get(player).tropy(32,1);
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 		} else {
 
 		}

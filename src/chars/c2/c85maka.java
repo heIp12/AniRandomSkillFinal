@@ -63,6 +63,8 @@ public class c85maka extends c00main{
 	int sk2 = 0;
 	List<LivingEntity> entitys;
 	
+	boolean sp = false;
+	
 	@Override
 	public void setStack(float f) {
 		p = (int)f;
@@ -134,6 +136,7 @@ public class c85maka extends c00main{
 					}
 				}
 				if(e.size() > 0) {
+					sp = true;
 					entitys = new ArrayList<>();
 					spskillon();
 					spskillen();
@@ -149,6 +152,9 @@ public class c85maka extends c00main{
 					skill("c85_sp");
 					ARSystem.giveBuff(player, new TimeStop(player), 120);
 					ARSystem.giveBuff(player, new Silence(player), 25);
+					delay(()->{
+						sp = false;
+					},100);
 				}
 			},40);
 		} else {
@@ -158,7 +164,7 @@ public class c85maka extends c00main{
 	}
 	@Override
 	public void makerSkill(LivingEntity target, String n) {
-		if(n.equals("1")) {
+		if(n.equals("1") && !sp) {
 			if(!entitys.contains(target)) {
 				entitys.add(target);
 				Skill.remove(target, player);
@@ -190,7 +196,6 @@ public class c85maka extends c00main{
 		if(isAttack) {
 			if(pp) e.setDamage(e.getDamage()*1.5f);
 			p += e.getDamage()*4;
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(p >= 100) {
 				p = 100;
 				if(!pp) {
@@ -198,12 +203,10 @@ public class c85maka extends c00main{
 					ARSystem.playSound((Entity)player, "c85p");
 					ARSystem.heal(player, 99999);
 					Rule.buffmanager.selectBuffValue(player, "barrier", (float) player.getMaxHealth());
-					if(ARSystem.isGameMode("lobotomy")) Rule.buffmanager.selectBuffValue(player, "barrier", (float) player.getMaxHealth() * 3);
 				}
 			}
 			
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.5);
 			if(sk2 > 0 && e.getDamager().getLocation().distance(player.getLocation()) >= 5) {
 				e.setDamage(0);
 				e.setCancelled(true);

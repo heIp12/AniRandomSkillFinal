@@ -184,7 +184,6 @@ public class c13nagisa extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			inv();
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			if(ps > 0) {
 				e.setDamage(e.getDamage()*2);
 			}

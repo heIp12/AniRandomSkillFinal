@@ -77,6 +77,7 @@ public class c122yuyuco extends c00main{
 	
 	int tick = 0;
 	int pt = 0;
+	int playerC = 0;
 	List<Player> killList = new ArrayList<Player>();
 	
 	List<Entity> removes = new ArrayList<Entity>();
@@ -126,7 +127,7 @@ public class c122yuyuco extends c00main{
 	void upgrad() {
 		if(isps) return;
 		skill("c122_pr");
-		if(stack >= 15) {
+		if(stack >= Math.max(playerC*1.5, 15)) {
 			if(!isps) {
 				Bgm.setForceBgm("c122");
 				skill0();
@@ -172,7 +173,11 @@ public class c122yuyuco extends c00main{
 		
 		if(n.equals("1")) damage = 1;
 		if(n.equals("2")) damage = 2;
-		damage *= (1.0 + stack*0.25);
+		if(playerC >= 10) {
+			damage *= (1.0 + stack*0.08);
+		} else {
+			damage *= (1.0 + stack*0.25);
+		}
 		if(stack >= 15) damage = 20;
 		
 		LivingEntity en = target;
@@ -277,6 +282,7 @@ public class c122yuyuco extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(playerC == 0) playerC = Rule.c.size();
 		if(tk%20 == 0) scoreBoardText.add("&c ["+Main.GetText("c122:p1")+ "] : &f" + stack);
 		if(tk%5 == 0) {
 			for(Player p : killList) {

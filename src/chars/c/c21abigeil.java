@@ -27,6 +27,7 @@ import buff.Panic;
 import buff.Rampage;
 import buff.Silence;
 import buff.Stun;
+import chars.c2.c61tyana;
 import chars.ca.c2100abigeil;
 import event.Skill;
 import types.box;
@@ -95,10 +96,10 @@ public class c21abigeil extends c00main{
 		}
 		for(Entity e : ARSystem.box(player, new Vector(6,6,6), box.TEAM)) {
 			LivingEntity en = (LivingEntity)e;
-			ARSystem.heal(en, 6);
+			ARSystem.heal(en, 10);
 			ARSystem.spellCast(player, en, "c21_s");
 		}
-		ARSystem.heal(player, 6);
+		ARSystem.heal(player, 10);
 		return true;
 	}
 	
@@ -142,7 +143,9 @@ public class c21abigeil extends c00main{
 	public void sp(Entity e) {
 		spskillon();
 		spskillen();
-		
+		if(Rule.c.get(e) != null && Rule.c.get(e) instanceof c61tyana) {
+			ARSystem.playSound(e, "c61kami2");
+		}
 		if(p > 9) {
 			skill("c21_b1");
 			delay(new Runnable() {
@@ -243,7 +246,7 @@ public class c21abigeil extends c00main{
 				fear.put(e,0);
 			} else {
 				fear.put(e, fear.get(e)+i);
-				if(fear.get(e) >= 60) {
+				if(fear.get(e) >= 40) {
 					fear.put(e,0);
 					if(skillCooldown(0)) sp(e);
 				}

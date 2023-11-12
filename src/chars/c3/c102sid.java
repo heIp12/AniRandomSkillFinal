@@ -69,8 +69,6 @@ public class c102sid extends c00main{
 		load();
 		text();
 		c = this;
-
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[0]=999;
 	}
 
 	@Override

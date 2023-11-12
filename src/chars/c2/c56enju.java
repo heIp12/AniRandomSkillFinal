@@ -111,7 +111,6 @@ public class c56enju extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(player.getLocation().getY() > e.getEntity().getLocation().getY() && ARSystem.isTarget(e.getEntity(),player)) {
 				((LivingEntity)e.getEntity()).setVelocity(new Vector(0,-0.4,0));
 				((LivingEntity)e.getEntity()).setNoDamageTicks(0);
@@ -125,8 +124,8 @@ public class c56enju extends c00main{
 				}
 				skill("c56_p2");
 				if(isps) {
-					ARSystem.giveBuff(((LivingEntity)e.getEntity()), new Stun(((LivingEntity)e.getEntity())), 10);
-					ARSystem.giveBuff(((LivingEntity)e.getEntity()), new Silence(((LivingEntity)e.getEntity())), 10);
+					ARSystem.giveBuff(((LivingEntity)e.getEntity()), new Stun(((LivingEntity)e.getEntity())), 4);
+					ARSystem.giveBuff(((LivingEntity)e.getEntity()), new Silence(((LivingEntity)e.getEntity())), 4);
 				}
 			}
 		} else {

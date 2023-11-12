@@ -44,6 +44,7 @@ import manager.AdvManager;
 import manager.BuffManager;
 import manager.ScoreBoard;
 import util.Text;
+import util.ULocal;
 import util.AMath;
 import util.BlockUtil;
 import util.Holo;
@@ -56,7 +57,6 @@ public class c00main implements Listener {
 	public float hp = 20;
 	public int number = 0;
 	public Player player;
-	public String name = "";
 	
 	public boolean isps = false;
 	public boolean psopen = false;
@@ -92,7 +92,7 @@ public class c00main implements Listener {
 	protected Plugin plugin;
 	protected int tk = 0;
 	
-	protected List<String> scoreBoardText = new ArrayList<String>();
+	public List<String> scoreBoardText = new ArrayList<String>();
 	
 	private HashMap<Runnable,Double> delayEvent = new HashMap<>();
 	
@@ -134,6 +134,9 @@ public class c00main implements Listener {
 				ARSystem.giveBuff(p, new Nodamage(p), -(ARSystem.AniRandomSkill.time/3)*40);
 			}
 			s_score = 200;
+			player.setFlying(false);
+			player.setAllowFlight(false);
+			player.setFlySpeed(0.1f);
 			player.setWalkSpeed(0.2f);
 		} else {
 			p = NpcPlayer.player;
@@ -473,6 +476,9 @@ public class c00main implements Listener {
 			Map.UniqeMap(player);
 			if(!Map.inMap(player) || (!BlockUtil.isPathable(player.getLocation().add(0,1,0).getBlock().getType()) && !BlockUtil.isPathable(player.getLocation().getBlock().getType()))) {
 				maptick++;
+				if(Map.mapid > 100 && Map.mapid < 1000) {
+					maptick+=2;
+				}
 			} else {
 				maptick = 0;
 			}
@@ -490,12 +496,21 @@ public class c00main implements Listener {
 		
 		if(maptick > 60 && ARSystem.AniRandomSkill.time > 0) {
 			maptick = 0;
-			Map.playeTp(player);
-			ARSystem.giveBuff(player, new Silence(player), 40);
-			ARSystem.giveBuff(player, new Noattack(player), 40);
-			ARSystem.giveBuff(player, new Nodamage(player), 40);
+			if(Map.mapid > 100 && Map.mapid < 1000) {
+				player.teleport(ULocal.BoxNear(Map.loc_f, Map.loc_l, player.getLocation()));
+				player.setHealth(player.getHealth()/1.5f);
+				player.setVelocity(ULocal.lookAt(player.getLocation(), Map.getCenter()).getDirection().multiply(1.2f));
+				if(!BlockUtil.isPathable(player.getLocation().add(0,1,0).getBlock().getType()) && !BlockUtil.isPathable(player.getLocation().getBlock().getType())) {
+					Map.playeTp(player);
+				}
+			} else {
+				ARSystem.giveBuff(player, new Nodamage(player), 40);
+				ARSystem.giveBuff(player, new Noattack(player), 40);
+				ARSystem.giveBuff(player, new Silence(player), 40);
+				player.setHealth(player.getHealth()/2);
+				Map.playeTp(player);
+			}
 			player.setFallDistance(0);
-			player.setHealth(player.getHealth()/2);
 		}
 		
 		

@@ -1,73 +1,30 @@
 package chars.c3;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.events.SpellTargetEvent;
-
 import Main.Main;
-import aliveblock.ABlock;
 import ars.ARSystem;
 import ars.Rule;
-import ars.gui.G_Satory;
-import buff.Barrier;
-import buff.Buff;
-import buff.Cindaella;
 import buff.Curse;
-import buff.Fascination;
-import buff.NoHeal;
-import buff.Noattack;
 import buff.Nodamage;
-import buff.Panic;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
-import buff.Timeshock;
-import buff.Wound;
-import chars.c.c000humen;
 import chars.c.c00main;
-import chars.c.c09youmu;
-import chars.c.c10bell;
-import chars.c.c30siro;
-import chars.c2.c60gil;
-import event.Skill;
-import event.WinEvent;
-import manager.AdvManager;
-import manager.Bgm;
-import types.BuffType;
-import types.TargetMap;
 import types.box;
 
 import util.AMath;
-import util.GetChar;
-import util.Holo;
-import util.InvSkill;
-import util.Inventory;
 import util.ULocal;
-import util.MSUtil;
-import util.Map;
-import util.Text;
 
 public class c127jack extends c00main{
 	Location target;
@@ -79,6 +36,8 @@ public class c127jack extends c00main{
 	Location sk2l;
 	
 	int p = 0;
+	boolean ps = false;
+	
 	
 	boolean t = false;
 	public c127jack(Player p,Plugin pl,c00main ch) {
@@ -93,12 +52,12 @@ public class c127jack extends c00main{
 	@Override
 	public boolean skill1() {
 		ARSystem.playSound((Entity)player, "c127s1");
-		player.removePotionEffect(PotionEffectType.INVISIBILITY);
-		skd = 20;
 		Location loc = player.getLocation();
 		delay(()->{
 			player.setVelocity(new Vector(0,0.4,0));
 			delay(()->{
+				player.removePotionEffect(PotionEffectType.INVISIBILITY);
+				skd = 20;
 				player.setVelocity(player.getLocation().getDirection().multiply(2).setY(0.2));
 				
 				delay(()->{
@@ -124,16 +83,16 @@ public class c127jack extends c00main{
 								},2);
 							}
 						},3);
-					},10);
-				},10);
+					},4);
+				},4);
 			},2);
 		},8);
 		return true;
 	}
 	void damage(Entity e, double damage){
-		float m = 1.4f;
-		
-		if(p > 0) damage *= m;
+		float m = 1.5f;
+		if(ps) m = 2.5f;
+		if(targettick > 0 && target.distance(e.getLocation()) <= 6) damage *= m;
 		if(player.getWorld().getTime()%36000 > 12500 && player.getWorld().getTime()%36000 < 22500) damage*= m;
 		if(Rule.c.get(e) != null && Main.GetText("c"+Rule.c.get(e).getCode()+":tag").indexOf("tg1") != -1) damage *= m;
 		
@@ -155,8 +114,8 @@ public class c127jack extends c00main{
 	public boolean skill2() {
 		ARSystem.playSound((Entity)player, "c127s2");
 		player.removePotionEffect(PotionEffectType.INVISIBILITY);
-		sk2 = 20;
-		skd = 20;
+		sk2 = 10;
+		skd = 10;
 		targets = new ArrayList<>();
 		sk2l = player.getLocation();
 		return true;
@@ -169,26 +128,35 @@ public class c127jack extends c00main{
 		sk3 = true;
 		return true;
 	}
+	
+	@Override
+	public boolean skill4() {
+		player.damage(2,player);
+		target = player.getLocation();
+		targettick = 160;
+		
+		return true;
+	}
 
 	@Override
 	public boolean tick() {
 		if(tk%20 == 0 && target!=null) {
-			scoreBoardText.add("&c ["+Main.GetText("c127:ps")+ "] : &f" + AMath.round(player.getLocation().distance(target),2) +"[7~11]");
+			scoreBoardText.add("&c ["+Main.GetText("c127:ps")+ "] : &f" + AMath.round(player.getLocation().distance(target),2) +"[6~12]");
 		}
 		if(target != null && targettick > 0) {
 			ARSystem.spellLocCast(player, target, "c127_p");
-			if(skd <= 0  && player.getLocation().distance(target) >= 7 && player.getLocation().distance(target) <= 11) {
+			if(skd <= 0  && player.getLocation().distance(target) >= 6 && player.getLocation().distance(target) <= 12) {
 				p = 40;
 				ARSystem.potion(player, 14, 20, 1);
 			}
 		}
 		if(sk2 > 0) {
-			if(sk2%4 == 0) {
+			if(sk2%2 == 0) {
 				ARSystem.playSound((Entity)player, "0katana2",1.2f);
 			}
 			sk2--;
 			skill("c127_s2");
-			player.setVelocity(sk2l.getDirection().multiply(0.7));
+			player.setVelocity(sk2l.getDirection().multiply(1.4));
 			for(Entity e : ARSystem.box(player, new Vector(4,4,4), box.TARGET)) {
 				if(!targets.contains(e)) {
 					targets.add(e);
@@ -216,6 +184,54 @@ public class c127jack extends c00main{
 		if(isAttack) {
 			target = e.getEntity().getLocation();
 			targettick = 160;
+			double range = 300;
+			for(Player p : Rule.c.keySet()) {
+				if(p.getGameMode() != GameMode.SPECTATOR) {
+					if(p.getLocation().distance(e.getEntity().getLocation()) < range && p != player && p != e.getEntity()) {
+						range = p.getLocation().distance(e.getEntity().getLocation());
+					}
+				}
+			}
+			if(p > 0 && range >= 50 && skillCooldown(0)) {
+				ARSystem.giveBuff(player, new TimeStop(player), 200);
+				ARSystem.giveBuff((LivingEntity) e.getEntity(), new TimeStop((LivingEntity) e.getEntity()), 200);
+				spskillon();
+				spskillen();
+				player.teleport(ULocal.lookAt(ULocal.offset(e.getEntity().getLocation(), new Vector(3,0,0)), e.getEntity().getLocation()));
+				ARSystem.playSound((Entity)player, "c127sp");
+				delay(()->{
+					player.teleport(ULocal.offset(e.getEntity().getLocation(), new Vector(-2,0,0)));
+					ARSystem.giveBuff((LivingEntity) e.getEntity(), new Stun((LivingEntity) e.getEntity()), 60);
+					ARSystem.giveBuff((LivingEntity) e.getEntity(), new Silence((LivingEntity) e.getEntity()), 60);
+					ARSystem.giveBuff(player, new Stun(player), 40);
+					ARSystem.giveBuff(player, new Silence(player), 40);
+					ARSystem.giveBuff(player, new Nodamage(player), 40);
+					ps = true;
+					for(int i=0;i<10;i++) {
+						delay(()->{
+							ARSystem.playSound((Entity)player, "0katana3",2f);
+							ARSystem.spellCast(player, e.getEntity(), "c127_sp_e1");
+							damage(e.getEntity(), 0.1);
+						},i*2);
+					}
+					delay(()->{
+						player.teleport(ULocal.lookAt(ULocal.offset(e.getEntity().getLocation(), new Vector(-1,0,0)), e.getEntity().getLocation()));
+					},20);
+						delay(()->{
+							ARSystem.playSound((Entity)player, "0katana4",1.4f);
+							ARSystem.spellCast(player, e.getEntity(), "c127_sp_e2");
+							damage(e.getEntity(), 1);
+						},20);
+						delay(()->{
+							ARSystem.playSound((Entity)player, "0katana5",2f);
+							ARSystem.spellCast(player, e.getEntity(), "c127_sp_e2");
+							damage(e.getEntity(), 6);
+						},25);
+					delay(()->{
+						ps = false;
+					},40);
+				},200);
+			}
 		} else {
 			if(player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 				e.setDamage(e.getDamage()* 0.1);

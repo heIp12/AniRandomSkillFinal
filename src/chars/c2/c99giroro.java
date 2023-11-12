@@ -69,11 +69,6 @@ public class c99giroro extends c00main{
 		load();
 		text();
 		c = this;
-		if(ARSystem.isGameMode("lobotomy")) {
-			setcooldown[1] *= 0.25;
-			setcooldown[2] *= 0.4;
-			setcooldown[3] *= 0.4;
-		}
 	}
 	
 	void shrot(){
@@ -173,7 +168,8 @@ public class c99giroro extends c00main{
 	@Override
 	public boolean tick() {
 		int id = player.getLocation().getBlock().getTypeId();
-		if((id == 8 || id == 9 ) && ps < 340) {
+		if((id == 8 || id == 9 ) && ps <= 380) {
+			ARSystem.heal(player, 0.5);
 			ps = 400;
 		}
 		if(!psc && ps > 0) {
@@ -205,10 +201,8 @@ public class c99giroro extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			if(e.getEntity() instanceof Player) target = (Player)e.getEntity();
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.7);
 		}
 		return true;
 	}

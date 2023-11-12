@@ -148,6 +148,12 @@ import chars.c3.c124satory;
 import chars.c3.c125iskandal;
 import chars.c3.c126hera;
 import chars.c3.c127jack;
+import chars.c3.c128roise;
+import chars.c3.c129nana;
+import chars.c3.c130yuzi;
+import chars.c3.c131saito;
+import chars.c3.c132tsuna;
+import chars.c3.c133yukina;
 import chars.ca.c0100minato;
 import chars.ca.c0200kirito;
 import chars.ca.c0202kirito;
@@ -159,10 +165,15 @@ import chars.ca.c0702shana;
 import chars.ca.c0800yuuki;
 import chars.ca.c0900youmu;
 import chars.ca.c100001;
+import chars.ca.c1090kirua;
 import chars.ca.c1100yasuo;
+import chars.ca.c1110artorya;
+import chars.ca.c1130shimakaze;
+import chars.ca.c1240coishi;
 import chars.ca.cc1180Ai;
 import chars.ca.c1300nagisa;
 import chars.ca.c1500tina;
+import chars.ca.c1600saki;
 import chars.ca.c1700shou;
 import chars.ca.c1800misogi;
 import chars.ca.c1900sinjjan;
@@ -173,23 +184,33 @@ import chars.ca.c2300madoka;
 import chars.ca.c2400sinobu;
 import chars.ca.c2600ribai;
 import chars.ca.c3000siro;
+import chars.ca.c3002siro;
 import chars.ca.c3900sakuya;
 import chars.ca.c4000megumin;
 import chars.ca.c4200touno;
+import chars.ca.c4300yuno;
 import chars.ca.c4400izuna;
 import chars.ca.c4800yoshino;
+import chars.ca.c4900aria;
 import chars.ca.c5000sayaka;
+import chars.ca.c5500yaya;
 import chars.ca.c5600enju;
+import chars.ca.c6300micoto;
 import chars.ca.c6500cohina;
 import chars.ca.c6600akame;
 import chars.ca.c6800origami;
 import chars.ca.c7200plan;
+import chars.ca.c8100saitama;
+import chars.ca.c9200susu;
+import chars.ca.c9201flan;
+import chars.ca.c9300bakugo;
 import chars.ca.cc1000kuroko;
 import chars.ch.h001chruno;
 import chars.ch.h002claw;
 import chars.ch.h003rentaro;
 import chars.ch.h004alice;
 import chars.ch.h005mery;
+import chars.ch.h006zagara;
 import mode.ModeBase;
 /**
  * 캐릭터 추가 방법
@@ -201,7 +222,7 @@ import mode.ModeBase;
  *
  */
 public class GetChar {
-	static int count = 127;
+	static int count = 133;
 	public static HashMap<String,List<Integer>> charban;
 	/**
 	 * {어벤번호,그 번호 어벤 갯수}
@@ -210,8 +231,9 @@ public class GetChar {
 			{1,1},{2,2},{3,1},{4,1},{5,1},
 			{7,2},{8,1},{9,1},{11,1},{13,1},
 			{15,1},{17,1},{18,1},{19,1},{20,1},{22,1},{26,1},
-			{30,1},{39,1},{42,1},{44,1},{48,1},
-			{50,1},{56,1},{65,1},{66,1},{72,1},{100,1}};
+			{30,1},{39,1},{42,1},{44,1},{48,1},{49,1},
+			{50,1},{55,1},{56,1},{65,1},{66,1},{72,1},{81,1},{63,1},{93,1},{100,1},
+			{109,1},{111,1},{113,1},{124,1}};
 	
 	static public int getCount() {
 		return count;
@@ -442,6 +464,13 @@ public class GetChar {
 		if(name.equals("125")) return new c125iskandal(p,pl,crt);
 		if(name.equals("126")) return new c126hera(p,pl,crt);
 		if(name.equals("127")) return new c127jack(p,pl,crt);
+		if(name.equals("128")) return new c128roise(p,pl,crt);
+		if(name.equals("129")) return new c129nana(p,pl,crt);
+		if(name.equals("130")) return new c130yuzi(p,pl,crt);
+		if(name.equals("131")) return new c131saito(p,pl,crt);
+		if(name.equals("132")) return new c132tsuna(p,pl,crt);
+		if(name.equals("133")) return new c133yukina(p,pl,crt);
+		
 		
 		if(name.equals("86f1")) return new c8601iriya(p,pl, crt);
 		if(name.equals("86f2")) return new c8602iriya(p,pl, crt);
@@ -459,6 +488,7 @@ public class GetChar {
 		if(name.equals("신인류창조계획")) return new h003rentaro(p,pl, crt);
 		if(name.equalsIgnoreCase("NeverLeftWithoutSayingGoodbye")) return new h004alice(p, pl, crt);
 		if(name.equals("들켜버렸다~♪알아버렸다~♪메리의비밀~☆")) return new h005mery(p,pl, crt);
+		if(name.equals("여왕이시여,영원하소서!")) return new h006zagara(p,pl, crt);
 		
 		return getAdv(p,pl,name,crt);
 	}
@@ -475,6 +505,9 @@ public class GetChar {
 			name = ""+n;
 			if(name.equals("1021")) return new c2100abigeil(p,pl, new c21abigeil(p, pl, crt));
 			if(name.equals("1024")) return new c2400sinobu(p,pl, new c24sinobu(p, pl, crt));
+			
+			if(name.equals("1113")) return new c1130shimakaze(p,pl, crt);
+			if(name.equals("1124")) return new c1240coishi(p,pl, crt);
 			if(name.equals("1068")) return new c6800origami(p,pl, crt);
 			if(name.equals("1011")) return new c1100yasuo(p,pl, crt);
 			if(name.equals("1015")) return new c1500tina(p,pl, crt);
@@ -493,6 +526,7 @@ public class GetChar {
 			if(name.equals("1042")) return new c4200touno(p,pl, crt);
 			if(name.equals("1013")) return new c1300nagisa(p,pl, crt);
 			if(name.equals("1019")) return new c1900sinjjan(p,pl, crt);
+			if(name.equals("1016")) return new c1600saki(p,pl, crt);
 			if(name.equals("1017")) return new c1700shou(p,pl, crt);
 			if(name.equals("1018")) return new c1800misogi(p,pl, crt);
 			if(name.equals("1007")) return new c0700shana(p,pl, crt);
@@ -501,12 +535,22 @@ public class GetChar {
 			if(name.equals("1003")) return new c0300remuru(p,pl, crt);
 			if(name.equals("2002")) return new c0202kirito(p,pl, crt);
 			if(name.equals("2007")) return new c0702shana(p,pl, crt);
+			if(name.equals("1092")) return new c9200susu(p,pl, crt);
+			if(name.equals("2092")) return new c9201flan(p,pl, crt);
 			if(name.equals("1002")) return new c0200kirito(p,pl, crt);
+			if(name.equals("1043")) return new c4300yuno(p,pl, crt);
 			if(name.equals("1001")) return new c0100minato(p,pl, crt);
 			if(name.equals("1066")) return new c6600akame(p,pl, crt);
 			if(name.equals("1008")) return new c0800yuuki(p,pl, crt);
 			if(name.equals("1005")) return new c0500touma(p,pl, crt);
-			if(name.equals("1100")) return new cc1000kuroko(p,pl, crt);
+			if(name.equals("1111")) return new c1110artorya(p,pl, crt);
+			if(name.equals("2030")) return new c3002siro(p,pl, crt);
+			if(name.equals("1049")) return new c4900aria(p,pl, crt);
+			if(name.equals("1063")) return new c6300micoto(p,pl, crt);
+			if(name.equals("1055")) return new c5500yaya(p,pl, crt);
+			if(name.equals("1081")) return new c8100saitama(p,pl, crt);
+			if(name.equals("1109")) return new c1090kirua(p,pl, crt);
+			if(name.equals("1093")) return new c9300bakugo(p,pl, crt);
 			if(name.equals("1118") && Rule.playerinfo.get(p).isTropy(118, 1)) return new cc1180Ai(p,pl, crt);
 			if(name.equals("1023") && Rule.playerinfo.get(p).isTropy(23, 1)) return new c2300madoka(p,pl, crt);
 		} catch (Exception e) {
@@ -515,12 +559,13 @@ public class GetChar {
 		return new c001nb(p,pl,crt);
 	}
 	static public c00main getHiden(Player p) {
-		int z = AMath.random(5);
+		int z = AMath.random(6);
 		if(z == 1) return new h001chruno(p, Rule.gamerule, null);
 		if(z == 2) return new h002claw(p, Rule.gamerule, null);
 		if(z == 3) return new h003rentaro(p, Rule.gamerule, null);
 		if(z == 4) return new h004alice(p, Rule.gamerule, null);
-		return new h005mery(p, Rule.gamerule, null);
+		if(z == 5) return new h005mery(p, Rule.gamerule, null);
+		return new h006zagara(p, Rule.gamerule, null);
 	}
 	public static ArrayList<Integer> advList() {
 		ArrayList<Integer> list = new ArrayList<>();

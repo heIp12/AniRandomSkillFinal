@@ -95,7 +95,7 @@ public class c04sans extends c00main{
 				return false;
 			}
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() + 2);
+			
 		}
 		return true;
 	}

@@ -207,7 +207,6 @@ public class h005mery extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*5);
 
 		} else {
 			if(e.getDamage()*0.7 > 5) {
@@ -215,7 +214,6 @@ public class h005mery extends c00main{
 			} else {
 				player.teleport(Map.randomLoc(player));
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.5);
 		}
 		return true;
 	}

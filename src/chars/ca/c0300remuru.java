@@ -121,7 +121,7 @@ public class c0300remuru extends c00main{
 	public void PlayerDeath(Player p, Entity e) {
 		if(p != player) {
 			if(killtick <= 0 && !isps) {
-				killtick = 60;
+				killtick = 10;
 			} else if(!isps){
 				spskillon();
 				spskillen();

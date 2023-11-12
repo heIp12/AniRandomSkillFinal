@@ -194,10 +194,7 @@ public class h003rentaro extends c00main{
 				ARSystem.spellLocCast(player, e.getEntity().getLocation().add(2-(AMath.random(40)*0.1),2-(AMath.random(40)*0.1),2-(AMath.random(40)*0.1)), "rentaro_p2");
 			}
 			if(isps) e.setDamage(e.getDamage() + 2);
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 4);
-			if(ARSystem.isGameMode("lobotomy")) ARSystem.heal(player, e.getDamage()*0.03);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.8);
 		}
 		return true;
 	}

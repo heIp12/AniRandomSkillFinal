@@ -205,7 +205,6 @@ public class c104rica extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(e.getDamage() <= 1 && ps <= 0) {
 				ps = 100;
 				skill("c104_p");

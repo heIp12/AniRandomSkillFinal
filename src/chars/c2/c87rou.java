@@ -132,6 +132,7 @@ public class c87rou extends c00main{
 			for(LivingEntity e : entitys) {
 				loc = e.getLocation().subtract(room_Loc);
 				e.teleport(room_Loc.clone().subtract(loc));
+				ARSystem.giveBuff(e, new Stun(e), 10);
 			}
 		} else {
 			cooldown[3] = 0;
@@ -198,13 +199,13 @@ public class c87rou extends c00main{
 			ARSystem.playSound((Entity)player, "c87p");
 			room_Loc = player.getLocation();
 		}
-		else if((!player.isSneaking() || player.getLocation().distance(room_Loc)>6) && room) {
+		else if((!player.isSneaking() || player.getLocation().distance(room_Loc)>7) && room) {
 			room = false;
 			skill("c87_room_Remove");
 		}
 		if(room) {
 			entitys = new ArrayList<LivingEntity>();
-			for(Entity e : player.getWorld().getNearbyEntities(room_Loc, 6, 6, 6)) {
+			for(Entity e : player.getWorld().getNearbyEntities(room_Loc, 7, 7, 7)) {
 				if(ARSystem.isTarget(e, player, box.TARGET)) {
 					ARSystem.spellLocCast(player, e.getLocation(), "c87_e");
 					entitys.add((LivingEntity) e);
@@ -226,7 +227,6 @@ public class c87rou extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(e.getDamage() < 2 && heart == null && entitys.contains(e.getEntity())) {
 				if(Rule.c.get(e.getEntity()) != null) {
 					String s = Main.GetText("c"+Rule.c.get(e.getDamager()).getCode()+":tag");
@@ -240,7 +240,6 @@ public class c87rou extends c00main{
 				}
 			}
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.25);
 			if(room && !entitys.contains(e.getDamager())) {
 				e.setDamage(0);
 			}

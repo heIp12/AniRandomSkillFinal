@@ -97,8 +97,12 @@ public class G_CharInfo2 extends GUIBase{
 	
 	public ItemStack gui2() {
 		ItemStack is = ItemCreate.Name(ItemCreate.Item(340), "§d§l[Passive] §f" + Text.get("c"+j+":ps"));
-		
-		return ItemCreate.Lore(is, getLine("c"+j+":ps_lore"));
+		List<String> lore = new ArrayList<String>();
+		lore.add("§e=====================================");
+		for(String str : getLine("c"+j+":ps")) {
+			lore.add(str);
+		}
+		return ItemCreate.Lore(is, lore);
 	}
 	public ItemStack gui3() {
 		ItemStack is = null;

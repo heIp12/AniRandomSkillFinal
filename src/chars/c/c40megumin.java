@@ -41,6 +41,7 @@ public class c40megumin extends c00main{
 	double damage = 4;
 	double range = 4;
 	double sten = 0;
+	int delay = 0;
 	
 	float co[] = new float[4];
 	
@@ -63,7 +64,7 @@ public class c40megumin extends c00main{
 			cooldown[1] = setcooldown[1];
 			cooldown[2] = setcooldown[1];
 			cooldown[3] = setcooldown[1];
-			if(damage >= 30 && c == 5 &&skillCooldown(0)) {
+			if(damage >= 34 && c == 5 &&skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				count+=5;
@@ -96,12 +97,18 @@ public class c40megumin extends c00main{
 			count--;
 			sc();
 			sten+=1;
-			range+=2;
-			damage+=3;
+			range+=3;
+			damage+=4;
 			cooldown[1] = setcooldown[3];
 			cooldown[2] = setcooldown[3];
 			cooldown[3] = setcooldown[3];
-			for(int i=0;i<4;i++) setcooldown[i] -=1.5;
+			delay++;
+			for(int i=0;i<4;i++) {
+				setcooldown[i] -=1;
+				if(setcooldown[i] <= 1) {
+					setcooldown[i] = 1;
+				}
+			}
 		} else {
 			cooldown[1] = 0;
 		}
@@ -157,7 +164,7 @@ public class c40megumin extends c00main{
 				
 				if(ARSystem.locEntity(l, new Vector(r,r,r),player) != null) {
 					for(Entity e : ARSystem.locEntity(l, new Vector(r,r,r),player)) {
-						if(cc > 5 && !ARSystem.isGameMode("lobotomy")) {
+						if(cc > 5) {
 							if(((LivingEntity)e).getHealth() - d < 1) {
 								Skill.remove(e, player);
 							} else {
@@ -177,12 +184,13 @@ public class c40megumin extends c00main{
 
 				if((cc*3 - (st*5))*20 > 0) ARSystem.playSound((Entity)player,"c40p");
 			}
-		}, 60);
+		}, 60 - delay*8);
 		
 		c = 0;
 		damage = 4;
 		range = 4;
 		sten = 0;
+		delay = 0;
 		return true;
 	}
 
@@ -204,7 +212,7 @@ public class c40megumin extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 2.5);
+			
 		} else {
 
 		}

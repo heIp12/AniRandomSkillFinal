@@ -122,13 +122,4 @@ public class c8602iriya extends c00main{
 		return true;
 	}
 	
-	@Override
-	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
-		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
-		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.3);
-		}
-		return true;
-	}
 }

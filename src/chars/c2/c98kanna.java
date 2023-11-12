@@ -40,7 +40,7 @@ public class c98kanna extends c00main{
 	public boolean skill1() {
 		if(target == null) {
 			ARSystem.playSound((Entity)player, "c98s1");
-			player.setVelocity(player.getLocation().getDirection().multiply(0.5));
+			player.setVelocity(player.getLocation().getDirection().multiply(0.5 + (getlv()*0.15)));
 			skill("c98_s1");
 			sk1 = 200;
 		} else {
@@ -55,9 +55,6 @@ public class c98kanna extends c00main{
 			target.setNoDamageTicks(0);
 			int damage = 3;
 			
-			if(ARSystem.isGameMode("lobotomy")) {
-				damage = 10;
-			}
 			
 			if(target.getHealth()-damage < 1) {
 				count++;
@@ -79,6 +76,16 @@ public class c98kanna extends c00main{
 		return true;
 	}
 	
+	int getlv() {
+		int lv = 0;
+		if(light >= 30) lv = 1;
+		if(light >= 60) lv = 2;
+		if(light >= 90) lv = 3;
+		if(light >= 300) lv = 5;
+		if(light >= 1000) lv = 10;
+		return lv;
+	}
+	
 	@Override
 	public boolean skill3() {
 		ARSystem.playSound((Entity)player, "c98s3");
@@ -87,7 +94,6 @@ public class c98kanna extends c00main{
 		delay(()->{
 			skill("c98_s3");
 		},60);
-		if(ARSystem.isGameMode("lobotomy")) light *= 0.2;
 		return true;
 	}
 	
@@ -102,20 +108,22 @@ public class c98kanna extends c00main{
 		if(Rule.buffmanager.OnBuffTime(target, "noattack")) {
 			Rule.buffmanager.selectBuffTime(target, "noattack",0);
 		}
+		LivingEntity t = target;
+		target = null;
+		sk1 = 0;
+		
 		delay(()->{
-			if(target != null) {
-				target.teleport(player);
-				target.setVelocity(player.getLocation().getDirection().multiply(2));
-				target = null;
+			if(t != null) {
+				t.teleport(player);
+				t.setVelocity(player.getLocation().getDirection().multiply(2));
 			}
-		},1);
+		},2);
 	}
 	
 	@Override
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
 			float kill = 14;
-			if(ARSystem.isGameMode("lobotomy")) kill = 30;
 			if(!(target instanceof Player) && target.getHealth() <= kill) {
 				light += target.getHealth();
 				Skill.remove(target, player);
@@ -125,10 +133,6 @@ public class c98kanna extends c00main{
 			}
 			if(this.target == null) {
 				this.target = target;
-				ARSystem.potion(target, 14, 200, 1);
-				ARSystem.giveBuff(target, new Silence(target), 200);
-				ARSystem.giveBuff(target, new Stun(target), 200);
-				if(!ARSystem.isGameMode("kanna")) ARSystem.giveBuff(target, new Noattack(target), 200);
 				cooldown[1] = 300;
 			}
 		}
@@ -147,28 +151,29 @@ public class c98kanna extends c00main{
 			}
 		}
 		if(target != null && player.isSneaking()) {
-			te();
 			cooldown[1] = 10 - sk1*0.05f;
 			if(cooldown[1] <= 5) cooldown[1] = 5;
+			te();
 			
 		}
 		if(tk%20 == 0) {
 			if(light >= 10) {
-				int lv = 0;
-				if(light >= 30) lv = 1;
-				if(light >= 60) lv = 2;
-				if(light >= 90) lv = 3;
-				if(light >= 300) lv = 5;
-				if(light >= 1000) lv = 10;
+				int lv = getlv();
+				if(lv > 0) {
+					cooldown[1] -= lv*0.15f;
+				}
 				ARSystem.potion(player, 1, 40, lv);
 			}
 		}
 		if(target != null && sk1 > 0) {
 			target.teleport(player.getLocation().add(0,2,0));
 			target.setVelocity(new Vector(0, 0, 0));
+			ARSystem.potion(target, 14, 5, 1);
+			ARSystem.giveBuff(target, new Silence(target), 5);
+			ARSystem.giveBuff(target, new Stun(target), 5);
+			if(!ARSystem.isGameMode("kanna")) ARSystem.giveBuff(target, new Noattack(target), 5);
 			if(tk%20 == 0) {
 				float damage = 0.5f;
-				if(ARSystem.isGameMode("lobotomy")) damage = 3;
 				if(target.getHealth()-damage < 1) {
 					count++;
 					if(count >= 2) Rule.playerinfo.get(player).tropy(98,1);
@@ -198,13 +203,12 @@ public class c98kanna extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) {
-				e.setDamage(e.getDamage()*2);
-				light += e.getDamage() * 0.1;
-			} else {
-				light += e.getDamage();
-			}
+			light += e.getDamage();
 		} else {
+			if(e.getDamager() == target) {
+				e.setDamage(0);
+				e.setCancelled(true);
+			}
 			if(Rule.c.get(e.getDamager()) != null) {
 				int code = Rule.c.get(e.getDamager()).number;
 				if(code == 63 || code == 109) {

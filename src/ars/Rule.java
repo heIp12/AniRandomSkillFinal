@@ -95,6 +95,15 @@ public class Rule extends JavaPlugin{
 			}
 		}
 		GetChar.BanLoad();
+		Rule.auto = (boolean)Rule.Var.Load("info.option.auto");
+		Rule.pick = (boolean)Rule.Var.Load("info.option.pick");
+		ARSystem.ban = (boolean)Rule.Var.Load("info.option.ban");
+		ARSystem.time = Rule.Var.Loadint("info.option.time");
+		if(ARSystem.time == 0) ARSystem.time = 12;
+		ARSystem.starttime = Rule.Var.Loadint("info.option.starttime");
+		if(ARSystem.starttime == 0) ARSystem.starttime = 30;
+		
+		
 		startTime = System.currentTimeMillis();
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			

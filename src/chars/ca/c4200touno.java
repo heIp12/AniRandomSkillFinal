@@ -32,8 +32,9 @@ import buff.TimeStop;
 import chars.c.c00main;
 import event.Skill;
 import manager.AdvManager;
-
+import types.box;
 import util.AMath;
+import util.BlockUtil;
 import util.InvSkill;
 import util.Inventory;
 import util.MSUtil;
@@ -71,8 +72,15 @@ public class c4200touno extends c00main{
 	
 	@Override
 	public boolean skill4() {
-		ARSystem.giveBuff(player, new Silence(player), 40);
-		skill("c1042_s4");
+		List<Entity> e = ARSystem.PlayerBeamBox(player, 10, 3, box.TARGET);
+		if(e.size() > 0) {
+			LivingEntity en = (LivingEntity)e.get(0);
+			ARSystem.playSound((Entity)player, "c1042s41");
+			ARSystem.giveBuff(player, new Silence(player), 40);
+			ARSystem.spellCast(player,en, "c1042_s4");
+		} else {
+			cooldown[4] = 0;
+		}
 		return false;
 	}
 	
@@ -84,22 +92,38 @@ public class c4200touno extends c00main{
 		return true;
 	}
 
+	
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			remove(target);
+		}
+		if(n.equals("2")) {
+			remove(target);
+			target.setNoDamageTicks(0);
+			target.damage(0.5,player);
+		}
+	}
 
+	
+	void remove(LivingEntity e) {
+		if(p_tick <=0 && AMath.random(100) <= cr) {
+			cooldown[4] = 0;
+			ARSystem.giveBuff(e, new TimeStop(e), 40);
+			delay(()->{
+				ARSystem.playSound(e, "c1042p");
+			},20);
+			delay(()->{
+				ARSystem.playSound(e, "0bload");
+				Skill.remove(e, player);
+			},40);
+		}
+	}
 	
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
-			if(p_tick <=0 && AMath.random(100) <= cr) {
-				ARSystem.giveBuff((LivingEntity) e.getEntity(), new TimeStop((LivingEntity) e.getEntity()), 40);
-				delay(()->{
-					ARSystem.playSound(e.getEntity(), "c1042p");
-				},20);
-				delay(()->{
-					ARSystem.playSound(e.getEntity(), "0bload");
-					Skill.remove(e.getEntity(), player);
-				},40);
-			}
+			remove(e.getEntity());
 		} else {
 
 		}

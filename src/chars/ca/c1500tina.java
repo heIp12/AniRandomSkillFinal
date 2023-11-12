@@ -27,7 +27,6 @@ public class c1500tina extends c00main{
 		number = 1015;
 		load();
 		text();
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[3] *= 0.2;
 		ARSystem.playSound(player, "c15select");
 	}
 	
@@ -83,10 +82,7 @@ public class c1500tina extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(night()) {
-				e.setDamage(e.getDamage()*2);
-			}
-			if(ARSystem.isGameMode("lobotomy")) {
-				e.setDamage(e.getDamage()*2.5);
+				e.setDamage(e.getDamage()*3);
 			}
 		} else {
 			if(!night()) {

@@ -64,7 +64,7 @@ import util.Map;
 import util.Text;
 
 public class c111artorya extends c00main{
-	int stack = 0;
+	public int stack = 0;
 	int sk1 = 0;
 	boolean start = false;
 	Entity target = null;
@@ -72,6 +72,10 @@ public class c111artorya extends c00main{
 	boolean remove = false;
 	
 	float s3 = 1;
+	
+	int sp = 0;
+	
+	int ac = 0;
 	
 	@Override
 	public void setStack(float f) {
@@ -88,6 +92,16 @@ public class c111artorya extends c00main{
 	
 	@Override
 	public boolean skill1() {
+		if(stack >= 50000) {
+			stack = 0;
+			skillsp();
+			return true;
+		}
+		if(stack < 60) {
+			cooldown[1] = 0;
+			return true;
+		}
+		stack -= 60;
 		ARSystem.playSound((Entity)player, "c111s3");
 		sk1 = 30;
 		target = null;
@@ -99,19 +113,11 @@ public class c111artorya extends c00main{
 		
 		ARSystem.giveBuff(player, new Stun(player), 30);
 		ARSystem.giveBuff(player, new Silence(player), 30);
+		sp = 0;
 		
 		skill("c111_s3-1");
-		delay(()->{
-			if(target != null) {
-				ARSystem.heal(player, 9999);
-				player.teleport(ULocal.lookAt(player.getLocation(), target.getLocation()));
-				skill("c111_s3-2");
-				ARSystem.playSound((Entity)player, "c111s32");
-			}
-			delay(()->{
-				s3 = 1;
-			},10);
-		},30);
+		
+		ac = 30;
 		return true;
 	}
 	
@@ -129,40 +135,81 @@ public class c111artorya extends c00main{
 		s3 = -1;
 		return true;
 	}
-
+	
 	public void skillsp() {
-		Rule.playerinfo.get(player).tropy(111, 1);
-		for(Player p : Rule.c.keySet()) {
-			ARSystem.giveBuff(p, new TimeStop(p), 200);
-			if(p != player) {
-				Location loc = player.getLocation();
-				loc.setPitch(0);
-				loc = ULocal.offset(loc, new Vector(3,0,0));
-				loc = ULocal.lookAt(loc, player.getLocation());
-				p.teleport(loc);
+		WinEvent event = new WinEvent(player);
+		Bukkit.getPluginManager().callEvent(event);
+		if(!event.isCancelled()) {
+			Map.getMapinfo(1011);
+			Location loc = Map.getCenter();
+			loc.setY(4);
+			loc.setPitch(0);
+			loc.setYaw(180);
+			loc = ULocal.offset(loc, new Vector(-6,0,0));
+			
+			player.teleport(loc);
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(Rule.c.get(p) != null && p != player) Rule.c.put(p, new c000humen(p, plugin, null));
+				if(Rule.c.get(p) != null) ARSystem.giveBuff(p, new TimeStop(p), 300);
+				if(p != player) p.teleport(ULocal.lookAt(ULocal.offset(loc, new Vector(4 + AMath.random(80)*0.1,0,3-AMath.random(60)*0.1)),loc));
+				if(Bukkit.getOnlinePlayers().size() > 10) {
+					for(Player pl : Bukkit.getOnlinePlayers()) {
+						if(AMath.random(5) <= 3 || pl == player) continue;
+						p.hidePlayer(pl);
+					}
+				}
 			}
-		}
-		ARSystem.playSoundAll("c111sp2");
-		skill("c111_sp");
-		delay(()->{
-			ARSystem.playSoundAll("c111sp");
-			skill("c111_spl");
+			Location locs = loc;
+			for(int i=0;i<6;i++) {
+				ARSystem.spellLocCast(player,ULocal.offset(locs, new Vector(3+3*i,0,6)), "c111_spt");
+				ARSystem.spellLocCast(player,ULocal.offset(locs, new Vector(3+3*i,0,-6)), "c111_spt");
+			}
+			Rule.playerinfo.get(player).tropy(111, 1);
+
+			ARSystem.playSoundAll("c111sp2");
+			skill("c111_sp");
 			delay(()->{
-				Skill.win(player);
-			},60);
-		},100);
+				ARSystem.playSoundAll("c111sp");
+				skill("c111_spl");
+			},100);
+			
+			delay(()->{
+				skill("c111_spe2");
+				delay(()->{
+					Skill.win(player);
+					tpsdelay(()->{
+						ARSystem.playSoundAll("c111win");
+					},40);
+				},100);
+			},140);
+		}
 	}
 	
 	
 	@Override
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
-			target.setNoDamageTicks(0);
-			if(remove) {
-				target.damage(16 * s3,player);
-			} else {
-				target.damage(8 * s3,player);
+			if(target instanceof Player) {
+				sp++;
+				if(sp == Rule.c.size()-1 && Rule.c.size() > 2) {
+					skillsp();
+				}
 			}
+			target.setNoDamageTicks(0);
+			if(s3 > 0) {
+				if(Rule.buffmanager.getBuffs(target) != null && Rule.buffmanager.getBuffs(target).getBuff() != null) {
+					for(Buff buff : Rule.buffmanager.getBuffs(target).getBuff()) {
+						buff.stop();
+					}
+				}
+			}
+			float damage = 8 * s3;
+			if(remove) damage*=2;
+			
+			if(target.getHealth() - damage < 1) {
+				stack += target.getMaxHealth()*10;
+			}
+			target.damage(damage, player);
 		}
 	}
 	
@@ -171,8 +218,8 @@ public class c111artorya extends c00main{
 		if(start && sk1 <= 0) {
 			if(Rule.buffmanager.selectBuffType(player, BuffType.HEADCC) != null) {
 				for(Buff buff : Rule.buffmanager.selectBuffType(player, BuffType.DEBUFF)) {
-					if(stack > 20) {
-						stack -=20;
+					if(stack >= 10) {
+						stack -=10;
 						buff.setTime(0);
 					}
 				}
@@ -185,6 +232,20 @@ public class c111artorya extends c00main{
 	public boolean tick() {
 		start = true;
 		if(sk1 > 0) sk1--;
+		if(ac > 0) {
+			ac--;
+			if(ac <= 0) {
+				if(target != null) {
+					ARSystem.heal(player, 8);
+					player.teleport(ULocal.lookAt(player.getLocation(), target.getLocation()));
+					skill("c111_s3-2");
+					ARSystem.playSound((Entity)player, "c111s32");
+				}
+				delay(()->{
+					s3 = 1;
+				},10);
+			}
+		}
 		
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c111:p")+ "] : &f" + stack +"");
@@ -206,16 +267,12 @@ public class c111artorya extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 		} else {
 			if(sk1 > 0) {
 				target = e.getDamager();
 				e.setDamage(0);
 				e.setCancelled(true);
 				return false;
-			}
-			if(e.getDamage() >= player.getMaxHealth()) {
-				e.setDamage(player.getMaxHealth() - 1);
 			}
 		}
 		return true;

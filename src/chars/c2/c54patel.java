@@ -38,7 +38,9 @@ import buff.Stun;
 import buff.TimeStop;
 import buff.Wound;
 import chars.c.c00main;
+import chars.c.c18misogi;
 import chars.c.c37subaru;
+import chars.ch.e002rain;
 import event.Skill;
 import manager.AdvManager;
 import types.box;
@@ -177,13 +179,13 @@ public class c54patel extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*6);
 			ARSystem.spellLocCast(player, e.getEntity().getLocation(), "c54_p");
 		} else {
 			if(player.getHealth() - e.getDamage() < 1 && Rule.buffmanager.OnBuffTime((LivingEntity) e.getDamager(), "panic")&&skillCooldown(0)) {
 				death((Player)e.getDamager());
 				e.setDamage(0);
 				e.setCancelled(true);
+				return false;
 			}
 		}
 		return true;
@@ -204,39 +206,56 @@ public class c54patel extends c00main{
 		info();
 		ARSystem.playSound((Entity)player, "c54sp");
 		player.teleport(p);
-		p.setGameMode(GameMode.SPECTATOR);
-		Rule.c.remove(player);
-		HashMap<Player, c00main> s = (HashMap<Player, c00main>) Rule.c.clone();
-		Rule.c.put(player,s.get(p));
-		Rule.c.remove(p);
-		Rule.c.get(player).player = player;
-		player.setMaxHealth(hp);
-		player.setHealth(hp);
-		ARSystem.giveBuff(player, new Nodamage(player), 60);
-		tpsdelay(()->{
-			if(Rule.c.get(player) != null) {
-				if(Rule.c.size() <= 1) ARSystem.Stop();
-				tpsdelay(()->{
-					if(Rule.c.get(player) != null) {
-						if(Rule.c.size() <= 1) ARSystem.Stop();
-						tpsdelay(()->{
-							if(Rule.c.get(player) != null) {
-								if(Rule.c.size() > 1) {
-									HashMap<Player, c00main> ss = (HashMap<Player, c00main>) Rule.c.clone();
-									Rule.c.put(p,ss.get(player));
-									Rule.c.get(p).player = p;
-									Skill.remove(player, p);
-									p.setGameMode(GameMode.ADVENTURE);
-									ARSystem.Stop();
-								} else {
-									ARSystem.Stop();
+		if(Rule.c.get(p) != null && Rule.c.get(p) instanceof e002rain) {
+			((e002rain)Rule.c.get(p)).l(18);
+		} else if(Rule.c.get(p) != null && Rule.c.get(p) instanceof c18misogi) {
+			player.setGameMode(GameMode.SPECTATOR);
+			ARSystem.giveBuff(player, new TimeStop(player), 60);
+			delay(()->{
+				ARSystem.playSound((Entity)p, "c18nomind");
+				delay(()->{
+					player.setGameMode(GameMode.ADVENTURE);
+					ARSystem.giveBuff(player, new Stun(player), 100);
+					ARSystem.giveBuff(player, new Silence(player), 100);
+					Skill.remove(player, p);
+				},80);
+			},60);
+			
+		} else {
+			p.setGameMode(GameMode.SPECTATOR);
+			Rule.c.remove(player);
+			HashMap<Player, c00main> s = (HashMap<Player, c00main>) Rule.c.clone();
+			Rule.c.put(player,s.get(p));
+			Rule.c.remove(p);
+			Rule.c.get(player).player = player;
+			player.setMaxHealth(hp);
+			player.setHealth(hp);
+			ARSystem.giveBuff(player, new Nodamage(player), 60);
+			tpsdelay(()->{
+				if(Rule.c.get(player) != null) {
+					if(Rule.c.size() <= 1) ARSystem.Stop();
+					tpsdelay(()->{
+						if(Rule.c.get(player) != null) {
+							if(Rule.c.size() <= 1) ARSystem.Stop();
+							tpsdelay(()->{
+								if(Rule.c.get(player) != null) {
+									if(Rule.c.size() > 1) {
+										HashMap<Player, c00main> ss = (HashMap<Player, c00main>) Rule.c.clone();
+										Rule.c.put(p,ss.get(player));
+										Rule.c.get(p).player = p;
+										Skill.remove(player, p);
+										p.setGameMode(GameMode.ADVENTURE);
+										ARSystem.Stop();
+									} else {
+										ARSystem.Stop();
+									}
 								}
-							}
-						},200);
-					}
-				},200);
-			}
-		},200);
+							},200);
+						}
+					},200);
+				}
+			},200);
+		}
 	}
 	
 	@Override

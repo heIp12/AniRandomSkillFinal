@@ -10,6 +10,7 @@ import org.bukkit.block.structure.Mirror;
 import mode.MAdv;
 import mode.MArena;
 import mode.MGUN;
+import mode.MHeal;
 import mode.MKagerou;
 import mode.MKanna;
 import mode.MKiller;
@@ -50,6 +51,7 @@ public class GameModes {
 		orignal.add(MArena.class);
 		orignal.add(MLoboTomy.class);
 		orignal.add(MKagerou.class);
+		orignal.add(MHeal.class);
 		
 		for(Class<? extends ModeBase> key : orignal) {
 			ModeBase mb;

@@ -113,7 +113,6 @@ public class c96iki extends c00main{
 			Rule.buffmanager.selectBuffValue(player, "buffac",10f);
 			sp = 300;
 			count = s_kill;
-			if(ARSystem.isGameMode("lobotomy")) sp = 6000;
 		} else {
 			super.skill6();
 		}
@@ -155,12 +154,10 @@ public class c96iki extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(isps) {
 				ARSystem.heal(player, e.getDamage() * 0.2);
 			}
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.5);
 			if(s3 > 0) {
 				d3 += e.getDamage();
 				e.setDamage(0);

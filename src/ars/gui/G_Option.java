@@ -71,13 +71,16 @@ public class G_Option extends GUIBase{
 	}
 	public void click2(boolean right,boolean shift) {
 		Rule.pick = !Rule.pick;
+		Rule.Var.Save("info.option.pick", Rule.pick);
 		Bukkit.broadcastMessage("§a§l[ARSystem] :§c§l " + Main.GetText("main:mode0")+" : " + Rule.pick);
 		new G_Option(player);
 	}
 	public void click3(boolean right,boolean shift) {
 		Rule.auto =! Rule.auto;
+		Rule.Var.Save("info.option.auto", Rule.auto);
 		new G_Option(player);
 	}
+	
 	public void click4(boolean right,boolean shift) {
 		if(right) {
 			if(shift) ARSystem.time+=4;
@@ -89,12 +92,16 @@ public class G_Option extends GUIBase{
 				ARSystem.time = 0;
 			}
 		}
+
+		Rule.Var.setInt("info.option.time", ARSystem.time);
 		new G_Option(player);
 	}
 	public void click5(boolean right,boolean shift) {
 		ARSystem.ban = !ARSystem.ban;
+		Rule.Var.Save("info.option.ban", ARSystem.ban);
 		new G_Option(player);
 	}
+	
 	public void click6(boolean right,boolean shift) {
 		Map.mapid = 0;
 		ARSystem.Start(-1);
@@ -156,6 +163,7 @@ public class G_Option extends GUIBase{
 					ARSystem.starttime = 5;
 				}
 			}
+			Rule.Var.setInt("info.option.starttime",ARSystem.starttime);
 			new G_Option(player);
 		}
 	}

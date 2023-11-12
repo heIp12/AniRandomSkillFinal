@@ -62,7 +62,7 @@ public class c110seiya extends c00main{
 	boolean ps = true;
 	int damage_Stack = 0;
 	float rotate = 0;
-	Location loc = player.getLocation();
+	Location loc;
 	boolean snk = false;
 	boolean jump = false;
 	
@@ -79,6 +79,7 @@ public class c110seiya extends c00main{
 		load();
 		text();
 		c = this;
+		if(loc != null) player.getLocation();
 	}
 
 	@Override
@@ -141,6 +142,7 @@ public class c110seiya extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(loc == null) player.getLocation();
 		if(ps) {
 			if(snk && player.isSneaking()) {
 				snk = false;
@@ -179,7 +181,6 @@ public class c110seiya extends c00main{
 			ps = false;
 		}
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.3);
 			LivingEntity target = ((LivingEntity)e.getEntity());
 			if(target.getHealth() - e.getDamage() <= 1 && skillCooldown(0)) {
 				spskillon();

@@ -110,7 +110,6 @@ public class c82maple extends c00main{
 		for(Entity e : ARSystem.box(player, new Vector(10,4,10), box.TARGET)) {
 			Wound w = new Wound((LivingEntity)e);
 			w.setValue(1);
-			if(ARSystem.isGameMode("lobotomy")) w.setValue(10);
 			w.setDelay(player,40,0);
 			ARSystem.giveBuff((LivingEntity)e, w, 600);
 		}
@@ -120,7 +119,7 @@ public class c82maple extends c00main{
 	@Override
 	public boolean tick() {
 		if(s2 > 0) s2--;
-		mp += 0.005;
+		mp += 0.01;
 		
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c [Mp] : "+ mp);

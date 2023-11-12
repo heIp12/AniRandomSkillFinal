@@ -115,7 +115,6 @@ public class c48yoshino extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			ARSystem.potion((LivingEntity) e.getEntity(), 2, 100, 2);
 		} else {
 			tropy++;

@@ -166,10 +166,9 @@ public class c6600akame extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 2);
-			if(ARSystem.isGameMode("lobotomy")) ARSystem.heal(player, e.getDamage());
+			
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.5);
+			
 		}
 		return true;
 	}

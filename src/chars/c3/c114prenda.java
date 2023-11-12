@@ -178,7 +178,6 @@ public class c114prenda extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			if(Rule.c.get(e.getDamager()) != null && Rule.c.get(e.getDamager()).getCode() == 63) {
 				e.setDamage(e.getDamage() * 0.2);
 			}

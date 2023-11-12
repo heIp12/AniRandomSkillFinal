@@ -87,8 +87,8 @@ public class c50sayaka extends c00main{
 	
 	@Override
 	public boolean skill3() {
-		int delay = 8;
-		delay -= speed/3;
+		int delay = 10;
+		delay -= speed/5;
 		if(delay < 1) delay = 1;
 		
 		int d = delay;
@@ -189,7 +189,6 @@ public class c50sayaka extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(Rule.c.get(e.getEntity()) != null) cooldown[4] -= e.getDamage()*3;
 		} else {
 			if(Rule.c.get(e.getDamager()) != null) cooldown[4] -= 3;

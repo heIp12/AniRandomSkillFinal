@@ -72,8 +72,8 @@ public class c22byakuya extends c00main{
 			player.teleport(loc);
 			ARSystem.playSound((Entity)player, "0miss");
 		} else {
-			if(flower >= 1) {
-				flower--;
+			if(flower >= 2) {
+				flower-=2;
 				skill("c"+number+"_s2");
 			}
 			
@@ -91,13 +91,8 @@ public class c22byakuya extends c00main{
 			player.addPotionEffect(new PotionEffect(PotionEffectType.getById(5),400, 2));
 			ARSystem.giveBuff(player, new Nodamage(player), 100);
 			player.setHealth(player.getMaxHealth());
-			if(ARSystem.isGameMode("lobotomy")) {
-				for(Entity e : ARSystem.box(player, new Vector(999,999,999), box.TARGET)) {
-					((LivingEntity)e).damage(333,player);
-				}
-			} else {
-				skill("c"+number+"_sp");
-			}
+			skill("c"+number+"_sp");
+			
 		}
 		else if(flower >= 40) {
 			flower-=40;
@@ -130,7 +125,7 @@ public class c22byakuya extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
+			
 		} else {
 
 		}

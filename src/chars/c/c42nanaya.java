@@ -180,7 +180,6 @@ public class c42nanaya extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(!e.getEntity().isDead() && !(e.getEntity() instanceof Player && ((Player)e.getEntity()).getGameMode() != GameMode.SPECTATOR)) {
 				stacks(e.getEntity(),1);
 				if(stack.get(e.getEntity()) > 0) {

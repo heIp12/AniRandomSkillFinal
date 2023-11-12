@@ -51,7 +51,7 @@ import util.Map;
 import util.Text;
 
 public class c65cohina extends c00main{
-	double crit = 1.5;
+	double crit = 2;
 	
 	int sk2 = 0;
 	int sk4 = 0;
@@ -86,6 +86,7 @@ public class c65cohina extends c00main{
 		sks = i;
 		sk = 0;
 	}
+
 	@Override
 	public boolean skill1() {
 		sk(1);
@@ -106,7 +107,7 @@ public class c65cohina extends c00main{
 		},6);
 		return true;
 	}
-	
+
 	@Override
 	public boolean skill2() {
 		ARSystem.playSound((Entity)player, "c65s2");
@@ -114,7 +115,7 @@ public class c65cohina extends c00main{
 		ARSystem.potion(player, 14, 10, 0);
 		return true;
 	}
-	
+
 	@Override
 	public boolean skill3() {
 		sk(3);
@@ -133,10 +134,13 @@ public class c65cohina extends c00main{
 
 	@Override
 	public boolean skill4() {
+		if(isps) {
+			cooldown[4] = 0;
+			return true;
+		}
 		sk(4);
 		ARSystem.playSound((Entity)player, "c65s4");
 		sk4 = 200;
-		if(ARSystem.isGameMode("lobotomy")) sk4 = 600;
 		ARSystem.heal(player, 2);
 		return true;
 	}
@@ -162,7 +166,11 @@ public class c65cohina extends c00main{
 		Entity e = ARSystem.boxSOne(player, new Vector(8,8,8), box.TARGET);
 		if(e != null) {
 			double range = AMath.round(e.getLocation().distance(player.getLocation()),2);
-			if(range < 5 && range > 3) {
+			float rangep = 1;
+			if(sk4 > 0 || isps) {
+				rangep = 2;
+			}
+			if(range <= 4+rangep && range >= 4-rangep) {
 				player.sendTitle("§4<§c "+e.getName()+" §4>", "§c"+Text.get("c65:p1") +" : " + range,0,10,0);
 			} else {
 				player.sendTitle("< "+e.getName()+" >", Text.get("c65:p1") +" : " + range,0,10,0);
@@ -176,13 +184,17 @@ public class c65cohina extends c00main{
 		}
 		return true;
 	}
-	
 
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			double range = e.getEntity().getLocation().distance(player.getLocation());
-			if(range <= 5 && range >= 3) {
+			float rangep = 1;
+			if(sk4 > 0 || isps) {
+				rangep = 2;
+				e.setDamage(e.getDamage() * 0.75f);
+			}
+			if(range <= 4+rangep && range >= 4-rangep) {
 				cr++;
 				e.setDamage(e.getDamage() * crit);
 				cooldown[3]-=6;
@@ -202,13 +214,13 @@ public class c65cohina extends c00main{
 					spskillon();
 					spskillen();
 					ARSystem.playSound((Entity)player, "c65sp");
+					sk4 = 20000;
 				}
 				player.sendTitle("§4Critical!!", "§c<"+AMath.round(e.getDamage(),1)+">");
 			} else {
 				cr = 0;
 			}
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(0.5);
 			if(Rule.c.get(e.getDamager()) != null && Rule.c.get(e.getDamager()) instanceof c56enju && !enjua) {
 				enjua = true;
 				e.setDamage(0);
@@ -226,6 +238,7 @@ public class c65cohina extends c00main{
 		}
 		return true;
 	}
+
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
 		if(ARSystem.getPlayerCount() == 3) {

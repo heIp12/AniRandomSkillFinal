@@ -183,7 +183,6 @@ public class c106ryel extends c00main{
 
 		} else {
 
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.5);
 			if(stack > 0) {
 				for(int i=0;i<stack;i++) {
 					delay(()->{

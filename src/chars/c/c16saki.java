@@ -30,7 +30,9 @@ import types.box;
 
 import util.AMath;
 import util.MSUtil;
+import util.Map;
 import util.Text;
+import util.ULocal;
 
 public class c16saki extends c00main{
 	String set[] = {"㊊","一","二","三","四"};
@@ -51,7 +53,6 @@ public class c16saki extends c00main{
 	String kanf = "";
 	int kan = 0;
 	public String handColor() {
-		if(ARSystem.isGameMode("lobotomy")) pescore = new int[]{9,12,6,20,18,8,2,12,4};
 		String str = hand;
 		
 		for(String s :set) {
@@ -276,7 +277,7 @@ public class c16saki extends c00main{
 		number = 16;
 		load();
 		text();
-		reset();
+		if(p != null) reset();
 	}
 	
 	public void deal() {
@@ -296,6 +297,7 @@ public class c16saki extends c00main{
 					info += " "+ Main.GetText("c16:text"+(i+1))+"("+pescore[i]+")";
 				}
 			}
+			score *= 1+(kan*0.2);
 		} else {
 			info = "§c✖";
 		}
@@ -381,6 +383,7 @@ public class c16saki extends c00main{
 					count++;
 				}
 			}
+			score *= 1+(kan*0.2);
 			delay(new Runnable() {
 				Entity ent = e;
 				int fscore = score;
@@ -459,41 +462,80 @@ public class c16saki extends c00main{
 	public boolean skill4() {
 		List<Entity> entity = ARSystem.box(player,new Vector(6,6,6),box.TARGET);
 		if(isps) {
-			entity = ARSystem.box(player,new Vector(1000,1000,1000),box.MYALL);
 			spskillen();
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				ARSystem.giveBuff(p, new TimeStop(p), 200);
-			}
-			for(Entity e : entity) {
-				ARSystem.spellCast(player, e, "c16_e");
-				ARSystem.spellCast(player, e, "c16_e");
-				ARSystem.spellCast(player, e, "c16_e");
-				ARSystem.spellCast(player, e, "c16_e2");
-				ARSystem.spellCast(player, e, "c16_e2");
-				ARSystem.spellCast(player, e, "c16_e2");
-				
-			}
 			ARSystem.playSoundAll("c16sp");
-			player.performCommand("tm anitext all SUBTITLE true 90 c16:text10/§aScore : §c§kaaaaa");
-			delay(()->{
-				for(Player p : Bukkit.getOnlinePlayers()) {
-					p.sendTitle("§d"+Main.GetText("c16:text8"),"§fScore : §kaaaaa",10,40,0);
-				}
-			},140);
-			delay(()->{
-					ARSystem.playSoundAll("c16sp2");
-					for(Player p : Bukkit.getOnlinePlayers()) {
-						p.sendTitle("§4§l《§4"+Main.GetText("c16:text8")+"§4§l》","§dScore : 32000!!!",0,10,40);
-					}
-					delay(()->{
-						WinEvent event = new WinEvent(player);
-						Bukkit.getPluginManager().callEvent(event);
-						if(!event.isCancelled()) {
-							Skill.win(player);
-						}
-					},40);
-			},160);
 			
+			WinEvent event = new WinEvent(player);
+			Bukkit.getPluginManager().callEvent(event);
+			if(!event.isCancelled()) {
+				entity = ARSystem.box(player,new Vector(1000,1000,1000),box.MYALL);
+				Map.getMapinfo(1011);
+				Location loc = Map.getCenter();
+				loc.setY(4);
+				loc.setPitch(0);
+				player.teleport(loc);
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					if(Rule.c.get(p) != null && p != player) Rule.c.put(p, new c000humen(p, plugin, null));
+					if(Rule.c.get(p) != null) ARSystem.giveBuff(p, new TimeStop(p), 400);
+					if(p != player) p.teleport(ULocal.lookAt(ULocal.offset(loc, new Vector(5,0,5-AMath.random(0,100)*0.1)),loc));
+					for(Player pl : Bukkit.getOnlinePlayers()) {
+						if(p == player || pl == player) continue;
+						p.hidePlayer(pl);
+					}
+				}
+				for(Player e : Rule.c.keySet()) {
+					ARSystem.spellCast(player, e, "c16_e");
+					ARSystem.spellCast(player, e, "c16_e2");
+				}
+				player.performCommand("tm anitext all SUBTITLE true 90 c16:text10/§aScore : §c§kaaaaa");
+	
+				Location locs = loc.clone();
+				delay(()->{
+					ARSystem.spellLocCast(player,ULocal.offset(locs, new Vector(2,-0.6,-4)), "c16_i1");
+					for(int i=0;i<12;i++) {
+						int j = i;
+						delay(()->{
+							Vector v = new Vector(2,-0.5,-4 + (0.5*(j+1)));
+							if(j == 0) ARSystem.spellLocCast(player,ULocal.offset(locs, v), "c16_i3");
+							if(j == 1 || j == 2 || j == 3) ARSystem.spellLocCast(player,ULocal.offset(locs, v), "c16_i4");
+							if(j == 4 || j == 7) ARSystem.spellLocCast(player,ULocal.offset(locs, v), "c16_i6");
+							if(j == 5 || j == 6) ARSystem.spellLocCast(player,ULocal.offset(locs, v), "c16_i5");
+							if(j == 8 || j == 11) ARSystem.spellLocCast(player,ULocal.offset(locs, v), "c16_i7");
+							if(j == 9 || j == 10) ARSystem.spellLocCast(player,ULocal.offset(locs, v), "c16_i8");
+						},i*2);
+						delay(()->{
+							ARSystem.spellLocCast(player,ULocal.offset(locs, new Vector(2,3.5,-4)), "c16_i2");
+						},50);
+					}
+				},20);
+				delay(()->{
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						p.sendTitle("§d"+Main.GetText("c16:text8"),"§fScore : §kaaaaa",10,40,0);
+					}
+					for(int i=0;i<6;i++) {
+						ARSystem.spellLocCast(player,ULocal.offset(player.getLocation(), new Vector(-6 + 2*i,0,2 + 1*i)), "c16_sp1");
+						ARSystem.spellLocCast(player,ULocal.offset(player.getLocation(), new Vector(-6 + 2*i,0,-2 - 1*i)), "c16_sp1");
+					}
+				},140);
+				delay(()->{
+						ARSystem.playSoundAll("c16sp2");
+						for(Player p : Bukkit.getOnlinePlayers()) {
+							p.sendTitle("§4§l《§4"+Main.GetText("c16:text8")+"§4§l》","§dScore : 32000!!!",0,10,40);
+							ARSystem.spellCast(player, p, "c16_e");
+							ARSystem.spellCast(player, p, "c16_e2");
+							ARSystem.spellCast(player, p, "c16_sp2");
+							ARSystem.spellCast(player, p, "c16_sp2");
+							ARSystem.spellCast(player, p, "c16_sp2");
+							ARSystem.spellCast(player, p, "c16_sp2");
+						}
+						delay(()->{
+							Skill.win(player);
+							tpsdelay(()->{
+								ARSystem.playSoundAll("c16win");
+							},40);
+						},60);
+				},160);
+			}
 		}
 		else if(hand.length() == handcount && entity.size() > 0 && pe[8]) {
 			skill("c"+number+"deck");

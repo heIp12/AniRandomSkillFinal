@@ -46,7 +46,7 @@ public class c35miruk extends c00main{
 		number = 35;
 		load();
 		text();
-		loc = player.getLocation();
+		if(p != player) loc = player.getLocation();
 	}
 	
 
@@ -109,6 +109,7 @@ public class c35miruk extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(loc == null) loc = player.getLocation();
 		if(s1) {
 			if(player.getMaxHealth() > 1 || isps) {
 				if(!isps) {

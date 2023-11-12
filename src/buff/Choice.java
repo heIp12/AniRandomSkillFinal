@@ -16,6 +16,7 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import chars.c.c000humen;
+import chars.c2.c61tyana;
 import chars.c2.c90arabe;
 import event.Skill;
 import event.WinEvent;
@@ -68,6 +69,9 @@ public class Choice extends Buff{
 						 count(type)+Main.GetText("c90:t"+type) + " | "+ 
 						 count(type2)+Main.GetText("c90:t"+type2));
 		start_loc = player.getLocation();
+		if(Rule.c.get(player) != null && Rule.c.get(player) instanceof c61tyana) {
+			ARSystem.playSound((Entity)player, "c61kami");
+		}
 	}
 	
 	public double count(int type) {

@@ -68,8 +68,6 @@ public class c7200plan extends c00main{
 		load();
 		text();
 		c = this;
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[3] *= 0.4;
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[1] *= 0.3;
 	}
 
 
@@ -164,7 +162,6 @@ public class c7200plan extends c00main{
 				ARSystem.playSound((Entity)player, "c72s1"+AMath.random(1,2));
 				skill("c1072_s1");
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			ARSystem.overheal(player, e.getDamage() * 0.6);
 		} else {
 			if(sk2 > 0) {

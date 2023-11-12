@@ -67,7 +67,7 @@ public class c38hajime extends c00main{
 		number = 38;
 		load();
 		text();
-		loc = player.getLocation();
+		if(p != null) loc = player.getLocation();
 	}
 	
 
@@ -128,6 +128,7 @@ public class c38hajime extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(loc == null) loc = player.getLocation();
 		if(tk%20==0) {
 			for(int i=0; i < guncount;i++) {
 				scoreBoardText.add("&c ["+Main.GetText("c38:t1"+i)+ "]");
@@ -278,7 +279,7 @@ public class c38hajime extends c00main{
 	
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
-		if(e == player || ARSystem.isGameMode("lobotomy")) {
+		if(e == player) {
 			if(guncount < 3) {
 				ARSystem.giveBuff(player, new TimeStop(player), 400);
 				wepone();
@@ -305,7 +306,7 @@ public class c38hajime extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
+			
 		} else {
 			if(!isps && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time < 30 && ((LivingEntity)e.getEntity()).getHealth() <= e.getDamage()+1) {
 				spskillon();

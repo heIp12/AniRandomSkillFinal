@@ -78,8 +78,6 @@ public class c0700shana extends c00main{
 					((LivingEntity)e.getEntity()).setNoDamageTicks(0);
 				}
 			}, 3);
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() + 2);
-			if(ARSystem.isGameMode("lobotomy")) ARSystem.heal(player, 1);
 			skill("c7_ps");
 			ARSystem.spellCast(player, e.getEntity(), "c1007p");
 			if(isps &&  e.getEntity() != null && e.getEntity() instanceof LivingEntity) {

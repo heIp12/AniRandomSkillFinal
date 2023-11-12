@@ -80,9 +80,6 @@ public class c94yukari extends c00main{
 		load();
 		text();
 		c = this;
-		if(ARSystem.isGameMode("lobotomy")) {
-			setcooldown[0] *= 0.3;
-		}
 	}
 	
 
@@ -105,8 +102,8 @@ public class c94yukari extends c00main{
 	
 	@Override
 	public boolean skill2() {
-		if(p > 30) {
-			p-=30;
+		if(p > 50) {
+			p-=50;
 			ARSystem.playSound((Entity)player, "c94s2");
 			for(int i=0; i< 5; i++) skill("c94_s2");
 		} else {
@@ -216,9 +213,9 @@ public class c94yukari extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*5);
+			
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.2);
+			
 		}
 		return true;
 	}

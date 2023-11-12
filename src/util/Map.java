@@ -28,7 +28,7 @@ public class Map {
 	
 	public static int maphuman = 10;
 	
-	public static String Version = "1.8";
+	public static String Version = "1.89";
 	public static MapType mapType = MapType.NORMAL;
 	public static World world = Bukkit.getWorld("world");
 	public static int lastplay = 0;
@@ -110,7 +110,12 @@ public class Map {
 				int x = (loc_f.getBlockX() + ((loc_l.getBlockX() - loc_f.getBlockX())/2));
 				int z = (loc_f.getBlockZ() + ((loc_l.getBlockZ() - loc_f.getBlockZ())/2));
 				world.getWorldBorder().setCenter(x, z);
-				world.getWorldBorder().setSize(size,1);
+				int sx = Math.abs(getCenter().getBlockX() - loc_l.getBlockX());
+				int sz = Math.abs(getCenter().getBlockZ() - loc_l.getBlockZ());
+				int min = sx;
+				if(sz < min) min = sz;
+				
+				world.getWorldBorder().setSize(sz*2,1);
 
 			}
 		}

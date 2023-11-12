@@ -130,7 +130,6 @@ public class c86iriya extends c00main{
 	public boolean tick() {
 		if(Mp < 500) {
 			Mp +=(0.25f * (skillmult + sskillmult));
-			if(ARSystem.isGameMode("lobotomy")) Mp += 1.5f;
 		}
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c86:t")+"] : " + AMath.round(Mp,1));

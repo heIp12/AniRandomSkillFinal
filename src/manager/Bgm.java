@@ -75,7 +75,7 @@ public class Bgm {
 	}
 	public static void getBgm(String name) {
 		if(bgmbar==null) {
-			bgmbar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID, BarFlag.CREATE_FOG);
+			bgmbar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
 		}
 		
 		bgmName = Main.GetText("bgm:"+name);

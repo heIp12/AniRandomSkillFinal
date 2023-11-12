@@ -95,8 +95,8 @@ public class c06watson extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
-			ARSystem.giveBuff((LivingEntity)e.getEntity(), new Rampage((LivingEntity)e.getEntity()), 20);
+			
+			ARSystem.giveBuff((LivingEntity)e.getEntity(), new Rampage((LivingEntity)e.getEntity()), 8);
 			((LivingEntity)e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION,200,10));
 		}
 		return true;

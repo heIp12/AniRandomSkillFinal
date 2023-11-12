@@ -1,91 +1,73 @@
 package chars.c3;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.events.SpellTargetEvent;
-
 import Main.Main;
-import aliveblock.ABlock;
 import ars.ARSystem;
 import ars.Rule;
-import ars.gui.G_Satory;
-import buff.Barrier;
-import buff.Buff;
-import buff.Cindaella;
 import buff.Curse;
-import buff.Fascination;
-import buff.NoHeal;
-import buff.Noattack;
 import buff.Nodamage;
-import buff.Panic;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
-import buff.Timeshock;
-import buff.Wound;
-import chars.c.c000humen;
 import chars.c.c00main;
-import chars.c.c09youmu;
-import chars.c.c10bell;
-import chars.c.c30siro;
-import chars.c2.c60gil;
-import event.Skill;
-import event.WinEvent;
-import manager.AdvManager;
-import manager.Bgm;
-import types.BuffType;
-import types.TargetMap;
 import types.box;
 
 import util.AMath;
-import util.GetChar;
-import util.Holo;
-import util.InvSkill;
-import util.Inventory;
 import util.ULocal;
-import util.MSUtil;
-import util.Map;
-import util.Text;
 
 public class c126hera extends c00main{
 	int p = 11;
 	int p2 = 0;
 	int pattantime = 0;
 	int pattan = 0;
+	
+	Location loc;
+	int sp = 0;
+	
 	public c126hera(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 126;
 		load();
 		text();
 		c = this;
-		ARSystem.playSound(player, "c126s"+AMath.random(3));
+		if(p != null) ARSystem.playSound(player, "c126s"+AMath.random(3));
 	}
 
-
+	@Override
+	public void setStack(float f) {
+		// TODO Auto-generated method stub
+		p = (int)f;
+	}
 	@Override
 	public boolean skill1() {
+		if(p <= 4 && skillCooldown(0)) {
+			cooldown[1] = 0;
+			spskillon();
+			spskillen();
+			p2 = 0;
+			ARSystem.playSound((Player)player, "c126sp");
+			skill("c126_s2");
+			ARSystem.playSound((Entity)player, "c126s2");
+			for(Entity e : ARSystem.box(player, new Vector(16,5,16), box.TARGET)) {
+				LivingEntity en = (LivingEntity) e;
+				ARSystem.giveBuff(en, new Stun(en), 120);
+			}
+			
+			ARSystem.giveBuff(player, new TimeStop(player), 120);
+			ARSystem.giveBuff(player, new Nodamage(player), 160);
+			ARSystem.giveBuff(player, new Silence(player), 160);
+			ARSystem.potion(player, 1, 160, 4);
+			loc = player.getLocation();
+			sp = 140;
+			return true;
+		}
 		if(p2 <= 0) {
 			skill("c126_s1");
 			ARSystem.playSound((Entity)player, "c126s1");
@@ -133,7 +115,7 @@ public class c126hera extends c00main{
 	@Override
 	public boolean tick() {
 		if(tk%20 == 0) scoreBoardText.add("&c ["+Main.GetText("c126:ps")+ "] : &f"+p);
-		if(p2 <= 0 && AMath.random(500) <= 12 - p && Rule.buffmanager.GetBuffTime(player, "stun") <= 0) {
+		if(p2 <= 0 && Rule.buffmanager.GetBuffTime(player, "stun") <= 0 && sp <= 0 && AMath.random(1200) <= 12 - p) {
 			ARSystem.playSound((Entity)player, "c126s3");
 			p2 = 20 + 8 * (12-p2);
 		}
@@ -141,26 +123,58 @@ public class c126hera extends c00main{
 			p2--;
 			ps2();
 		}
+		if(sp > 0) {
+			ARSystem.playerRotate(player, loc.getYaw(), loc.getPitch());
+			if(sp > 100) {
+				if(sp%20 == 0) skill("c126_sp1");
+			}
+			else if(sp > 80) {
+				if(sp%10 == 0) skill("c126_sp1");
+			}
+			else if(sp > 60) {
+				if(sp%5 == 0) skill("c126_sp1");
+			}
+			else if(sp > 40) {
+				if(sp%2 == 0) skill("c126_sp1");
+			}
+			else if(sp > 20) {
+				skill("c126_sp1");
+			}
+			if(sp == 10) {
+				skill("c126_sp2");
+				skill("c126_sp3");
+				skill("c126_sp4");
+			}
+			sp--;
+		}
 		return true;
 	}
 	
-	void ps() {
+	void ps(Entity e) {
+		
 		p2 = 0;
-		ARSystem.giveBuff(player, new Nodamage(player), 20);
+		ARSystem.giveBuff(player, new Nodamage(player), 5);
 		p--;
 		ARSystem.playSound((Entity)player, "c126death");
-		double size = player.getMaxHealth() - AMath.random(0, 2);
+		double size = 0;
+		
+		if(player.getMaxHealth() <= 14 && AMath.random(10) <= 7) {
+			size = player.getMaxHealth() - AMath.random(0, 1);
+		} else {
+			size = player.getMaxHealth() - AMath.random(0, 2);
+		}
+		
 		if(size <=1) size = 1;
 		player.setMaxHealth(size);
 		ARSystem.giveBuff(player, new Stun(player), 80);
-		ARSystem.giveBuff(player, new Silence(player), 80);
-		ARSystem.overheal(player, hp);
+		ARSystem.giveBuff(player, new Silence(player), 100);
+		ARSystem.heal(player, hp);
 	}
 	
 	@Override
 	public boolean remove(Entity caster) {
 		if(p > 0) {
-			ps();
+			ps(caster);
 			return false;
 		}
 		return super.remove(caster);
@@ -169,15 +183,15 @@ public class c126hera extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(p2 > 0){
-				e.setDamage(e.getDamage() * 1.5);
+			if(sp > 0) {
+				((LivingEntity)e.getEntity()).setVelocity(new Vector(0,-0.1,0));
+				ARSystem.giveBuff((LivingEntity) e.getEntity(), new Stun((LivingEntity) e.getEntity()), 1);
 			}
-			
 		} else {
 			if(player.getHealth() - e.getDamage() < 1 && p > 0) {
 				e.setDamage(0);
 				e.setCancelled(true);
-				ps();
+				ps(e.getDamager());
 				return false;
 			}
 			if(p2 > 0){

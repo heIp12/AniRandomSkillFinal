@@ -160,7 +160,6 @@ public class c93bakugo extends c00main{
 		if(frist_loc == null) frist_loc = player.getLocation();
 		
 		if(p < 100) p += frist_loc.distance(player.getLocation())*1;
-		if(ARSystem.isGameMode("lobotomy")) p+=0.25;
 		
 		if(ARSystem.isGameMode("zombie")) p -= frist_loc.distance(player.getLocation())*0.6;
 		p = (float) AMath.round(p, 2);
@@ -182,9 +181,9 @@ public class c93bakugo extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			for(int i=0;i<10;i++) cooldown[i] -= 0.1;
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
+			
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.35);
+			
 		}
 		return true;
 	}

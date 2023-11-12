@@ -207,7 +207,7 @@ public class c118cotory extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
+			
 		} else {
 			if(nodamage.get((LivingEntity) e.getDamager()) != null && nodamage.get((LivingEntity) e.getDamager()) > 0) {
 				e.setDamage(0);

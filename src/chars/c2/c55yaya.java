@@ -120,19 +120,18 @@ public class c55yaya extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			damage+= e.getDamage();
 			if(damage >= 100) Rule.playerinfo.get(player).tropy(55,1);
 			if(sk4 > 0) {
 				ARSystem.potion((LivingEntity) e.getEntity(), 2, 10, 1);
-				delay(()->{((LivingEntity) e.getEntity()).damage(1);},60);
+				delay(()->{((LivingEntity) e.getEntity()).damage(1,player);},60);
 			}
 			if(sp > 0) {
 				ARSystem.spellCast(player, e.getEntity(), "c55_spe");
 			}
 			
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.6);
+			
 		}
 		return true;
 	}

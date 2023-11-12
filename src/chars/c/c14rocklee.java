@@ -25,7 +25,7 @@ import util.Map;
 import util.ULocal;
 
 public class c14rocklee extends c00main{
-	Location loc = player.getLocation();
+	Location loc;
 	int sk2 = 0;
 	boolean sk1 = false;
 	float sk3 = 1;
@@ -33,9 +33,12 @@ public class c14rocklee extends c00main{
 	public c14rocklee(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 14;
-		MSUtil.setvar(player, "c14", 0);
 		load();
 		text();
+		if(p != null) {
+			player.getLocation();
+			MSUtil.setvar(player, "c14", 0);
+		}
 	}
 
 	@Override

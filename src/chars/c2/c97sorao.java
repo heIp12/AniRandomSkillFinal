@@ -111,7 +111,6 @@ public class c97sorao extends c00main{
 						damage += target.getMaxHealth()*0.2f;
 					}
 				}
-				if(ARSystem.isGameMode("lobotomy")) damage*=10;
 				
 				if(target.getHealth()- damage >= 1) {
 					s_damage+=damage;
@@ -121,7 +120,6 @@ public class c97sorao extends c00main{
 					Skill.death(target, player);
 				}
 			} else {
-				if(ARSystem.isGameMode("lobotomy")) damage *= 5;
 				target.damage(damage,player);
 			}
 		}
@@ -225,7 +223,6 @@ public class c97sorao extends c00main{
 		if(isAttack) {
 
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.6);
 			if(AMath.random(10) <= 1) {
 				player.teleport(Map.randomLoc());
 			}

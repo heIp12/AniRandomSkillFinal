@@ -73,8 +73,8 @@ public class c4800yoshino extends c00main{
 		if(sk3) {
 			ARSystem.playSound((Entity)player, "c48s2");
 		} else {
-			ARSystem.giveBuff(player,new Stun(player), 100);
-			ARSystem.giveBuff(player,new Silence(player), 100);
+			ARSystem.giveBuff(player,new Stun(player), 60);
+			ARSystem.giveBuff(player,new Silence(player), 60);
 		}
 		return true;
 	}
@@ -85,8 +85,8 @@ public class c4800yoshino extends c00main{
 		if(tk%1==0) {
 			ARSystem.spellLocCast(player, Map.randomLoc(), "c1048p");
 		}
-		if(sk3) {
-			ARSystem.addBuff(player,new Stun(player), 1);
+		if(sk3 && tk%2 == 0) {
+			ARSystem.addBuff(player,new Stun(player), 2);
 			skill("c1048_s3");
 		}
 		return true;
@@ -100,20 +100,20 @@ public class c4800yoshino extends c00main{
 		}
 		if(n.equals("2")) {
 			target.setNoDamageTicks(0);
-			target.damage(1,player);
+			target.damage(2,player);
 			ARSystem.potion(target, 2, 60, 2);
 			ARSystem.giveBuff(target,new Stun(target), 40);
 		}
 		if(n.equals("3")) {
 			target.setNoDamageTicks(0);
-			target.damage(0.05 + target.getMaxHealth()/111,player);
+			target.damage(0.1 + target.getMaxHealth()/80,player);
 		}
 	}
 
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 1.5);
+			
 		} else {
 			e.setDamage(e.getDamage()*0.8);
 			ARSystem.spellLocCast(player, e.getDamager().getLocation(), "c1048p");

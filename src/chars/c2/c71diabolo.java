@@ -69,7 +69,7 @@ public class c71diabolo extends c00main{
 		load();
 		text();
 		c = this;
-		skill("c71_p");
+		if(p != player) skill("c71_p");
 	}
 
 	@Override
@@ -193,7 +193,6 @@ public class c71diabolo extends c00main{
 			sk2 = 0;
 			double damage = (1-player.getHealth()/player.getMaxHealth())*2;
 			e.setDamage(e.getDamage() + e.getDamage()*damage);
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 		} else {
 			if(sk3 > 0) {
 				if(attack.get(e.getDamager()) == null) {

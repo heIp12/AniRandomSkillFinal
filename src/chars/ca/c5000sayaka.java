@@ -147,7 +147,6 @@ public class c5000sayaka extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(e.getDamage() <= 1) {
 				ARSystem.heal(player, e.getDamage());
 			}

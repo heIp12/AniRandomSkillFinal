@@ -81,11 +81,7 @@ public class c69himi extends c00main{
 	@Override
 	public boolean skill1() {
 		ARSystem.playSound((Entity)player, "c69s");
-		if(ARSystem.isGameMode("lobotomy") && AMath.random(3) == 1) {
-			count++;
-		} else {
-			count++;
-		}
+		count++;
 		Location loc = player.getLocation();
 		
 		for(int i =0; i < 1+count/5;i++) {
@@ -105,11 +101,7 @@ public class c69himi extends c00main{
 	@Override
 	public boolean skill2() {
 		ARSystem.playSound((Entity)player, "c69s");
-		if(ARSystem.isGameMode("lobotomy") && AMath.random(3) == 1) {
-			count++;
-		} else {
-			count++;
-		}
+		count++;
 		Location loc = player.getLocation();
 		
 		for(int i =0; i < 1+count/5;i++) {
@@ -129,11 +121,7 @@ public class c69himi extends c00main{
 	@Override
 	public boolean skill3() {
 		ARSystem.playSound((Entity)player, "c69s3");
-		if(ARSystem.isGameMode("lobotomy") && AMath.random(3) == 1) {
-			count++;
-		} else {
-			count++;
-		}
+		count++;
 		local.add(player.getLocation());
 		sp();
 		return true;

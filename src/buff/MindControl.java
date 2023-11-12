@@ -25,8 +25,12 @@ public class MindControl extends Buff{
 	Location loc;
 	int l = 1;
 	LivingEntity owner;
-	
 	LivingEntity targets;
+	
+	boolean onlyPlayer = false;
+	
+	public void OnlyPlayer(boolean ok) { onlyPlayer = ok;}
+	
 	public MindControl(LivingEntity target,LivingEntity owner) {
 		super(target);
 		bufftype.add(BuffType.DEBUFF);
@@ -46,7 +50,7 @@ public class MindControl extends Buff{
 	@Override
 	public boolean onTicks() {
 		Entity t = ARSystem.boxRandom(target, new Vector(14,14,14), box.ALL);
-		if(t != owner) targets = (LivingEntity)t;
+		if(t != owner && !(onlyPlayer && (t instanceof Player))) targets = (LivingEntity)t;
 		if(targets != null) {
 			Location look = ULocal.lookAt(target.getLocation(), targets.getLocation());
 			if(target.getLocation().distance(targets.getLocation()) < 3) {

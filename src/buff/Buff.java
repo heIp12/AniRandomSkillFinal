@@ -69,7 +69,9 @@ public class Buff {
 	public void stop() {
 		tick = 0;
 		last();
-		Rule.buffmanager.getBuffs(target).removeBuff(this);
+		if(this != null && Rule.buffmanager.getBuffs(target) != null) {
+			Rule.buffmanager.getBuffs(target).removeBuff(this);
+		}
 		
 	}
 	

@@ -150,9 +150,7 @@ public class c113shimakaze extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(isps) e.setDamage(e.getDamage()*2);
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.5);
 			if(player.getLocation().getBlock().getTypeId() == 8 || player.getLocation().getBlock().getTypeId() == 9) {
 				if(AMath.random(100) <= 30) {
 					player.setVelocity(player.getLocation().getDirection().multiply(5).setY(0.02));

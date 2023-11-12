@@ -105,22 +105,16 @@ public class c67akad extends c00main{
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
 			target.setNoDamageTicks(0);
-			if(ARSystem.isGameMode("lobotomy") && target.getMaxHealth() > 500) {
-				target.damage(2 + (target.getMaxHealth() - target.getHealth()) * (damage/5),player);
-			} else {
-				target.damage(2 + (target.getMaxHealth() - target.getHealth()) * damage,player);
-			}
+			target.damage(2 + (target.getMaxHealth() - target.getHealth()) * damage,player);
+			
 		}
 		if(n.equals("2")) {
 			target.setNoDamageTicks(0);
-			if(ARSystem.isGameMode("lobotomy") && target.getMaxHealth() > 500) {
-				target.damage(2 + target.getHealth() *  (damage/5),player);
-			} else {
-				target.damage(2 + target.getHealth() * damage,player);
-				Location loc = target.getLocation();
-				loc = ULocal.lookAt(loc, player.getLocation());
-				target.setVelocity(loc.getDirection().multiply(-0.5));
-			}
+			target.damage(2 + target.getHealth() * damage,player);
+			Location loc = target.getLocation();
+			loc = ULocal.lookAt(loc, player.getLocation());
+			target.setVelocity(loc.getDirection().multiply(-0.5));
+			
 		}
 	}
 

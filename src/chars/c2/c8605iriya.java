@@ -111,7 +111,6 @@ public class c8605iriya extends c00main{
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
 			float f = 3;
-			if(ARSystem.isGameMode("lobotomy")) f = 12;
 			if(sk2 > 0) {
 				if(target.getHealth() - f*2 < 1) Skill.remove(target, player);
 				target.setHealth(target.getHealth() - f*2);
@@ -138,7 +137,7 @@ public class c8605iriya extends c00main{
 		if(isAttack) {
 			
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.6);
+			
 		}
 		return true;
 	}

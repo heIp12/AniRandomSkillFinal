@@ -178,6 +178,7 @@ public class c30siro extends c00main{
 					Rule.buffmanager.selectBuffAddValue(player, "plushp",30);
 					player.performCommand("tm anitext all TITLE true 20 c30:sk0/c30:t8");
 					isps = true;
+					if(ARSystem.AniRandomSkill != null) ARSystem.AniRandomSkill.modes.clear();
 					for(Player p : Bukkit.getOnlinePlayers()) {
 						AdvManager.set(p, 399, 0 , "§f§l"+player.getName() +"§a("+ n +") §f§l" + Main.GetText("c"+number+":sk0"));
 						Map.getMapinfo(1001);
@@ -288,6 +289,13 @@ public class c30siro extends c00main{
 		if(isAttack) {
 			
 		} else {
+			if(cooldown[3] <= 0 && player.getHealth() - e.getDamage() < 1) {
+				skill3();
+				cooldown[3] = setcooldown[3];
+				e.setDamage(0);
+				e.setCancelled(true);
+				return false;
+			}
 			if(isps) {
 				if(Rule.c.get(e.getDamager()) != null && Rule.c.get(e.getDamager()).number == 60 && AMath.random(100) <= 75) {
 					e.setCancelled(true);

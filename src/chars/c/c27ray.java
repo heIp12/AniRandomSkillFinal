@@ -150,7 +150,7 @@ public class c27ray extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
+			
 			if(!isps) e.setDamage(e.getDamage() * (2.0-player.getHealth()/player.getMaxHealth()));
 		} else {
 

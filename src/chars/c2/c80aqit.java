@@ -174,7 +174,6 @@ public class c80aqit extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			if(cooldown[2] > 0) {
 				cooldown[2]-= 1;
 			}

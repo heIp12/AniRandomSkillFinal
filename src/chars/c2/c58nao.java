@@ -117,10 +117,10 @@ public class c58nao extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
+			
 			if(Rule.c.size() <=2) e.setDamage(e.getDamage() * 10);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.05);
+			
 		}
 		return true;
 	}

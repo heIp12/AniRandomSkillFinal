@@ -145,7 +145,7 @@ public class c2600ribai extends c00main{
 				e.setDamage(0);
 			}
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.7);
+			
 		}
 		return true;
 	}

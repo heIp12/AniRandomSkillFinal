@@ -81,7 +81,7 @@ public class c62shinon extends c00main{
 			},30);
 			targets = 10;
 			cooldown[1] = 0;
-			delay = 50;
+			delay = 30;
 		} else if(target.size() > 0){
 			gun = false;
 			ARSystem.playSound((Entity)player, "c62s14");

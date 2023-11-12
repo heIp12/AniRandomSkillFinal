@@ -48,7 +48,7 @@ public class c20kurumi extends c00main{
 	public c20kurumi(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 20;
-		MSUtil.setvar(player, "c13", 0);
+		if(p != null) MSUtil.setvar(player, "c13", 0);
 		load();
 		text();
 		shdow = 130 + (Rule.buffmanager.GetBuffTime(player, "silence")/20);

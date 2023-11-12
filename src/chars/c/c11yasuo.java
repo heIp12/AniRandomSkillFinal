@@ -2,7 +2,9 @@ package chars.c;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -24,14 +26,15 @@ import util.ULocal;
 public class c11yasuo extends c00main{
 	int ticks = 0;
 	int count = 0;
+	int nomove = 0;
+	Location l;
 	
 	public c11yasuo(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 11;
 		load();
 		text();
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[1] *= 0.5;
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[4] *= 0.3;
+		if(p != null) l = p.getLocation();
 	}
 	
 	@Override
@@ -61,12 +64,11 @@ public class c11yasuo extends c00main{
 	public boolean skill4() {
 		boolean airbone = false;
 		boolean allairbone = false;
-		if(ARSystem.getPlayerCount() < 3) {
+		if(ARSystem.getPlayerCount() < 0) {
 			allairbone = true;
-		}
-		else {
+		} else {
 			for(Player p :Rule.c.keySet()) {
-				if (((LivingEntity)p).isOnGround() && p != player) {
+				if (!BlockUtil.isAirbone(p.getLocation(), 2) && p != player) {
 					allairbone = true;
 				} 
 			}
@@ -115,6 +117,19 @@ public class c11yasuo extends c00main{
 			if(Rule.buffmanager.GetBuffValue(player, "barrier")< player.getMaxHealth()/4) {
 				Rule.buffmanager.selectBuffAddValue(player, "barrier",1);
 			}
+		}
+		if(l.distance(player.getLocation()) <= 0.5) {
+			nomove++;
+			if(nomove > 200) {
+				ARSystem.playSound((Entity)player, "c11afk");
+				nomove = 0;
+			}
+		} else {
+			nomove = 0;
+			l = player.getLocation();
+		}
+		if(l == null) {
+			l = player.getLocation();
 		}
 		return true;
 	}

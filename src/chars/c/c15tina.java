@@ -27,14 +27,13 @@ public class c15tina extends c00main{
 		number = 15;
 		load();
 		text();
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[3] *= 0.2;
 	}
 	
 	@Override
 	public boolean skill1() {
 		skill("c"+number+"_s1");
 		if(night()) {
-			cooldown[1]*=0.8;
+			cooldown[1]*=0.7;
 		}
 		return true;
 	}
@@ -64,7 +63,7 @@ public class c15tina extends c00main{
 	public boolean skill2() {
 		skill("c"+number+"_s2");
 		if(night()) {
-			cooldown[2]*=0.8;
+			cooldown[2]*=0.7;
 		}
 		return true;
 	}
@@ -73,24 +72,17 @@ public class c15tina extends c00main{
 	public boolean skill3() {
 		skill("c"+number+"_s3");
 		count++;
-		if(ARSystem.isGameMode("lobotomy")) {
-			if(count > 10) {
-				count = 0;
-				spskillen();
-				spskillon();
-				skill("c"+number+"_sp");
-			}
-		} else {
-			if(count > 3 ) {
-				count = 0;
-				spskillen();
-				spskillon();
-				skill("c"+number+"_sp");
-			}
+
+		if(count > 3 ) {
+			count = 0;
+			spskillen();
+			spskillon();
+			skill("c"+number+"_sp");
 		}
 		
+		
 		if(night()) {
-			cooldown[3]*=0.8;
+			cooldown[3]*=0.7;
 		}
 		return true;
 	}
@@ -106,10 +98,7 @@ public class c15tina extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(night()) {
-				e.setDamage(e.getDamage()*1.5);
-			}
-			if(ARSystem.isGameMode("lobotomy")) {
-				e.setDamage(e.getDamage()*2.5);
+				e.setDamage(e.getDamage()*2);
 			}
 		} else {
 

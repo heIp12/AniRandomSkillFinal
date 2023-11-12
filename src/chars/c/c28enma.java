@@ -44,7 +44,7 @@ public class c28enma extends c00main{
 		number = 28;
 		load();
 		text();
-		p.setGameMode(GameMode.SPECTATOR);
+		if(p != null) p.setGameMode(GameMode.SPECTATOR);
 	}
 	
 	@Override

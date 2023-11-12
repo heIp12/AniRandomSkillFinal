@@ -135,8 +135,7 @@ public class c2000kurumi extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 3);
-			if(ARSystem.isGameMode("lobotomy")) ARSystem.heal(player, e.getDamage()*0.05);
+			
 		} else {
 			for(int i =0; i <cooldown.length;i++) {
 				cooldown[i] -= 0.5;

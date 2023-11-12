@@ -175,7 +175,6 @@ public class c112hanekawa extends c00main{
 				LivingEntity entity = (LivingEntity)e;
 				float size = 0.1f;
 				if(sk2 > 0) size = 0.5f;
-				if(ARSystem.isGameMode("lobotomy")) size*=3;
 				if(s != null && ((c24sinobu)Rule.c.get(s)).target == e) ((c24sinobu)Rule.c.get(s)).event(player);
 				if(entity.getHealth() - size > 1) {
 					if(size > 0.3) {

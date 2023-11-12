@@ -42,6 +42,8 @@ import buff.Timeshock;
 import buff.Wound;
 import chars.c.c000humen;
 import chars.c.c00main;
+import chars.c.c18misogi;
+import chars.ca.c1800misogi;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
@@ -73,11 +75,6 @@ public class c91satoru extends c00main{
 		load();
 		text();
 		c = this;
-		if(ARSystem.isGameMode("lobotomy")) {
-			setcooldown[1] *= 0.3;
-			setcooldown[2] *= 0.3;
-			setcooldown[3] *= 5;
-		}
 	}
 	
 
@@ -89,6 +86,14 @@ public class c91satoru extends c00main{
 		if(sptime > 0) sk1 = 10;
 		skill("c91_s1");
 		for(Entity e : ARSystem.box(player, new Vector(8,5,8), box.TARGET)) {
+			if(Rule.c.get(e) !=null && Rule.c.get(e) instanceof c18misogi) {
+				ARSystem.playSound(e, "c18noao");
+				ARSystem.giveBuff(player, new TimeStop(player), 30);
+				ARSystem.giveBuff((LivingEntity)e, new TimeStop((LivingEntity)e), 30);
+				e.teleport(ULocal.lookAt(e.getLocation(), player.getLocation()));
+				player.teleport(ULocal.lookAt(player.getLocation(), e.getLocation()));
+				cooldown[1] = 999;
+			}
 			Location loc = e.getLocation();
 			loc = ULocal.lookAt(loc, player.getLocation());
 			e.setVelocity(e.getVelocity().add(loc.getDirection().multiply(e.getLocation().distance(player.getLocation())/2.5)));
@@ -104,6 +109,14 @@ public class c91satoru extends c00main{
 		if(sptime > 0) sk2 = 10;
 		skill("c91_s2");
 		for(Entity e : ARSystem.box(player, new Vector(8,5,8), box.TARGET)) {
+			if(Rule.c.get(e) !=null && Rule.c.get(e) instanceof c18misogi) {
+				ARSystem.playSound(e, "c18noaka");
+				ARSystem.giveBuff(player, new TimeStop(player), 30);
+				ARSystem.giveBuff((LivingEntity)e, new TimeStop((LivingEntity)e), 30);
+				e.teleport(ULocal.lookAt(e.getLocation(), player.getLocation()));
+				player.teleport(ULocal.lookAt(player.getLocation(), e.getLocation()));
+				cooldown[2] = 999;
+			}
 			Location loc = e.getLocation();
 			loc = ULocal.lookAt(loc, player.getLocation());
 			e.setVelocity(e.getVelocity().add(loc.getDirection().multiply((e.getLocation().distance(player.getLocation())-10)/2)));
@@ -205,9 +218,7 @@ public class c91satoru extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.7);
 			if(sk4 > 0) {
 				e.setDamage(e.getDamage()* 0.67);
 				for(int i=0;i<10;i++) cooldown[i] -= e.getDamage();

@@ -20,6 +20,7 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import chars.c2.c62shinon;
+import chars.c3.c133yukina;
 import types.box;
 
 import util.ULocal;
@@ -215,7 +216,6 @@ public class c02kirito extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(!isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.5);
 			if(!ps) {
 				ps = !ps;
 				ARSystem.heal(player, 1);
@@ -231,7 +231,7 @@ public class c02kirito extends c00main{
 				}
 			}
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 1.5);
+			
 		}
 		return true;
 	}
@@ -254,6 +254,14 @@ public class c02kirito extends c00main{
 					is = "sinon";
 					break;
 				}
+				if(Rule.c.get(e) instanceof c07shana){
+					is = "shana";
+					break;
+				}
+				if(Rule.c.get(e) instanceof c133yukina){
+					is = "yukina";
+					break;
+				}
 			}
 		}
 		
@@ -263,6 +271,10 @@ public class c02kirito extends c00main{
 			ARSystem.playSound((Entity)player, "c2ren");
 		} else if(is.equals("sinon")) {
 			ARSystem.playSound((Entity)player, "c2sinon");
+		} else if(is.equals("shana")) {
+			ARSystem.playSound((Entity)player, "c2shana");
+		} else if(is.equals("yukina")) {
+			ARSystem.playSound((Entity)player, "c2yukina");
 		}else  {
 			ARSystem.playSound((Entity)player, "c2db");
 		}

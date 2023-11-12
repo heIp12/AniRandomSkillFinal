@@ -219,7 +219,7 @@ public class c84siro extends c00main{
 		return super.damage(e);
 	}
 
-	public void sp(Player p) {
+	public void sp(Player p,Player target) {
 		spskillon();
 		spskillen();
 		for(Player pl: Bukkit.getOnlinePlayers()) {
@@ -230,16 +230,74 @@ public class c84siro extends c00main{
 		}
 		Bgm.setBgm("c83");
 		ARSystem.playSoundAll("c83sp3");
+		
+		Map.getMapinfo(1011);
+		Location loc = Map.getCenter();
+		loc.setY(4);
+		loc.setPitch(0);
+		
+		int j = 0;
+		
+		for(Player e : Rule.c.keySet()) {
+			if(p != player) Rule.c.put(p, new c000humen(p, plugin, null));
+			ARSystem.giveBuff(e, new TimeStop(e), 600);
+			int o = (j+1)/2;
+			if(j%2==1) o*=-1;
+			p.teleport(ULocal.lookAt(ULocal.offset(loc, new Vector(1,0,o)),loc));
+			j++;
+		}
+		target.teleport(ULocal.lookAt(ULocal.offset(loc, new Vector(-2,0,0)), loc));
+		
+		player.teleport(ULocal.lookAt(ULocal.offset(loc, new Vector(5,0,0)),loc));
+		p.teleport(ULocal.lookAt(ULocal.offset(loc, new Vector(5,0,-1)),loc));
+		ARSystem.potion(p, 14, 600, 1);
+		ARSystem.potion(player, 14, 600, 1);
+		ARSystem.spellLocCast(player,ULocal.offset(loc, new Vector(5,0,0)), "c84_sp2");
+		ARSystem.spellLocCast(player,ULocal.offset(loc, new Vector(5,0,-1)), "c84_sp1");
+
 		delay(()->{
 			ARSystem.playSoundAll("c83sp2");
+			
+			ARSystem.spellLocCast(player,ULocal.offset(loc, new Vector(5,0,1)), "c84_sp3");
+			ARSystem.spellLocCast(player,ULocal.offset(loc, new Vector(5,0,-2)), "c84_sp3");
+			ARSystem.spellLocCast(player,ULocal.offset(loc, new Vector(5,0,2)), "c84_sp5");
+			ARSystem.spellLocCast(player,ULocal.offset(loc, new Vector(5,0,-3)), "c84_sp5");
+			ARSystem.spellLocCast(player,ULocal.offset(loc, new Vector(5,0,3)), "c84_sp4");
+			ARSystem.spellLocCast(player,ULocal.offset(loc, new Vector(5,0,-4)), "c84_sp4");
+			for(int i=0; i<8;i++) {
+				ARSystem.spellLocCast(player,ULocal.offset(loc, new Vector(4,0,-4+i)), "c84_sp6");
+			}
+			delay(()->{
+				skill("c83_spp");
+				for(Player pl : Rule.c.keySet()) {
+					if(pl != player && pl != target && pl != p) {
+						Skill.quit(pl);
+					}
+				}
+			},100);
 		},220);
 		delay(()->{
-			if(AMath.random(2) == 1) {
-				ARSystem.playSoundAll("c83sp1");
-			} else {
-				ARSystem.playSoundAll("c84sp1");
+			for(int i=0; i<18;i++) {
+				int k = i;
+				delay(()->{
+					Location locs = target.getLocation();
+					locs.setYaw(k*20);
+					ARSystem.spellLocCast(player,ULocal.offset(locs, new Vector(4,0,0)), "c84_sp"+(AMath.random(4)+2));
+				},i);
 			}
-			Skill.win(player.getName() +" | " + p.getName());
+			delay(()->{
+				skill("c83_spp");
+			},70);
 		},340);
+		delay(()->{
+			tpsdelay(()->{
+				if(AMath.random(2) == 1) {
+					ARSystem.playSoundAll("c83sp1");
+				} else {
+					ARSystem.playSoundAll("c84sp1");
+				}
+			},40);
+			Skill.win(player.getName() +" | " + p.getName());
+		},440);
 	}
 }

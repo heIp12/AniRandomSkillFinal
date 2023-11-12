@@ -25,8 +25,12 @@ import com.nisovin.magicspells.MagicSpells;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.PowerUp;
+import chars.c3.c126hera;
+import chars.c3.c129nana;
 import event.Skill;
 import manager.AdvManager;
+import types.box;
 import util.AMath;
 import util.InvSkill;
 import util.Inventory;
@@ -111,6 +115,27 @@ public class c45momo extends c00main{
 			e.setDamage(e.getDamage() + e.getDamage()*(count*0.05));
 		} else {
 
+		}
+		return true;
+	}
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c129nana) {
+					is = "n";
+					break;
+				}
+
+			}
+		}
+
+		if(is.equals("n")) {
+			ARSystem.playSound((Entity)player, "c129nana");
+		} else {
+			ARSystem.playSound((Entity)player, "c45db");
 		}
 		return true;
 	}

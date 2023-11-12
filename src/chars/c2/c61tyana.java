@@ -62,7 +62,6 @@ public class c61tyana extends c00main{
 		text();
 		c = this;
 		mana = 90;
-		if(ARSystem.isGameMode("lobotomy")) this.p = 20;
 	}
 	
 	@Override
@@ -128,6 +127,9 @@ public class c61tyana extends c00main{
 		Location loc = player.getLocation().clone().add(0,0.4,0);
 		
 		ARSystem.addBuff(player, new TimeStop(player), 440);
+		ARSystem.addBuff(player, new Stun(player), 100);
+		ARSystem.addBuff(player, new Silence(player), 100);
+		ARSystem.addBuff(player, new Nodamage(player), 100);
 		delay(()->{
 			loc.setPitch(20);
 			ARSystem.spellLocCast(player, ULocal.offset(loc, new Vector(-1.5,0,1)), "c61_sp");
@@ -190,9 +192,6 @@ public class c61tyana extends c00main{
 		},180);
 		delay(()->{
 			skill("c61_sp0");
-			ARSystem.addBuff(player, new Stun(player), 100);
-			ARSystem.addBuff(player, new Silence(player), 100);
-			ARSystem.addBuff(player, new Nodamage(player), 100);
 		},440);
 		return true;
 	}
@@ -219,7 +218,6 @@ public class c61tyana extends c00main{
 			}
 		}
 		if(tk%20 == 0) {
-			if(ARSystem.isGameMode("lobotomy") && AMath.random(2) == 1) mana+=1;
 			scoreBoardText.add("&c ["+Main.GetText("c61:ps")+ "] : "+ mana);
 			scoreBoardText.add("&c [speed] : "+ AMath.round(speed,2));
 		}
@@ -238,7 +236,7 @@ public class c61tyana extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
+			
 		} else {
 			if(p > 0) {
 				p--;
@@ -246,7 +244,6 @@ public class c61tyana extends c00main{
 				e.setCancelled(true);
 				skill("barrier");
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.6);
 		}
 		return true;
 	}

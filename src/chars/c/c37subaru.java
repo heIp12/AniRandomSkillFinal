@@ -42,6 +42,9 @@ import buff.Rampage;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
+import chars.c2.c62shinon;
+import chars.c3.c133yukina;
+import chars.ch.e002rain;
 import event.Skill;
 import event.WinEvent;
 import manager.AdvManager;
@@ -89,7 +92,7 @@ public class c37subaru extends c00main{
 		ARSystem.playSound((Entity)player, "c37p");
 		delay(()->{
 			for(Entity target : ARSystem.box(player, new Vector(6,3,6), box.TARGET)) {
-				((LivingEntity)target).damage(8,player);
+				((LivingEntity)target).damage(9,player);
 			}
 			ARSystem.heal(player, 16);
 			player.teleport(Map.randomLoc(player));
@@ -103,6 +106,92 @@ public class c37subaru extends c00main{
 		ARSystem.playSound((Entity)player, "c37s3");
 		skill("c"+number+"_s3");
 		return true;
+	}
+	
+	public void sp() {
+		spskillon();
+		spskillen();
+		ARSystem.playSoundAll("c37sp");
+		WinEvent event = new WinEvent(player);
+		Bukkit.getPluginManager().callEvent(event);
+		if(!event.isCancelled()) {
+			Bgm.setBgm("c37");
+			Map.getMapinfo(1011);
+			Location loc = Map.getCenter();
+			loc.setY(4);
+			loc.setPitch(0);
+
+			player.teleport(ULocal.offset(loc,new Vector(-3,0,0)));
+
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(Rule.c.get(p) != null && Rule.c.get(p).number%1000 == 23) continue;
+				if(Rule.c.get(p) != null && p != player) Rule.c.put(p, new c000humen(p, plugin, null));
+				
+				if(Rule.c.get(p) != null) ARSystem.giveBuff(p, new TimeStop(p), 600);
+				if(p != player) {
+					Location l = loc.clone();
+					l.setYaw(AMath.random(360));
+					p.teleport(ULocal.lookAt(ULocal.offset(l, new Vector(8,0,0)),loc));
+				}
+				if(Bukkit.getOnlinePlayers().size() > 10) {
+					for(Player pl : Bukkit.getOnlinePlayers()) {
+						if(pl == player || AMath.random(5) <= 3) continue;
+						p.hidePlayer(pl);
+					}
+				}
+			}
+			
+			Player po = null;
+			for(Player p : Rule.c.keySet()) {
+				if(Rule.c.get(p).number %1000 == 23) {
+					po = p;
+				}
+			}
+			Player pp = po;
+			if(pp == null) {
+				player.teleport(ULocal.offset(loc,new Vector(-3,0,0)));
+				ARSystem.spellLocCast(player, ULocal.offset(loc,new Vector(-3,0,0)), "c37_sp");
+				tpsdelay(()->{
+					ARSystem.spellLocCast(player, ULocal.offset(loc, new Vector(2.5,0,0)), "c37_sp2");
+				},140);
+				tpsdelay(()->{
+					ARSystem.spellLocCast(player, ULocal.offset(loc, new Vector(2.5,-2,0)), "c37_sp4");
+				},260);
+				tpsdelay(()->{
+					for(Player p : Rule.c.keySet()) {
+						if(p != player)
+							ARSystem.spellLocCast(p, ULocal.offset(p.getLocation(), new Vector(0,0,0)), "c37_sp5");
+					}
+				},300);
+				tpsdelay(()->{
+					for(Player p : Rule.c.keySet()) {
+						ARSystem.spellLocCast(p, ULocal.offset(p.getLocation(), new Vector(0,-2,0)), "c37_sp4");
+					}
+				},320);
+				tpsdelay(()->{
+					target.clear();
+					Rule.playerinfo.get(player).tropy(37, 1);
+					Skill.win(player);
+					tpsdelay(()->{
+						ARSystem.playSoundAll("c37win");
+					},40);
+				},360);
+			} else {
+				tpsdelay(()->{
+					ARSystem.playSoundAll("c23sp2");
+					tpsdelay(()->{
+						ARSystem.playSoundAll("c1023p3");
+						for(Player e: Rule.c.keySet()) {
+							if(e != pp) {
+								ARSystem.spellCast(player, e, "c1023_p");
+								ARSystem.giveBuff(e, new TimeStop(e), 220);
+								Skill.quit(e);
+							}
+						}
+					},120);
+				},140);
+			}
+		}
 	}
 
 	@Override
@@ -118,25 +207,7 @@ public class c37subaru extends c00main{
 					}
 				}
 				if(ok && !isps) {
-					Bgm.setBgm("c37");
-					spskillon();
-					spskillen();
-					ARSystem.playSoundAll("c37sp");
-					for(Player p : Rule.c.keySet()) {
-						ARSystem.giveBuff(p, new Nodamage(p), 200);
-						ARSystem.giveBuff(p, new Stun(p), 200);
-						ARSystem.giveBuff(p, new Silence(p), 200);
-					}
-
-					delay(()->{
-						target.clear();
-						WinEvent event = new WinEvent(player);
-						Bukkit.getPluginManager().callEvent(event);
-						if(!event.isCancelled()) {
-							Rule.playerinfo.get(player).tropy(37, 1);
-							Skill.win(player);
-						}
-					},200);
+					sp();
 				}
 			}
 			
@@ -171,6 +242,29 @@ public class c37subaru extends c00main{
 				}
 			}
 		}
+		return true;
+	}
+	
+	
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof e002rain) {
+					is = "rain";
+					break;
+				}
+			}
+		}
+		
+		if(is.equals("rain")) {
+			ARSystem.playSound((Entity)player, "c37rain");
+		} else {
+			ARSystem.playSound((Entity)player, "c37db");
+		}
+		
 		return true;
 	}
 }

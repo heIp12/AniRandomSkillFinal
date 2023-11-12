@@ -110,7 +110,7 @@ public class c3000siro extends c00main{
 				for(Entity e : ARSystem.box(player, new Vector(15,15,15),box.TARGET)) {
 					if((e instanceof LivingEntity)) {
 						LivingEntity entity = (LivingEntity) e;
-						entity.damage(entity.getMaxHealth()/2,player);
+						entity.damage(entity.getMaxHealth()*0.99,player);
 						dot.put(entity, 10);
 					}
 				}

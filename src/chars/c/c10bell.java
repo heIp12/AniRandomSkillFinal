@@ -100,8 +100,6 @@ public class c10bell extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 2);
-			if(ARSystem.isGameMode("lobotomy")) ARSystem.heal(player, e.getDamage()*0.1);
 			e.setDamage(e.getDamage() + e.getDamage()*(Damagecount*0.1f));
 		} else {
 			cooldown[0]-=0.5;

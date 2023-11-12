@@ -76,9 +76,7 @@ public class c0702shana extends c00main{
 			if(isps) {
 				e.setDamage(e.getDamage() + (((LivingEntity)e.getEntity()).getHealth()*0.05*e.getDamage()));
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 1.5);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.4);
 			if(isps) e.setDamage(e.getDamage() * 0.7);
 			damage = true;
 		}

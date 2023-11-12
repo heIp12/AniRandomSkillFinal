@@ -141,7 +141,6 @@ public class c26ribai extends c00main{
 				e.setDamage(e.getDamage() * 2);
 			}
 			
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			double damage = player.getLocation().distance(e.getEntity().getLocation());
 			if(damage > 5) damage = 5;
 			e.setDamage(e.getDamage() * (2.5 - (damage * 0.4 )));
@@ -150,7 +149,7 @@ public class c26ribai extends c00main{
 				player.sendTitle("§4Critical!","§cDamage : " + (Math.round(e.getDamage()*10)/10.0) + " x"+(Math.round((2.5 - (damage * 0.4 ))*10)/10.0),10,10,20);
 			}
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.7);
+			
 		}
 		return true;
 	}

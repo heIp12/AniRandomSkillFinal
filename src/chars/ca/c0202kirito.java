@@ -250,15 +250,6 @@ public class c0202kirito extends c00main{
 	}
 
 	
-	@Override
-	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
-		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 4);
-		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.6);
-		}
-		return true;
-	}
 	
 	@Override
 	protected boolean skill9() {

@@ -169,13 +169,12 @@ public class c60gil extends c00main{
 		if(tk%10 == 0) {
 			if(sword < 200) {
 				sword+= 1*(skillmult + sskillmult);
-				if(ARSystem.isGameMode("lobotomy")) sword += 2;
 			} else {
 				Rule.playerinfo.get(player).tropy(60,1);
 			}
 			scoreBoardText.add("&c ["+Main.GetText("c60:ps")+ "] : "+ sword);
 		}
-		if(sk2 && sword > 0 && tk%2 == 0) {
+		if(sk2 && sword > 0) {
 			sword--;
 			Location l = ULocal.offset(gob.clone(), new Vector(-2,1+AMath.random(100)*0.05,4-AMath.random(160)*0.05));
 			ARSystem.spellLocCast(player, l, "c60_p2_"+AMath.random(9));
@@ -201,8 +200,15 @@ public class c60gil extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
-			if(AMath.random(10) <= 3 && sp <= 0) {
+			int rd = 3;
+			if(Rule.c.get(e.getEntity()) != null) {
+				if(Rule.c.get(e.getEntity()) instanceof c126hera) {
+					rd = 8;
+				}
+
+			}
+			
+			if(AMath.random(10) <= rd && sp <= 0) {
 				Location loc = player.getLocation();
 				loc = ULocal.offset(loc, new Vector(-2,1+AMath.random(100)*0.05,4-AMath.random(160)*0.05));
 				loc = ULocal.lookAt(loc, e.getEntity().getLocation());
@@ -240,7 +246,8 @@ public class c60gil extends c00main{
 		if(is.equals("h")) {
 			ARSystem.playSound((Entity)player, "c126gil");
 			if(h) {
-				sword += 30;
+				cooldown[1] = cooldown[2] = cooldown[3] = 0;
+				sword = 1000;
 				ARSystem.giveBuff(player, new PowerUp(player), 200, 2);
 				h = false;
 			}

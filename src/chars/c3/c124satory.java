@@ -1,78 +1,31 @@
 package chars.c3;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.events.SpellTargetEvent;
-
 import Main.Main;
-import aliveblock.ABlock;
 import ars.ARSystem;
 import ars.Rule;
-import ars.gui.G_Satory;
-import buff.Barrier;
-import buff.Buff;
-import buff.Cindaella;
-import buff.Curse;
-import buff.Fascination;
-import buff.NoHeal;
-import buff.Noattack;
 import buff.Nodamage;
 import buff.Panic;
 import buff.Silence;
-import buff.Stun;
 import buff.TimeStop;
-import buff.Timeshock;
-import buff.Wound;
-import chars.c.c000humen;
 import chars.c.c00main;
-import chars.c.c09youmu;
-import chars.c.c10bell;
-import chars.c.c30siro;
-import chars.c2.c60gil;
-import event.Skill;
-import event.WinEvent;
-import manager.AdvManager;
-import manager.Bgm;
-import types.BuffType;
-import types.TargetMap;
 import types.box;
 
 import util.AMath;
-import util.GetChar;
-import util.Holo;
-import util.InvSkill;
-import util.Inventory;
 import util.ULocal;
 import util.MSUtil;
-import util.Map;
 import util.Text;
 
 public class c124satory extends c00main{
 	int card = 0;
-	public int type = 0;
-	
 	int s1 = 0;
 	LivingEntity target;
 	Location s1loc;
@@ -164,10 +117,14 @@ public class c124satory extends c00main{
 
 	@Override
 	public boolean tick() {
-		if(tk%20 == 0 ) scoreBoardText.add("&c ["+Main.GetText("c124:ps")+ "] : &f" + Text.get("main:tp"+type));
 		if(tk%20 == 0 ) scoreBoardText.add("&c ["+Main.GetText("c124:sk0")+ "] : &f" + damage);
-		if(type == 0 && Rule.c.get(player) != null && Rule.c.get(player) instanceof c124satory && !player.getOpenInventory().getTitle().equals("[GUI] Satory Select")) {
-			new G_Satory(player);
+		
+		List<Player> e = ARSystem.PlayerOnlyBeamBox(player, 50, 2, box.TARGET);
+		if(e.size() > 0) {
+			if(Rule.c.get(e.get(0)) != null) {
+				int n = Rule.c.get(e.get(0)).number;
+				player.sendTitle(e.get(0).getName(), ""+ Text.get("c"+n+":name1") + " " + Text.get("c"+n+":name2"),0,20,0);
+			}
 		}
 		if(s1 > 0 && target != null) {
 			MSUtil.buffoff(player, "c124_p");
@@ -207,10 +164,6 @@ public class c124satory extends c00main{
 			damage += e.getDamage();
 			if(Rule.c.get(e.getDamager()) != null) {
 				int number = Rule.c.get(e.getDamager()).number;
-				if(Text.get("c"+number+":type").contains("tp"+type)) {
-					for(int i=0;i<10;i++)Rule.c.get(e.getDamager()).setcooldown[i] *= 1.05f;
-					e.setDamage(e.getDamage() * 0.5f);
-				}
 			}
 			if(s1 > 0 && e.getDamager() == target && player.getHealth() - e.getDamage() < 1 && skillCooldown(0)) {
 				e.setDamage(0);
@@ -222,7 +175,7 @@ public class c124satory extends c00main{
 				if(Rule.c.get(target) != null) damage += Rule.c.get(target).s_damage;
 				ARSystem.giveBuff(target, new TimeStop(target), 160);
 				ARSystem.giveBuff(player, new TimeStop(player), 160);
-				ARSystem.giveBuff(player, new Nodamage(player), 40);
+				ARSystem.giveBuff(player, new Nodamage(player), 80);
 				
 				for(int i=0; i<60;i++) {
 					delay(()->{
@@ -254,6 +207,7 @@ public class c124satory extends c00main{
 					return false;
 				}
 			}
+			e.setDamage(e.getDamage()*0.8f);
 		}
 		return true;
 	}

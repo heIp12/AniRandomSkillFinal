@@ -67,11 +67,7 @@ public class c66akame extends c00main{
 		Curse cs = new Curse(e);
 		cs.setCaster(player);
 		if(isps) {
-			if(ARSystem.isGameMode("lobotomy")) {
-				ARSystem.giveBuff(e, cs,60,0.5);
-			} else {
-				ARSystem.giveBuff(e, cs,60,1);
-			}
+			ARSystem.giveBuff(e, cs,60,1);
 		} else {
 			ARSystem.giveBuff(e, cs,200,0.3);
 		}
@@ -141,7 +137,6 @@ public class c66akame extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 2);
 			if(sk3 > 0 && e.getEntity().getLocation().distance(player.getLocation()) <= 8) {
 				sk3 = 0;
 				cuers((LivingEntity)e.getEntity());
@@ -151,9 +146,8 @@ public class c66akame extends c00main{
 				w.setDelay(player,20,0);
 				ARSystem.giveBuff((LivingEntity) e.getEntity(), w, 100);
 			}
-			if(ARSystem.isGameMode("lobotomy")) ARSystem.heal(player, e.getDamage());
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.5);
+			
 		}
 		return true;
 	}

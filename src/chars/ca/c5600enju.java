@@ -152,10 +152,8 @@ public class c5600enju extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(isps) e.setDamage(e.getDamage()*1.5);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.7);
 			if(!player.isOnGround()) {
 				if(pt <= 0) {
 					pt = 1;

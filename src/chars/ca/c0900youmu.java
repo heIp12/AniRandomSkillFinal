@@ -124,7 +124,6 @@ public class c0900youmu extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 6);
 		} else {
 			if(player.getHealth() - e.getDamage() <= 0 && ps) {
 				player.setHealth(6);

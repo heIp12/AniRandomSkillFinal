@@ -107,7 +107,6 @@ public class c0800yuuki extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			for(int i=0; i<cooldown.length;i++) cooldown[i] -= e.getDamage()*0.3f;
 		} else {
 			for(int i=0; i<cooldown.length;i++) cooldown[i] -= e.getDamage()*0.3f;
@@ -138,7 +137,6 @@ public class c0800yuuki extends c00main{
 				sk3 = 0;
 				ARSystem.addBuff(player, new Nodamage(player), 10);
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.5);
 		}
 		return true;
 	}

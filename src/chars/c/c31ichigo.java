@@ -157,7 +157,6 @@ public class c31ichigo extends c00main{
 			}
 			if(passive) sp(e.getDamage());
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.5);
 			if(((LivingEntity)e.getEntity()).getHealth() - e.getDamage() < 1 && passive) {
 				passive = false;
 				Entity = (LivingEntity) e.getDamager();

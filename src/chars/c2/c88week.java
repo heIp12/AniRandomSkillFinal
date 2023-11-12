@@ -61,10 +61,10 @@ import util.Map;
 public class c88week extends c00main{
 	Location loc;
 	int speed = 100;
-	int addspeed = 2;
+	public int addspeed = 2;
 	int st = 1200;
 	int maxst = 1200;
-	int maxspeed = 1200;
+	public int maxspeed = 1200;
 	int sdelay = 0;
 	int spsound = 0;
 	boolean ds = false;
@@ -273,7 +273,9 @@ public class c88week extends c00main{
 			}
 			player.setVelocity(player.getLocation().getDirection().multiply(speed*0.0008).setY(-2));
 			Location local = player.getLocation().clone().add(player.getLocation().getDirection().multiply(1).setY(0));
-			if(!BlockUtils.isPathable(local.getBlock()) && BlockUtils.isPathable(local.add(0,1,0).getBlock()) && BlockUtils.isPathable(local.add(0,2,0).getBlock())) {
+			if(Math.abs((player.getLocation().getPitch())) > 80) {
+				speed *= 0.5;
+			} else if(!BlockUtils.isPathable(local.getBlock()) && BlockUtils.isPathable(local.add(0,1,0).getBlock()) && BlockUtils.isPathable(local.add(0,2,0).getBlock())) {
 				player.setVelocity(player.getLocation().getDirection().multiply(speed*0.0015).setY(0.5));
 			} else if(!BlockUtils.isPathable(local.getBlock()) && !BlockUtils.isPathable(local.add(0,1,0).getBlock())) {
 				speed-=addspeed;
@@ -350,7 +352,6 @@ public class c88week extends c00main{
 		} else {
 			if(st < maxst) {
 				st += 3;
-				if(ARSystem.isGameMode("lobotomy")) st+= 17;
 			} else {
 				st = maxst;
 			}
@@ -367,9 +368,7 @@ public class c88week extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 3);
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 0.7);
 		}
 		return true;
 	}

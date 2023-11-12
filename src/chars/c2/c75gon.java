@@ -259,7 +259,6 @@ public class c75gon extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*2);
 			if(isps) e.setDamage(999);
 		} else {
 			if(isps) e.setDamage(e.getDamage()*0.01);

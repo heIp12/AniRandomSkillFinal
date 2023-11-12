@@ -93,12 +93,12 @@ public class c121cocoro extends c00main{
 		if(s1 == 1) {
 			skill("c121_a1");
 			ARSystem.playSound(player, "0sword", 1);
-			skill("c121_s1");
+			if(sethead == 4 || isps) skill("c121_s1");
 		}
 		if(s1 == 2) {
 			skill("c121_a2");
 			ARSystem.playSound(player, "0sword", 1.2f);
-			skill("c121_s1");
+			if(sethead == 4 || isps) skill("c121_s1");
 		}
 		if(s1 == 3) {
 			skill("c121_a3");
@@ -172,9 +172,9 @@ public class c121cocoro extends c00main{
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c121:sk2")+ "] : &f" + Main.GetText("c121:p"+sethead));
 			scoreBoardText.add("&c ["+Main.GetText("c121:sk4")+ "] : &f" + Main.GetText("c121:p"+head));
-			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c121:sk0")+ "] : &f" + sp +" / 20");
+			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c121:sk0")+ "] : &f" + sp +" / 40");
 		}
-		if(sp >= 30 && !isps) {
+		if(sp >= 40 && !isps) {
 			spskillon();
 			spskillen();
 			ARSystem.playSound((Entity)player, "c121sp");

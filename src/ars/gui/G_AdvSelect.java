@@ -37,6 +37,7 @@ public class G_AdvSelect extends GUIBase{
 		count.add(1040);
 		count.add(1068);
 		count.add(1118);
+		count.add(2030);
 		line = 6;
 		page = new int[Math.max(count.size(),this.line*9) + (Math.max(count.size(),this.line*9)/8) + 18];
 		info = Rule.playerinfo.get(player);

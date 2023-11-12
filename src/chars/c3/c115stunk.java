@@ -82,18 +82,22 @@ public class c115stunk extends c00main{
 	
 	int spp = 0;
 	
+	int sb = 0;
+	
 	public c115stunk(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 115;
 		load();
 		text();
 		c = this;
+		if(p != null) {
 		LocalTime now = LocalTime.now();
-		if(now.getHour() > 0 && now.getHour() < 7) {
-			spskillon();
-			spskillen();
-			spp = 6974;
-			Rule.playerinfo.get(player).tropy(115, 1);
+			if(now.getHour() > 0 && now.getHour() < 7) {
+				spskillon();
+				spskillen();
+				spp = 6974;
+				Rule.playerinfo.get(player).tropy(115, 1);
+			}
 		}
 	}
 
@@ -165,6 +169,10 @@ public class c115stunk extends c00main{
 			}
 			
 			if(targetz && skillCooldown(0)) {
+				if(Rule.c.get(targetz) instanceof c111artorya) {
+					sb = ((c111artorya)Rule.c.get(targetz)).stack;
+					((c111artorya)Rule.c.get(targetz)).stack = 0;
+				}
 				ARSystem.giveBuff(target, new Nodamage(target), 400);
 				ARSystem.giveBuff(player, new Nodamage(player), 400);
 				ARSystem.giveBuff(target, new Stun(target), 400);
@@ -244,6 +252,10 @@ public class c115stunk extends c00main{
 					player.performCommand("tm sound all minecraft:entity.experience_orb.pickup/2/0.2");
 					player.performCommand("tm anitext all TITLE true "+(20+start*20)+" &e"+ s +"/&a" + sps.getName()+"");
 					delay(()->{player.performCommand("tm sound all no");},start*20);
+					if(Rule.c.get(sps) != null && Rule.c.get(sps) instanceof c112hanekawa) {
+						ARSystem.playSound((Entity)player, "c115hanekawa");
+					}
+					((c111artorya)Rule.c.get(sps)).stack = ((200*(p1 / 20))+sb);
 				},time+20);
 			}
 		}
@@ -265,7 +277,6 @@ public class c115stunk extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			makerSkill((LivingEntity) e.getEntity(), "2");
 		} else {
 

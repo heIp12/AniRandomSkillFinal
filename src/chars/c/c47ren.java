@@ -51,7 +51,6 @@ public class c47ren extends c00main{
 		load();
 		text();
 		bullet = 50;
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[4] *= 0.3;
 	}
 	
 
@@ -61,9 +60,6 @@ public class c47ren extends c00main{
 			if(bullet>0) { bullet--; shrot();}
 			delay(()->{if(bullet>0) { bullet--; shrot();}}, 2);
 			delay(()->{if(bullet>0) { bullet--; shrot();}}, 4);
-			if(ARSystem.isGameMode("lobotomy")) delay(()->{if(bullet>0) { bullet--; shrot();}}, 6);
-			if(ARSystem.isGameMode("lobotomy")) delay(()->{if(bullet>0) { bullet--; shrot();}}, 8);
-			if(ARSystem.isGameMode("lobotomy")) delay(()->{if(bullet>0) { bullet--; shrot();}}, 10);
 		}
 		return true;
 	}
@@ -155,7 +151,6 @@ public class c47ren extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(e.getDamage() <= 1.4) stack++;
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 		} else {
 
 		}

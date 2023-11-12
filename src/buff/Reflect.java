@@ -73,10 +73,8 @@ public class Reflect extends Buff{
 				return false;
 			}
 
-		} else {
-			e.setDamage(0);
-			e.setCancelled(true);
 		}
-		return false;
+		return true;
+		
 	}
 }

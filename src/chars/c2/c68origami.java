@@ -136,7 +136,6 @@ public class c68origami extends c00main{
 	@Override
 	public boolean tick() {
 		if(pt>0) pt--;
-		if(ARSystem.isGameMode("lobotomy")) if(pt>0) pt--;
 		if(tk%20 == 0) {
 
 		}
@@ -147,9 +146,8 @@ public class c68origami extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
+			
 		} else {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.6);
 			if(!ps) {
 				count++;
 				if(count>=2) {
@@ -200,7 +198,7 @@ public class c68origami extends c00main{
 				}
 			}
 			if(ps && pt <= 0) {
-				pt = 20;
+				pt = 30;
 				e.setDamage(0);
 				e.setCancelled(true);
 				if(Rule.buffmanager.selectBuffType(player, BuffType.HEADCC) != null) {

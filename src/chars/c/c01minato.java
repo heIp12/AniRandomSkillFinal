@@ -31,7 +31,7 @@ import util.MagicSpellVar;
 public class c01minato extends c00main{
 	private Location[] lc = new Location[3];
 	private Entity[] et = new Entity[3];
-	private Location loc = player.getLocation();
+	private Location loc;
 	int na = 0;
 	float cm = 0;
 	
@@ -42,6 +42,8 @@ public class c01minato extends c00main{
 		number = 1;
 		load();
 		text();
+
+		if(p != player) loc = player.getLocation();
 		if(player != null) {
 			for(int i = 1; i<4;i++) {
 				player.performCommand("as create "+p.getName()+"c1_"+i);
@@ -153,6 +155,7 @@ public class c01minato extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(loc == null)loc = player.getLocation();
 		if(na > 0) {
 			na--;
 			if(na > 100) {
@@ -344,7 +347,6 @@ public class c01minato extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 4);
 			if(e.getDamager() instanceof Player) {
 				if(stack > 2) {
 					stack = 0;

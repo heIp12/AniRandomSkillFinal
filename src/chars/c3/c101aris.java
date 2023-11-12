@@ -171,9 +171,9 @@ public class c101aris extends c00main{
 			ARSystem.playSound((Entity)player, "c101s3");
 			if(cooldown[1] > 0) {
 				cooldown[1] = 0;
-				setcooldown[1] *= 1.08;
-				setcooldown[2] *= 1.08;
-				setcooldown[3] *= 1.08;
+				setcooldown[1] *= 1.10;
+				setcooldown[2] *= 1.10;
+				setcooldown[3] *= 1.10;
 			}
 		} else {
 			player.setVelocity(player.getLocation().getDirection().multiply(1.4).setY(0));
@@ -191,6 +191,7 @@ public class c101aris extends c00main{
 			scoreBoardText.add("&c ["+Main.GetText("c101:ps")+ "] : "+ (ps>0));
 		}
 		if(ps%10 == 0) {
+			if(isps) ARSystem.heal(player, 0.5f);
 			if(ps > 0) {
 				for(int i=0;i<10;i++) {
 					if(cooldown[i] > 0) cooldown[i] -= 0.25f;
@@ -227,15 +228,15 @@ public class c101aris extends c00main{
 			en = (LivingEntity) e.getEntity();
 			ps = 100;
 			if(isps) e.setDamage(e.getDamage() + 1);
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*5);
 		} else {
+			if(ps > 0) e.setDamage(e.getDamage() * 0.75);
+			if(ps <= 0) e.setDamage(e.getDamage() * 1.75);
 			ps = 100;
 			if(isps&&AMath.random(100) <= 60) {
 				ARSystem.playSound((Entity)player, "0miss", 1.8f);
 				e.setDamage(0);
 				e.setCancelled(true);
 			}
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*0.5);
 		}
 		return true;
 	}

@@ -27,6 +27,7 @@ import ars.ARSystem;
 import ars.Rule;
 import buff.Nodamage;
 import buff.Panic;
+import chars.ca.c4300yuno;
 import event.Skill;
 import manager.AdvManager;
 import types.box;
@@ -56,6 +57,10 @@ public class c43yuno extends c00main{
 	
 	public void team() {
 		for(int i = 0; i<4;i++) co[i] = setcooldown[i];
+		if(Rule.team.getTeam("Yuno") != null) {
+			Rule.c.put(player,new c4300yuno(player, plugin, null));
+			return;
+		}
 		Rule.team.teamCreate("Yuno");
 		Rule.team.teamJoin("Yuno", player);
 		Rule.team.getTeam("Yuno").setTeamColor("d");
@@ -93,13 +98,8 @@ public class c43yuno extends c00main{
 			public void run() {
 				if(player.getOpenInventory().getTitle().equals(invskill.inventory.getTitle())) {
 					player.closeInventory();
-					if(yuki == null) {
-						yuki = ARSystem.RandomPlayer(player);
-						heal = yuki.getHealth();
-						yuki.sendTitle(Main.GetText("c43:t1"), "",5,15,20);
-						ARSystem.playSound(yuki, "c43p");
-						ARSystem.playSound(player, "c43p");
-						Rule.team.teamJoin("Yuno", yuki);
+					if(yuki == null || yuki == player) {
+						Rule.c.put(player,new c4300yuno(player, plugin, null));
 					}
 				}
 			}
@@ -155,12 +155,7 @@ public class c43yuno extends c00main{
 			team();
 		}
 		if(yuki == null && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time > 10) {
-			yuki = ARSystem.RandomPlayer(player);
-			heal = yuki.getHealth();
-			yuki.sendTitle(Main.GetText("c43:t1"), "",5,15,20);
-			ARSystem.playSound(yuki, "c43p");
-			ARSystem.playSound(player, "c43p");
-			Rule.team.teamJoin("Yuno", yuki);
+			Rule.c.put(player,new c4300yuno(player, plugin, null));
 		}
 		else if(yuki != null) {
 			if(tk%20==0) {

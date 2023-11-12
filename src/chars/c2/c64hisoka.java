@@ -60,7 +60,6 @@ public class c64hisoka extends c00main{
 		load();
 		text();
 		c = this;
-		if(ARSystem.isGameMode("lobotomy")) setcooldown[1] *= 0.4;
 	}
 
 	@Override
@@ -146,7 +145,6 @@ public class c64hisoka extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage()*3);
 			target = (LivingEntity) e.getEntity();
 		} else {
 			if(isps) {

@@ -38,6 +38,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.server.TabCompleteEvent;
@@ -447,7 +448,9 @@ public class Event
 			e.setCancelled(true);
 			return true;
 		}
-		
+		if(e.getEntity() instanceof Player) {
+			if(!(e.getDamager() instanceof Player)) ((LivingEntity)e.getEntity()).setNoDamageTicks(0);
+		}
 		if(ARSystem.isTarget(e.getEntity(), e.getDamager(), box.TARGET)) {
 			if(Rule.c.get(e.getDamager()) != null) {
 				Rule.c.get(e.getDamager()).setFrist_Damage(e, true);
@@ -484,7 +487,7 @@ public class Event
 				Rule.c.get(e.getEntity()).setFrist_Damage(e, false);
 			}
 		}
-		if(e.getDamage() <= 0.001 || e.isCancelled()) {
+		if(e.getDamage() <= 0.01 || e.isCancelled()) {
 			e.setCancelled(true);
 		} else {
 			if(!(e.getEntity() instanceof ArmorStand)) {
@@ -506,7 +509,9 @@ public class Event
 						Holo.create(loc,"§9§l✖ "+ (Math.round(e.getFinalDamage()*100)/100.0f),40,new Vector(0,0.05,0));
 					}
 					if(!e.isCancelled() && e.getDamage() > 0 && e.getEntity().getLocation() != null) {
-						damageText(e.getEntity().getLocation(),"§c§l⚔ ",e.getDamage());
+						if(e.getEntity() instanceof Player || e.getDamager() instanceof Player) {
+							damageText(e.getEntity().getLocation(),"§c§l⚔ ",e.getDamage());
+						}
 						((LivingEntity)e.getEntity()).setNoDamageTicks(20);
 					}
 					
