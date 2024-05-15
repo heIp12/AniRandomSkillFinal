@@ -28,12 +28,15 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Nodamage;
+import buff.Nodie;
 import buff.Stun;
 import buff.TimeStop;
 import chars.c.c00main;
+import chars.c.c06watson;
 import chars.ca.c5000sayaka;
 import event.Skill;
 import manager.AdvManager;
+import manager.Bgm;
 import types.MapType;
 
 import util.AMath;
@@ -126,7 +129,7 @@ public class c50sayaka extends c00main{
 			ARSystem.heal(player, 1);
 		}
 		if(tk%20==0) {
-			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c50:sk0")+ "] : "+ damage +"/140");
+			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c50:sk0")+ "] : "+ damage +"/ 200");
 			scoreBoardText.add("&c ["+Main.GetText("c50:sk4")+ "] : "+ (speed*5) +"%");
 		}
 		if(damage >= 140 && !isps&& !ARSystem.isGameMode("lobotomy")) {
@@ -134,7 +137,12 @@ public class c50sayaka extends c00main{
 		}
 		if(pstick <= 0) {
 			if(isps) {
-				if(boss != null && !boss.isDead()) {
+				player.sendTitle("", "" + boss.getHealth() +" / " + boss.getMaxHealth(),0,10,0);
+				String s = Bgm.bgmcode;
+				if(!s.equals("bc50") && Bgm.rep) {
+					Bgm.setlockBgm("c50");
+				}
+				if(boss != null && !(boss.isDead() || boss.getHealth() < 1 )) {
 					if(!Map.inMap(boss.getLocation())) {
 						boss.teleport(Map.randomLoc());
 					}
@@ -143,46 +151,51 @@ public class c50sayaka extends c00main{
 					Skill.remove(player, player);
 				}
 			}
-		}
-		if(pstick>0) {
+		} else {
 			pstick--;
-			if(pstick == 0) {
-				for(LivingEntity e : player.getWorld().getLivingEntities()) {
-					if(e.getCustomName() != null) {
-						if(e.getCustomName().equals("Oktavia Von Seckendorff")) {
-							boss = e;
-						}
-					}
-				}
-			}
 		}
 		return true;
 	}
 	
 	public void sk0() {
+		for(Player p :Rule.c.keySet()) {
+			if(p != player && Rule.c.get(p) instanceof c50sayaka) {
+				Rule.c.get(p).cooldown[0] = 60;
+			}
+		}
 		spskillon();
 		spskillen();
-		Rule.playerinfo.get(player).tropy(50,1);
-		ARSystem.playSoundAll("c50sp",(float) 1);
+		pstick = 200;
 		ARSystem.giveBuff(player, new TimeStop(player), 120);
-		pstick = 60;
+		for(int i=0;i<10;i++) {
+			delay(()->{skill("c50_sp");},i*2);
+		}
 		delay(()->{
-			player.setGameMode(GameMode.SPECTATOR);
-			player.setMaxHealth(500);
-			player.setHealth(500);
-			if(ARSystem.gameMode2) {
-				Map.mapType = MapType.NORMAL;
-				Map.getMapinfo(1008);
-				for(Player p : Bukkit.getOnlinePlayers()) {
-					Map.playeTp(p);
+			skill("okta2");
+			delay(()->{
+				ARSystem.potion(player, 14, 140, 1);
+			},30);
+			Rule.playerinfo.get(player).tropy(50,1);
+			ARSystem.playSoundAll("c50sp",(float) 1);
+			delay(()->{
+				player.setGameMode(GameMode.SPECTATOR);
+				player.setMaxHealth(500);
+				player.setHealth(500);
+				if(ARSystem.gameMode2) {
+					Map.mapType = MapType.NORMAL;
+					Map.getMapinfo(1008);
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						Map.playeTp(p);
+					}
+					delay(()->{
+						pstick = 20;
+						boss = (LivingEntity)Map.spawnMMOwner("c50_1",new Location(player.getWorld(),169,38,69),player.getUniqueId());
+					},20);
+				} else {
+					boss = (LivingEntity)Map.spawnMMOwner("c50_1",new Location(player.getWorld(),169,38,69),player.getUniqueId());
 				}
-				delay(()->{
-					Map.spawn("c50_0",new Location(player.getWorld(),169,36,69), 1);
-				},20);
-			} else {
-				Map.spawn("c50_0",player.getLocation(), 1);
-			}
-		},100);
+			},100);
+		},20);
 	}
 
 
@@ -193,10 +206,11 @@ public class c50sayaka extends c00main{
 		} else {
 			if(Rule.c.get(e.getDamager()) != null) cooldown[4] -= 3;
 		}
-		if(damage >= 140 && !isps && !ARSystem.isGameMode("lobotomy")) {
+		if(damage >= 200 && !isps && !ARSystem.isGameMode("lobotomy")) {
 			e.setCancelled(true);
 			e.setDamage(0);
-			sk0();
+			ARSystem.giveBuff(player, new Nodie(player), 400);
+			if(skillCooldown(0)) sk0();
 			return false;
 		}
 		return true;

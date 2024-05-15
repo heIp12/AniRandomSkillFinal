@@ -59,7 +59,6 @@ import util.Map;
 
 public class c101aris extends c00main{
 	int sk3 = 0;
-	float ps = 0;
 	LivingEntity en;
 	int tr = 0;
 	
@@ -119,10 +118,13 @@ public class c101aris extends c00main{
 	
 	@Override
 	public boolean skill2() {
-		List<Entity> entitys = ARSystem.PlayerBeamBox(player, 10, 5, box.ALL);
+		List<Entity> entitys = ARSystem.PlayerBeamBox(player, 5, 3, box.ALL);
 		if(entitys != null && entitys.size() > 0) {
 			LivingEntity en = (LivingEntity) entitys.get(0);
 			if(en != null) {
+				tr++;
+				if(tr >=20) Rule.playerinfo.get(player).tropy(101, 1);
+				
 				this.en = en;
 				cooldown[3] = 0.5f;
 				ARSystem.addBuff(player, new Silence(player), 10);
@@ -157,8 +159,6 @@ public class c101aris extends c00main{
 				}
 				return true;
 			}
-			tr++;
-			if(tr >=20) Rule.playerinfo.get(player).tropy(101, 1);
 		}
 		cooldown[2] = 0;
 		return true;
@@ -188,11 +188,11 @@ public class c101aris extends c00main{
 		if(sk3 > 0) sk3--;
 		if(tk%20 == 0) {
 			if(en != null) scoreBoardText.add("&c ["+Main.GetText("c101:sk3")+ "] : "+ en.getName());
-			scoreBoardText.add("&c ["+Main.GetText("c101:ps")+ "] : "+ (ps>0));
+			scoreBoardText.add("&c ["+Main.GetText("c101:ps")+ "] : "+ (isBattle()));
 		}
-		if(ps%10 == 0) {
-			if(isps) ARSystem.heal(player, 0.5f);
-			if(ps > 0) {
+		if(tk%10 == 0) {
+			if(isps) ARSystem.heal(player, 0.15f);
+			if(isBattle()) {
 				for(int i=0;i<10;i++) {
 					if(cooldown[i] > 0) cooldown[i] -= 0.25f;
 				}
@@ -206,7 +206,6 @@ public class c101aris extends c00main{
 			if(en instanceof Player && Rule.c.get(en) == null) en = null;
 			else if(en.isDead()) en = null;
 		}
-		ps--;
 		
 		for(int i =1; i<10; i++) {
 			if(cooldown[i] > 15 && skillCooldown(0)) {
@@ -226,12 +225,13 @@ public class c101aris extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			en = (LivingEntity) e.getEntity();
-			ps = 100;
 			if(isps) e.setDamage(e.getDamage() + 1);
 		} else {
-			if(ps > 0) e.setDamage(e.getDamage() * 0.75);
-			if(ps <= 0) e.setDamage(e.getDamage() * 1.75);
-			ps = 100;
+			if(isBattle()) {
+				e.setDamage(e.getDamage() * 0.75);
+			} else {
+				e.setDamage(e.getDamage() * 1.75);
+			}
 			if(isps&&AMath.random(100) <= 60) {
 				ARSystem.playSound((Entity)player, "0miss", 1.8f);
 				e.setDamage(0);

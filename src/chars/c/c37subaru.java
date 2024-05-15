@@ -43,6 +43,7 @@ import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
 import chars.c2.c62shinon;
+import chars.c2.c74ainz;
 import chars.c3.c133yukina;
 import chars.ch.e002rain;
 import event.Skill;
@@ -256,10 +257,25 @@ public class c37subaru extends c00main{
 					is = "rain";
 					break;
 				}
+				if(Rule.c.get(e) instanceof c74ainz) {
+					is = "inz";
+					break;
+				}
+			}
+		}
+		boolean r = false;
+		for(Entity e : ARSystem.box(player, new Vector(999,999,999), box.TARGET)) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof e002rain) {
+					r = true;
+					break;
+				}
 			}
 		}
 		
-		if(is.equals("rain")) {
+		if(is.equals("inz") && r) {
+			ARSystem.playSound((Entity)player, "c37sa");
+		} else if(is.equals("rain")) {
 			ARSystem.playSound((Entity)player, "c37rain");
 		} else {
 			ARSystem.playSound((Entity)player, "c37db");

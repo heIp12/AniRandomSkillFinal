@@ -125,7 +125,7 @@ public class c1240coishi extends c00main{
 		for(Player p : Rule.c.keySet()) {
 			if(p == player) continue;
 			double range = p.getLocation().distance(player.getLocation());
-			if(range < 30) t = 0;
+			if(range < 20) t = 0;
 			if(range < 10) {
 				p.showPlayer(player);
 			} else {

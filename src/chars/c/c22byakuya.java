@@ -22,7 +22,9 @@ import event.Skill;
 import types.box;
 
 import util.ULocal;
+import util.BlockUtil;
 import util.MSUtil;
+import util.Map;
 
 public class c22byakuya extends c00main{
 	int ticks = 0;
@@ -84,9 +86,25 @@ public class c22byakuya extends c00main{
 	@Override
 	public boolean skill3() {
 		if(flower >= 100 && skillCooldown(0)) {
+			Location loc = player.getLocation().clone();
+			if(loc.getY() <= Map.loc_f.getY()) loc.setY(Map.loc_l.getY());
+			for(int i =0; i<400; i++) {
+				if(BlockUtil.isAirbone(loc, 1) || loc.getBlock().isEmpty() || !Map.inMap(loc)) {
+					loc.add(new Vector(0,-0.2f,0));
+				} else {
+					if(!Map.inMap(loc)) {
+						cooldown[0] = 0;
+						return false;
+					}
+					break;
+				}
+			}
 			spskillen();
 			spskillon();
 			flower-=100;
+
+			player.teleport(loc);
+			
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 400, 2));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.getById(5),400, 2));
 			ARSystem.giveBuff(player, new Nodamage(player), 100);

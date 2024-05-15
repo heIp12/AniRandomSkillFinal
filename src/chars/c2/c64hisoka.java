@@ -124,7 +124,7 @@ public class c64hisoka extends c00main{
 				}
 			}
 		}
-		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 111 && !isps) {
+		if(tick>100&&ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 111 && !isps && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			ARSystem.playSoundAll("c64sp");

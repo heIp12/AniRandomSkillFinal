@@ -36,6 +36,8 @@ public class c36kaneki extends c00main{
 	int vt = 0;
 	int s1 = 1;
 	int count;
+	int pr = 0;
+	int cc = 2;
 	
 	boolean sp = false;
 	public c36kaneki(Player p,Plugin pl,c00main ch) {
@@ -78,9 +80,27 @@ public class c36kaneki extends c00main{
 
 	@Override
 	public boolean tick() {
+		if(pr == 0) {
+			pr = Rule.c.size();
+			if(pr >= 8) {
+				cc +=1;
+			}
+			if(pr >= 12) {
+				cc +=1;
+			}
+			if(pr >= 16) {
+				cc +=1;
+			}
+			if(pr >= 20) {
+				cc +=1;
+			}
+		}
 		if(vt > 0) {
 			vt--;
 			player.setVelocity(new Vector(0,0,0));
+		}
+		if(tk%20 == 0) {
+			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c36:sk0")+ "]&f : "+ count + " / " + cc);
 		}
 		return true;
 	}
@@ -97,7 +117,7 @@ public class c36kaneki extends c00main{
 			if(setcooldown[2] <= 0.5) setcooldown[2] = 0.5f;
 			if(setcooldown[3] <= 0.5) setcooldown[3] = 0.5f;
 			
-			if(count >= 2 && !isps) {
+			if(count >= cc && !isps) {
 				spskillon();
 				spskillen();
 				setcooldown[1]-=1.5;
@@ -116,7 +136,7 @@ public class c36kaneki extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(isps) {
-				e.setDamage(e.getDamage() + 5);
+				e.setDamage(e.getDamage() + 4);
 				ARSystem.heal(player,e.getDamage()/3);
 			}
 		} else {

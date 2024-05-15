@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -150,7 +151,7 @@ public class c110seiya extends c00main{
 				if(damage_Stack>= 1000) Rule.playerinfo.get(player).tropy(110, 1);
 			} else if(!snk && !player.isSneaking()){
 				snk = true;
-			} else if(jump && player.isOnGround()) {
+			} else if(jump && player.isOnGround() && player.getLocation().getBlock().getType() != Material.WEB) {
 				jump = false;
 				skillmult += 0.012;
 			} else if(!jump && !player.isOnGround()) {

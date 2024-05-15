@@ -252,9 +252,9 @@ public class c30siro extends c00main{
 				if(!ARSystem.gameMode2) time+= (skillmult + sskillmult);
 				if(psopen) {
 					scoreBoardText.add("&c ["+Main.GetText("c30:sk0")+ "]&f");
-					scoreBoardText.add("&f : "+ time + " / 100");
+					scoreBoardText.add("&f : "+ time + " / 120");
 				}
-				if(time >= 100 && !sp) {
+				if(time >= 120 && !sp && skillCooldown(0)) {
 					time = 0;
 					sp();
 				}

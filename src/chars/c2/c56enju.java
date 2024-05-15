@@ -66,6 +66,7 @@ public class c56enju extends c00main{
 		cooldown[1] = cooldown[2] = cooldown[3] = 0;
 		ARSystem.giveBuff(player, new Stun(player), 40);
 		skill("c56_s4");
+		skill("c56_s41");
 		ARSystem.playSound((Entity)player, "c56s3");
 		return true;
 	}
@@ -111,30 +112,24 @@ public class c56enju extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(player.getLocation().getY() > e.getEntity().getLocation().getY() && ARSystem.isTarget(e.getEntity(),player)) {
-				((LivingEntity)e.getEntity()).setVelocity(new Vector(0,-0.4,0));
-				((LivingEntity)e.getEntity()).setNoDamageTicks(0);
-				if(pt <= 0) {
-					pt = 1;
-					if(!ARSystem.gameMode2) {
+			if(e.getDamage() > 0.8f) {
+				if(player.getLocation().getY() > e.getEntity().getLocation().getY() && ARSystem.isTarget(e.getEntity(),player)) {
+					((LivingEntity)e.getEntity()).setVelocity(new Vector(0,-0.4,0));
+					((LivingEntity)e.getEntity()).setNoDamageTicks(0);
+					if(pt <= 0) {
+						pt = 1;
 						((LivingEntity)e.getEntity()).damage(1,player);
-					} else {
-						((LivingEntity)e.getEntity()).damage(3,player);
 					}
-				}
-				skill("c56_p2");
-				if(isps) {
-					ARSystem.giveBuff(((LivingEntity)e.getEntity()), new Stun(((LivingEntity)e.getEntity())), 4);
-					ARSystem.giveBuff(((LivingEntity)e.getEntity()), new Silence(((LivingEntity)e.getEntity())), 4);
+					skill("c56_p2");
+					if(isps) {
+						ARSystem.giveBuff(((LivingEntity)e.getEntity()), new Stun(((LivingEntity)e.getEntity())), 4);
+						ARSystem.giveBuff(((LivingEntity)e.getEntity()), new Silence(((LivingEntity)e.getEntity())), 4);
+					}
 				}
 			}
 		} else {
 			if(!player.isOnGround()) {
-				if(!ARSystem.gameMode2) {
-					e.setDamage(e.getDamage()*0.7);
-				} else {
-					e.setDamage(e.getDamage()*0.4);
-				}
+				e.setDamage(e.getDamage()*0.7);
 			}
 			if(player.isOnGround()) p = 0;
 			

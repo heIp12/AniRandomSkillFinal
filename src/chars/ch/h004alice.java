@@ -19,6 +19,7 @@ import chars.c.c00main;
 import event.Skill;
 import manager.Bgm;
 import util.AMath;
+import util.Holo;
 import util.ULocal;
 
 public class h004alice extends c00main{
@@ -56,8 +57,7 @@ public class h004alice extends c00main{
 		number = 996;
 		load();
 		text();
-		ARSystem.playSound((Entity)player, "aliceselect");
-		
+		if(p != null) ARSystem.playSound((Entity)player, "aliceselect");
 	}
 	
 	@Override
@@ -229,13 +229,14 @@ public class h004alice extends c00main{
 				ARSystem.giveBuff(player, new Nodamage(player), 20);
 			}
 			if(c_count < c_size && musicc) {
-				if(st == 1213321 && code[c_count+2] != 0) {
+				if(st == 52 && code[c_count+2] != 0) {
 					combo++;
 					cb = "§6Perfect!";
 					code[c_count+2] = 0;
 					Location loc = player.getLocation();
 					loc.setPitch(0);
 					ARSystem.spellLocCast(player, ULocal.offset(loc, new Vector(2,1,1.0 - AMath.random(0, 20)*0.1)), "c996_p1");
+					Holo.create(player.getLocation().clone().add(0,2,0), "§a매크로 사용중",10,new Vector(0,0.04,0));
 				}
 				if(code[c_count] != 0) {
 					cb = "§7miss";

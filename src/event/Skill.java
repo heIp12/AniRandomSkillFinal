@@ -19,6 +19,7 @@ import chars.ca.c5600enju;
 import chars.ca.c8400subi;
 import manager.AdvManager;
 import manager.BuffManager;
+import mode.MLoboTomy;
 import util.GetChar;
 import util.Holo;
 import util.MSUtil;
@@ -26,22 +27,26 @@ import util.Map;
 
 public class Skill {
 	static public void remove(Entity entity,Entity player) {
-		if(Rule.c.get(player) == null) return;
 		Holo.create(entity.getLocation(),"§c§l<< Delete >>",100,new Vector(0,0.01,0));
 		if(entity instanceof Player) {
 			if(Rule.c.get(entity) != null) {
 				if(Rule.c.get(entity).remove(player)) {
-					
-					for(Player p : Bukkit.getOnlinePlayers()) {
-						AdvManager.set(p, 258, 0 , "§f§l"+player.getName() +" >>§4§l delete §f§l " + entity.getName());
+					if(ARSystem.isGameMode("lobotomy")) {
+						MLoboTomy.dieMsg((Player)entity);
+					} else {
+						for(Player p : Bukkit.getOnlinePlayers()) {
+							AdvManager.set(p, 258, 0 , "§f§l"+player.getName() +" >>§4§l delete §f§l " + entity.getName());
+						}
 					}
-					Rule.c.get(player).kill();
-					Rule.playerinfo.get(player).addcradit(5,entity.getName()+" "+Main.GetText("main:msg104"));
+					if(Rule.c.get(player) != null) {
+						Rule.c.get(player).kill();
+						Rule.playerinfo.get(player).addcradit(5,entity.getName()+" "+Main.GetText("main:msg104"));
+					}
 					ARSystem.Death((Player)entity,player);
 				}
 			}
 		} else {
-			if(((LivingEntity)entity).getMaxHealth() > 500) {
+			if(((LivingEntity)entity).getMaxHealth() >= 500) {
 				((LivingEntity)entity).damage(((LivingEntity)entity).getMaxHealth()/2.5 + 250);
 			} else {
 				((LivingEntity)entity).setNoDamageTicks(0);
@@ -53,12 +58,16 @@ public class Skill {
 	static public void death(Entity entity,Entity player) {
 		Holo.create(entity.getLocation(),"§6§l<< Kill >>",100,new Vector(0,0.01,0));
 		if(entity instanceof Player) {
-			if(Rule.c.get(player) != null) {
-				Rule.c.get(player).kill();
-				Rule.playerinfo.get(player).addcradit(5,entity.getName()+" "+Main.GetText("main:msg104"));
-			}
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				AdvManager.set(p, 267, 0 , "§f§l"+player.getName() +" >>§c§l Kill §f§l " + entity.getName());
+			if(ARSystem.isGameMode("lobotomy")) {
+				MLoboTomy.dieMsg((Player)entity);
+			} else {
+				if(Rule.c.get(player) != null) {
+					Rule.c.get(player).kill();
+					Rule.playerinfo.get(player).addcradit(5,entity.getName()+" "+Main.GetText("main:msg104"));
+				}
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					AdvManager.set(p, 267, 0 , "§f§l"+player.getName() +" >>§c§l Kill §f§l " + entity.getName());
+				}
 			}
 			ARSystem.Death((Player)entity,player);
 		} else {
@@ -69,8 +78,12 @@ public class Skill {
 	public static void quit(LivingEntity entity) {
 		Holo.create(entity.getLocation(),"§d§l<< Quit >>",100,new Vector(0,0.01,0));
 		if(Rule.c.get(entity) != null) {
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				AdvManager.set(p, 258, 0 , "§d§l Quit §f§l " + entity.getName());
+			if(ARSystem.isGameMode("lobotomy")) {
+				MLoboTomy.dieMsg((Player)entity);
+			} else {
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					AdvManager.set(p, 258, 0 , "§d§l Quit §f§l " + entity.getName());
+				}
 			}
 			ARSystem.Death((Player)entity,entity);
 		} else {

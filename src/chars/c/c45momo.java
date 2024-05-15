@@ -40,9 +40,9 @@ import util.Map;
 
 public class c45momo extends c00main{
 
-	int count = 0;
+	public int count = 0;
 	int tick = 0;
-	boolean sp = false;
+	public boolean sp = false;
 	
 	public c45momo(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -57,6 +57,10 @@ public class c45momo extends c00main{
 		count++;
 		if(count >= 30) {
 			Rule.playerinfo.get(player).tropy(45,1);
+		}
+
+		if(ARSystem.isGameMode("lobotomy") && count > 30) {
+			return false;
 		}
 		if(sp) {
 			skill("c45_sp1");

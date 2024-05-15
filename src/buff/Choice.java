@@ -43,12 +43,13 @@ public class Choice extends Buff{
 		lv = i;
 		bufftype.add(BuffType.DEBUFF);
 		bufftype.add(BuffType.DAMAGE);
-
+		tick += 10;
+		
 		buffName = "choice";
 		onlyone = true;
 		color = "§a";
 		isScore = true;
-		select = 4+(i*3);
+		select = 4+(int)(i*1.4f);
 		if(select >= 22) {
 			select = 21;
 			if(Rule.c.get(player) instanceof c90arabe) {
@@ -61,13 +62,14 @@ public class Choice extends Buff{
 			type2 = AMath.random(select);
 			while(type2 == type) type2 = AMath.random(select);
 		}
-		count = lv*3+AMath.random(lv*2);
+		count = lv+AMath.random(lv);
 		
 		ARSystem.playSound(player, "c90a"+AMath.random(5));
 		ARSystem.addBuff(player, new TimeStop(player), 60);
 		player.sendTitle(Main.GetText("c90:t0"), 
 						 count(type)+Main.GetText("c90:t"+type) + " | "+ 
 						 count(type2)+Main.GetText("c90:t"+type2));
+		
 		start_loc = player.getLocation();
 		if(Rule.c.get(player) != null && Rule.c.get(player) instanceof c61tyana) {
 			ARSystem.playSound((Entity)player, "c61kami");
@@ -102,6 +104,15 @@ public class Choice extends Buff{
 	}
 	
 	public boolean onTicks() {
+		if(tick <= 10 && tick > 0) {
+			tick = 0;
+			if(value > 0 && value > -100) {
+				value = -1000;
+				if(Rule.c.get(caster) != null) {
+					Skill.remove(caster, caster);
+				}
+			}
+		}
 		if(selects == false) {
 			if(AMath.random(2)==1) type = type2;
 			value = count(type);
@@ -213,12 +224,6 @@ public class Choice extends Buff{
 	
 	@Override
 	public void last() {
-		if(value > 0 && value > -100) {
-			value = -1000;
-			if(Rule.c.get(caster) != null) {
-				Skill.remove(caster, caster);
-			}
-		}
 		if(type == 8) ARSystem.playSound((Entity)caster, "h");
 	}
 	
@@ -271,4 +276,6 @@ public class Choice extends Buff{
 		}
 		return super.onMove(e);
 	}
+	
+
 }

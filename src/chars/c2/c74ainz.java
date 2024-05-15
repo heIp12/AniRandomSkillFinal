@@ -42,6 +42,7 @@ import buff.Timeshock;
 import buff.Wound;
 import chars.c.c000humen;
 import chars.c.c00main;
+import event.FixedDealEvent;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
@@ -109,7 +110,7 @@ public class c74ainz extends c00main{
 			if(((LivingEntity)en).getHealth() <= 14) {
 				Skill.remove(en, player);
 			} else {
-				((LivingEntity)en).setHealth(((LivingEntity)en).getHealth() * 0.2f);
+				ARSystem.fixedDamage((LivingEntity)en, player, ((LivingEntity)en).getHealth() * 0.2f);
 			}
 		} else {
 			cooldown[3] = 0;
@@ -134,7 +135,7 @@ public class c74ainz extends c00main{
 		
 		if(tick%100 == 0) {
 			List<Entity> l = ARSystem.box(player, new Vector(999,999,999), box.TARGET);
-			if(l.size() >= 40 && skillCooldown(0)) {
+			if(l.size() >= 25 && skillCooldown(0)) {
 				ARSystem.addBuff(player, new TimeStop(player), 200);
 				int size = 2 + l.size()/50;
 				spskillon();

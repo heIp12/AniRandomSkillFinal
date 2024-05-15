@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Noattack;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
@@ -47,6 +48,8 @@ public class c39sakuya extends c00main{
 	
 	int s4 = 0;
 	boolean sps = false;
+	
+	List<Location> loc4 = new ArrayList<>();
 	
 	public c39sakuya(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -117,7 +120,9 @@ public class c39sakuya extends c00main{
 	public boolean skill4() {
 		List<Entity> e = ARSystem.PlayerBeamBox(player, 10, 3, box.TARGET);
 		if(e.size() > 0) {
+			loc4 = new ArrayList<Location>();
 			s4t = (LivingEntity)e.get(0);
+			loc4.add(s4t.getLocation());
 			s4 = 200;
 			s4l = s4t.getLocation();
 			ARSystem.spellLocCast(player, s4l, "c39_s4e");
@@ -160,8 +165,19 @@ public class c39sakuya extends c00main{
 							this.loc.add(loc);
 						}
 					}
-					ARSystem.giveBuff((LivingEntity)e, new Stun((LivingEntity)e), 10);
-					ARSystem.giveBuff((LivingEntity)e, new Silence((LivingEntity)e), 10);
+					ARSystem.giveBuff((LivingEntity)e, new Stun((LivingEntity)e), 20);
+					ARSystem.giveBuff((LivingEntity)e, new Silence((LivingEntity)e), 20);
+				} else {
+					Location l = player.getLocation();
+					for(int i = 0; i < 10; i++) {
+						l.setYaw(i*36);
+						Location loc = ULocal.lookAt(ULocal.offset(l, new Vector(2,-0.5 + i%2,0)),l);
+						if(!s22) {
+							ARSystem.spellLocCast(player, loc, "c39_s1");
+						} else {
+							this.loc.add(loc);
+						}
+					}
 				}
 				player.setGameMode(GameMode.ADVENTURE);
 			}
@@ -172,10 +188,21 @@ public class c39sakuya extends c00main{
 			player.sendTitle(Text.get("c39:sk4"), t +"(s)",0,10,0);
 			s4--;
 			if(s4%20 == 0) ARSystem.playSound(player, "0timer");
+			if(s4%10 == 0) loc4.add(s4t.getLocation());
 			if(s4 <= 0) {
-				s4t.teleport(s4l);
-				skill("c39_s4r");
-				s4t = null;
+				for(int i = loc4.size(); i > 0; i--) {
+					Location lc = loc4.get(i-1);
+					delay(()->{
+						s4t.teleport(lc);
+						ARSystem.giveBuff(s4t, new Silence(s4t), 2);
+					},loc4.size()-i);
+				}
+				delay(()->{
+					ARSystem.giveBuff(s4t, new Silence(s4t), 20);
+					ARSystem.giveBuff(s4t, new Stun(s4t), 20);
+					s4t = null;
+					skill("c39_s4r");
+				},loc4.size()+1);
 			}
 		}
 		int speed = 0;
@@ -183,19 +210,22 @@ public class c39sakuya extends c00main{
 		if(speed > 0) {
 			ARSystem.potion(player, 1, speed, speed-1);
 		}
-		
+		for(int i =0; i<10;i++) if(cooldown[i] > 0) cooldown[i] -= speed*0.005;
 		if(tk%10 == 0) {
 			List<Entity> en = ARSystem.box(player, new Vector(5, 5, 5), box.TARGET);
 			if(en.size() > 2 && skillCooldown(0)) {
 				cooldown[3] = 0;
 				spskillon();
 				spskillen();
+				Rule.playerinfo.get(player).tropy(39,1);
 				ARSystem.playSound((Entity)player, "c39sp");
 				skill("c39_sp");
 				for(Entity e : en) {
 					LivingEntity le = (LivingEntity)e;
 					ARSystem.giveBuff(le, new TimeStop(le), 300);
-					ARSystem.giveBuff(le, new Timeshock(le), 60);
+					ARSystem.giveBuff(le, new Timeshock(le), 100);
+					ARSystem.giveBuff(le, new Noattack(le), 100);
+					ARSystem.giveBuff(le, new Silence(le), 100);
 				}
 				for(int i = 0 ;i<10;i++) {
 					delay(()->{
@@ -204,6 +234,7 @@ public class c39sakuya extends c00main{
 				}
 				sps = true;
 				delay(()->{
+					player.sendTitle("§4<<Time Shock>>", "",0,20,80);
 					sps = false;
 				},300);
 			}
@@ -227,7 +258,7 @@ public class c39sakuya extends c00main{
 				e.setCancelled(true);
 				return false;
 			}
-			if(e.getDamage() >= AMath.random(100)) {
+			if(e.getDamage()*2 >= AMath.random(100)) {
 				e.setDamage(0);
 				e.setCancelled(true);
 				ARSystem.giveBuff(player, new TimeStop(player), 20);

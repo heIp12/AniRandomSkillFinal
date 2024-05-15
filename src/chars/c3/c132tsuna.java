@@ -37,6 +37,7 @@ import buff.Buff;
 import buff.Cindaella;
 import buff.Curse;
 import buff.Fascination;
+import buff.Ice;
 import buff.NoHeal;
 import buff.Noattack;
 import buff.Nodamage;
@@ -100,6 +101,7 @@ public class c132tsuna extends c00main{
 			
 		} else {
 			if(stack > 10) {
+				if(stack >= 200) Rule.playerinfo.get(player).tropy(132, 1);
 				sk1s = player.isSneaking();
 				ARSystem.playSound((Entity)player, "c132s1");
 				delay(()->{
@@ -179,14 +181,16 @@ public class c132tsuna extends c00main{
 		if(n.equals("1")) {
 			target.setNoDamageTicks(0);
 			target.damage(0.5,player);
+			if(Rule.buffmanager.GetBuffTime(target, "ice") > 0 && Rule.buffmanager.GetBuffTime(target, "ice") < 10) {
+				ARSystem.addBuff(target, new Ice(target,player), 10);
+			}
 		} else if(n.equals("2")) {
 			if(isps) {
 				for(Buff b : Rule.buffmanager.selectBuffType(target, BuffType.BUFF)) {
 					b.setTime(0);
 				}
 			}
-			ARSystem.giveBuff(target, new Silence(target), 40);
-			ARSystem.giveBuff(target, new Stun(target), 100);
+			ARSystem.giveBuff(target, new Ice(target, player), 100);
 		}
 		else if(n.equals("3")) {
 			target.setNoDamageTicks(0);

@@ -191,6 +191,7 @@ public class c128roise extends c00main{
 				for(Entity e : ARSystem.locEntity(loc, new Vector(s,s,s), player)) {
 					LivingEntity en = (LivingEntity)e;
 					if(c >= 20) {
+						Rule.playerinfo.get(player).tropy(128, 1);
 						ARSystem.giveBuff(en,new TimeStop(en), 40);
 						delay(()->{
 							Skill.remove(en, player);
@@ -340,5 +341,25 @@ public class c128roise extends c00main{
 		}
 		return true;
 	}
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c131saito) {
+					is = "r";
+					break;
+				}
 
+			}
+		}
+
+		if(is.equals("r")) {
+			ARSystem.playSound((Entity)player, "c131saito");
+		} else {
+			ARSystem.playSound((Entity)player, "c128db");
+		}
+		return true;
+	}
 }

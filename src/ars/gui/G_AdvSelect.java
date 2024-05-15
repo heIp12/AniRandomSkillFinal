@@ -38,6 +38,7 @@ public class G_AdvSelect extends GUIBase{
 		count.add(1068);
 		count.add(1118);
 		count.add(2030);
+		count.add(1006);
 		line = 6;
 		page = new int[Math.max(count.size(),this.line*9) + (Math.max(count.size(),this.line*9)/8) + 18];
 		info = Rule.playerinfo.get(player);
@@ -70,8 +71,8 @@ public class G_AdvSelect extends GUIBase{
 	
 	@Override
 	public boolean ClickFrist(int clickLocal, boolean right, boolean shift) {
-		if(!(!ARSystem.isGameMode("lobotomy") || Rule.ishelp(player))) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"tm anitext "+player.getName()+" SUBTITLE true 40 main:lb10/main:lb9");
+		if(!(!ARSystem.isGameMode("lobotomy") || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) {
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"tm anitext "+player.getName()+" SUBTITLE true 40 lobo:lb10/lobo:lb9");
 			return false;
 		}
 		

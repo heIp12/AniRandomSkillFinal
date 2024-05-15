@@ -43,7 +43,7 @@ public class c27ray extends c00main{
 	public boolean skill1() {
 		count++;
 		if(isps) {
-			ARSystem.spellLocCast(player, player.getLocation(), "c27_spi"+AMath.random(3));
+			ARSystem.spellLocCast(player, player.getLocation(), "c27_spi");
 		} else {
 			if(player.isSneaking()) {
 				skill("c"+number+"_s1_1");
@@ -58,9 +58,7 @@ public class c27ray extends c00main{
 	public boolean skill2() {
 		count++;
 		if(isps) {
-			for(int i = 0; i < 4; i++) {
-				ARSystem.spellLocCast(player, player.getLocation().add(new Vector(-3+AMath.random(6),-3+AMath.random(6),-3+AMath.random(6))), "c27_spi"+AMath.random(3));
-			}
+			for(int i =0; i<10; i++) skill("c27_spi2");
 		} else {
 			skill("c"+number+"_s2");
 		}
@@ -72,10 +70,14 @@ public class c27ray extends c00main{
 		count++;
 		if(isps) {
 			for(int i = 0; i < 15; i++) {
-				ARSystem.spellLocCast(player, Map.randomLoc(player), "c27_spi"+AMath.random(3));
+				ARSystem.spellLocCast(player, Map.randomLoc(player), "c27_spi");
 			}
 		} else {
-			skill("c"+number+"_s3");
+			skill("removemyall");
+			skill("c27");
+			delay(()->{
+				skill("c"+number+"_s3");
+			},3);
 			Rule.buffmanager.selectBuffValue(player, "barrier",5);
 		}
 		return true;
@@ -109,7 +111,7 @@ public class c27ray extends c00main{
 			public void run() {
 				Map.playeTp(player);
 				for(int i = 0; i < 50; i++) {
-					ARSystem.spellLocCast(player, Map.randomLoc(), "c27_spi"+AMath.random(3));
+					ARSystem.spellLocCast(player, Map.randomLoc(), "c27_spi");
 				}
 			}
 		},380);
@@ -130,14 +132,14 @@ public class c27ray extends c00main{
 		}
 		if(isps && player.getLocation().distance(loc) > 1) {
 			loc = player.getLocation();
-			ARSystem.spellLocCast(player,player.getLocation().add(new Vector(-2+AMath.random(4),-1,-2+AMath.random(4))), "c27_spi"+AMath.random(3));
+			ARSystem.spellLocCast(player,player.getLocation().add(new Vector(-2+AMath.random(4),-1,-2+AMath.random(4))), "c27_spi");
 		}
 		if(tk%20==0 && !isps && player.getHealth()/player.getMaxHealth() <= 0.20) {
 			time++;
 			if(psopen&& !isps) {
 				scoreBoardText.add("&c [Time]&f : "+ time + " / 15");
 			}
-			if(time > 14&& !isps) {
+			if(time > 14&& !isps && skillCooldown(0)) {
 				time = 0;
 				spskillon();
 				spskillen();

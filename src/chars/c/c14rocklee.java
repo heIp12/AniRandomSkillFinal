@@ -132,14 +132,14 @@ public class c14rocklee extends c00main{
 					break;
 				}
 			}
-			float damage = fall*0.5f;
+			float damage = fall*0.75f;
 			delay(()->{
 				t.setNoDamageTicks(0);
 				if(!isps) t.damage(damage,player);
 				if(isps) t.damage(damage*1.5f,player);
 				ARSystem.playSound(t, "0explod",0.8f);
 				ARSystem.spellCast(player, t, "c14_d2");
-			},count+fall+2);
+			},count+fall+6);
 		} else {
 			cooldown[2] = 0;
 		}
@@ -187,7 +187,7 @@ public class c14rocklee extends c00main{
 					Rule.playerinfo.get(player).tropy(14, 1);
 				}
 				hpCost(0.5, true);
-				if(AMath.random(100) <= 1) {
+				if(AMath.random(100) <= AMath.random(2)) {
 					spskillen();
 					spskillon();
 					skill("c14_sp");

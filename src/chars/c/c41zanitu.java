@@ -220,7 +220,7 @@ public class c41zanitu extends c00main{
 		if(player.isSneaking() && loc.distance(player.getLocation()) <= 0.1 && cooldown[1] <= 0) {
 			ptick++;
 			if(ptick > 10 && Rule.buffmanager.GetBuffTime(player, "sleep") < 3) {
-				ARSystem.giveBuff(player, new Sleep(player), 10);
+				ARSystem.giveBuff(player, new Sleep(player), 10 , 1);
 			}
 		} else {
 			ptick = 0;

@@ -39,7 +39,7 @@ public class h003rentaro extends c00main{
 		number = 997;
 		load();
 		text();
-		ARSystem.playSound((Entity)player, "rentaroselect");
+		if(p != null) ARSystem.playSound((Entity)player, "rentaroselect");
 	}
 	
 	int skill1 = 0;

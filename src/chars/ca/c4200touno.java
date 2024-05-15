@@ -26,6 +26,7 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
@@ -39,10 +40,22 @@ import util.InvSkill;
 import util.Inventory;
 import util.MSUtil;
 import util.Map;
+import util.ULocal;
 
 public class c4200touno extends c00main{
 	int cr = 3;
 	int p_tick = 0;
+	
+	boolean ison = false;
+	
+	@Override
+	public void setStack(float f) {
+		if(((int)f) == 42) {
+			spskillen("17분할 제로투");
+			spskillon();
+			ison = true;
+		}
+	}
 	
 	public c4200touno(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -70,24 +83,69 @@ public class c4200touno extends c00main{
 		return true;
 	}
 	
+	LivingEntity target;
+	int sk4 = 0;
 	@Override
 	public boolean skill4() {
 		List<Entity> e = ARSystem.PlayerBeamBox(player, 10, 3, box.TARGET);
 		if(e.size() > 0) {
-			LivingEntity en = (LivingEntity)e.get(0);
-			ARSystem.playSound((Entity)player, "c1042s41");
-			ARSystem.giveBuff(player, new Silence(player), 40);
-			ARSystem.spellCast(player,en, "c1042_s4");
+			target = (LivingEntity)e.get(0);
+			if(!ison) {
+				ARSystem.playSound((Entity)player, "c1042s41");
+				ARSystem.spellCast(player, target, "c1042_s4");
+			} else {
+				zero = 0;
+				yaw = 1000;
+				sk4 = 140;
+				ARSystem.giveBuff(player, new Silence(player), 40);
+				ARSystem.giveBuff(target, new Stun(target), 40);
+				ARSystem.giveBuff(target, new Silence(target), 40);
+			}
 		} else {
 			cooldown[4] = 0;
 		}
 		return false;
 	}
-	
+
+	double yaw = 0;
+	int zero = 0;
+	int snk = 0;
+	boolean sn = false;
 	@Override
 	public boolean tick() {
 		if(p_tick >40) {
 			 p_tick--;
+		}
+		if(player.isSneaking() && !sn) {
+			sn = true;
+			snk++;
+		}
+		if(!player.isSneaking() && sn){
+			sn = false;
+		}
+		if(snk >= 150 && !isps) {
+			spskillen("17분할 제로투");
+			spskillon();
+			ison = true;
+		}
+		float yw = player.getLocation().getYaw();
+		if(sk4 > 0) sk4--;
+		if(ison && player.isSneaking() && sk4 > 0 && target != null) {
+			if(Math.abs(Math.abs(yw) - Math.abs(yaw)) > 45) {
+				ARSystem.giveBuff(player, new Nodamage(player), 20);
+				ARSystem.giveBuff(player, new Silence(player), 20);
+				ARSystem.giveBuff(target, new Silence(target), 10);
+				ARSystem.giveBuff(target, new Stun(target), 10);
+				target.teleport(ULocal.lookAt(target.getLocation().clone(), player.getLocation()));
+				player.setSneaking(false);
+				yaw = yw;
+				zero++;
+				if(zero > 7) zero = 0;
+				ARSystem.spellCast(player, target, "c1042_s4_4");
+				remove(target);
+				ARSystem.playSound((Entity)player, "0zero"+zero);
+				ARSystem.playSound(target, "0zero"+zero);
+			}
 		}
 		return true;
 	}

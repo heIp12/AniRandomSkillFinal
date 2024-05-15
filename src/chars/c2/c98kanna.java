@@ -150,6 +150,9 @@ public class c98kanna extends c00main{
 				cooldown[1] = 1;
 			}
 		}
+		if(ARSystem.isGameMode("lobotomy") && light > 300) {
+			light = 300;
+		}
 		if(target != null && player.isSneaking()) {
 			cooldown[1] = 10 - sk1*0.05f;
 			if(cooldown[1] <= 5) cooldown[1] = 5;

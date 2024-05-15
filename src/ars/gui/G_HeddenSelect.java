@@ -12,6 +12,8 @@ import Main.Main;
 import ars.ARSystem;
 import ars.PlayerInfo;
 import ars.Rule;
+import chars.ca.c0001nb;
+import chars.ca.c1394matan;
 import chars.ca.c8400subi;
 import chars.ch.e001mary;
 import chars.ch.e002rain;
@@ -22,6 +24,7 @@ import chars.ch.h003rentaro;
 import chars.ch.h004alice;
 import chars.ch.h005mery;
 import chars.ch.h006zagara;
+import chars.ch.h007anduin;
 import util.GUIBase;
 import util.GetChar;
 import util.ItemCreate;
@@ -37,8 +40,8 @@ public class G_HeddenSelect extends GUIBase{
 		line = 2;
 		page = new int[]
 				{
-						   1,2,3,4,5,6,101,102,103,
-						   51,0,0,0,0,0,0,0,0
+						   1,2,3,4,5,6,7,101,102,
+						   103,51,52,53,0,0,0,0,0
 				};
 
 		info = Rule.playerinfo.get(player);
@@ -70,6 +73,10 @@ public class G_HeddenSelect extends GUIBase{
 		ItemStack item = GetChar.getColor(994-500);
 		return ItemCreate.Name(item,"§a§l"+Text.get("c994:name1")+ " "+Text.get("c994:name2"));
 	}
+	public ItemStack gui7(){
+		ItemStack item = GetChar.getColor(993-500);
+		return ItemCreate.Name(item,"§a§l"+Text.get("c993:name1")+ " "+Text.get("c993:name2"));
+	}
 	public ItemStack gui101(){
 		ItemStack item = GetChar.getColor(901-500);
 		return ItemCreate.Name(item,"§a§l"+Text.get("c901:name1")+ " "+Text.get("c901:name2"));
@@ -86,7 +93,15 @@ public class G_HeddenSelect extends GUIBase{
 		ItemStack item = GetChar.getColor(84);
 		return ItemCreate.Name(item,"§a§l"+Text.get("c1084:name1")+ " "+Text.get("c1084:name2"));
 	}
-	
+
+	public ItemStack gui52(){
+		ItemStack item = GetChar.getColor(139);
+		return ItemCreate.Name(item,"§a§l"+Text.get("c4139:name1")+ " "+Text.get("c4139:name2"));
+	}
+	public ItemStack gui53(){
+		ItemStack item = GetChar.getColor(950-500);
+		return ItemCreate.Name(item,"§a§l"+Text.get("c-1001:name1")+ " "+Text.get("c-1001:name2"));
+	}
 	public void click0(boolean right,boolean shift) {}
 	public void click1(boolean right,boolean shift) {
 		Rule.c.put(target, new h001chruno(target, Rule.gamerule, null));
@@ -106,8 +121,17 @@ public class G_HeddenSelect extends GUIBase{
 	public void click6(boolean right,boolean shift) {
 		Rule.c.put(target, new h006zagara(target, Rule.gamerule, null));
 	}
+	public void click7(boolean right,boolean shift) {
+		Rule.c.put(target, new h007anduin(target, Rule.gamerule, null));
+	}
 	public void click51(boolean right,boolean shift) {
 		Rule.c.put(target, new c8400subi(target, Rule.gamerule, null));
+	}
+	public void click52(boolean right,boolean shift) {
+		Rule.c.put(target, new c1394matan(target, Rule.gamerule, null));
+	}
+	public void click53(boolean right,boolean shift) {
+		Rule.c.put(target, new c0001nb(target, Rule.gamerule, null));
 	}
 	public void click101(boolean right,boolean shift) {
 		Rule.c.put(target, new e001mary(target, Rule.gamerule, null));

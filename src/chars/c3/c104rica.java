@@ -181,8 +181,7 @@ public class c104rica extends c00main{
 						p.setNoDamageTicks(0);
 						p.damage(10,player);
 					} else {
-						p.setHealth(p.getHealth() -0.4);
-						s_damage += 0.4;
+						ARSystem.fixedDamage(p, player, 0.4);
 					}
 				}
 			}

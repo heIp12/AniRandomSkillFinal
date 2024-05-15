@@ -151,7 +151,6 @@ public class PlayerInfo {
 				spopen[i] = false;
 			}
 		}
-		head = (ItemStack) Rule.Var.getItemStack(player.getName()+".head");
 		if(head == null) {
 			head = new ItemStack(397, 1, (short) 3);
 			SkullMeta meta =  (SkullMeta) head.getItemMeta();
@@ -160,6 +159,10 @@ public class PlayerInfo {
 			head.setItemMeta(meta);
 			Rule.Var.Save(player.getName()+".head", head);
 		}
+		Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{
+			player.getInventory().addItem(head);
+			player.getInventory().clear();
+		});
 		setCradit(Rule.Var.Loadint(player.getName()+".info.Cradit"));
 		setAddcradit(Rule.Var.Loadint(player.getName()+".info.CraditOpen"));
 		setSpopencradit(500 + getAddcradit()*100);

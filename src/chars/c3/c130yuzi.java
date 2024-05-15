@@ -77,6 +77,8 @@ public class c130yuzi extends c00main{
 	int s2 = 0;
 	int p =0;
 	
+	int spc = 0;
+	
 	public c130yuzi(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 130;
@@ -105,6 +107,7 @@ public class c130yuzi extends c00main{
 				ARSystem.giveBuff(target, new Stun(target), 10);
 				player.sendTitle("§c§l【§4§l ! §c§l】", "",0,20,0);
 				s2 = 20;
+				player.playSound(player.getLocation(), "0attack3", 2, 2);
 			},5+AMath.random(10));
 		} else {
 			cooldown[1] = 0;
@@ -117,6 +120,8 @@ public class c130yuzi extends c00main{
 		if(s2 > 0) {
 			Rule.buffmanager.selectBuffTime(target, "stun", 0);
 			if(s2 >= Math.min(19, 17 + sp) && skillCooldown(0)) {
+				spc++;
+				if(spc > 7) Rule.playerinfo.get(player).tropy(130, 1);
 				spskillon();
 				spskillen();
 				ARSystem.playSound((Entity)player, "c130sp"+AMath.random(3));
@@ -141,6 +146,8 @@ public class c130yuzi extends c00main{
 				v.setY(v.getY()*0.03);
 				target.setVelocity(v);
 			}
+			player.sendTitle(Main.GetText("c130:sk2"), "§c" + AMath.round((20 - s2)*0.05,2)+" §e/ §a"+ AMath.round((20-Math.min(19, 17 + sp))*0.05,2) + "(s)",0,20,0);
+			s2 = 0;
 			s2s++;
 		} else {
 			cooldown[2] = 2f;

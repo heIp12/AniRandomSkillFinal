@@ -3,6 +3,7 @@ main: ars.Rule
 version: 20-10-20-A
 website: https://blog.naver.com/dlwhrhks01
 authors: [heIp12]
+softdepend: [MythicMobs]
 commands:
   ars:
     description: plugin help

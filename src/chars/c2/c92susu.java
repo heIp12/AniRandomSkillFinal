@@ -186,11 +186,15 @@ public class c92susu extends c00main{
 							((c9200susu)Rule.c.get(player)).owner = (Player)owner;
 
 						} else {
+							float buff = 1;
+							for(Player p : Rule.c.keySet()) {
+								if(p != player && Rule.c.get(p).number == 92) if(buff >= 0.5f) buff -=0.25;
+							}
 							if(!(owner instanceof Player)) owner.setMaxHealth(owner.getMaxHealth() + 200);
-							owner.setMaxHealth(owner.getMaxHealth()*1.6);
+							owner.setMaxHealth(owner.getMaxHealth()*1.0 + (0.6*buff));
 							owner.setHealth(owner.getMaxHealth());
 							if(Rule.c.get(owner) != null) {
-								for(int i=0;i<10;i++) Rule.c.get(owner).setcooldown[i] *= 0.6;
+								for(int i=0;i<10;i++) Rule.c.get(owner).setcooldown[i] *= 1 - (0.4*buff);
 							}
 						}
 					} else {

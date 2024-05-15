@@ -85,7 +85,7 @@ public class c66akame extends c00main{
 		skill("c66_s1");
 		player.setVelocity(player.getLocation().getDirection().multiply(2));
 		delay(()->{
-			for(Entity e : ARSystem.box(player, new Vector(3,3,3), box.TARGET)) {
+			for(Entity e : ARSystem.box(player, new Vector(2,2,2), box.TARGET)) {
 				((LivingEntity)e).setNoDamageTicks(0);
 				((LivingEntity)e).damage(4,player);
 				cuers((LivingEntity) e);
@@ -100,7 +100,7 @@ public class c66akame extends c00main{
 	public boolean skill2() {
 		ARSystem.playSound((Entity)player, "c66s2");
 		skill("c66_s2");
-		for(Entity e : ARSystem.box(player, new Vector(8,3,8), box.TARGET)) {
+		for(Entity e : ARSystem.box(player, new Vector(6,3,6), box.TARGET)) {
 			((LivingEntity)e).setNoDamageTicks(0);
 			((LivingEntity)e).damage(6,player);
 			cuers((LivingEntity) e);
@@ -142,7 +142,7 @@ public class c66akame extends c00main{
 				cuers((LivingEntity)e.getEntity());
 				Wound w = new Wound((LivingEntity) e.getEntity());
 				w.setEffect("c66_s3e");
-				w.setValue(2);
+				w.setValue(1.5);
 				w.setDelay(player,20,0);
 				ARSystem.giveBuff((LivingEntity) e.getEntity(), w, 100);
 			}

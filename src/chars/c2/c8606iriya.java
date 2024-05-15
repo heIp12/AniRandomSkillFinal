@@ -86,17 +86,24 @@ public class c8606iriya extends c00main{
 	public boolean skill2() {
 		if(b.getValue() > 4) {
 			b.setValue(b.getValue()-4);
-			
+			if(player.isSneaking()) {
+				Location loc = player.getLocation();
+				loc.setYaw(loc.getYaw()+180);
+				player.teleport(loc);
+			}
 			if(AMath.random(3) == 2)ARSystem.playSound((Entity)player, "c6086s2");
-			if(target == null) {
-				skill("c6086_s2");
-				skill("c6086_s22");
-			} else {
+			skill("c6086_s2");
+			delay(()->{skill("c6086_s22");},0);
+			if(target != null) {
 				cooldown[1] = 0;
-				skill("c6086_s2");
-				player.setVelocity(player.getLocation().clone().subtract(target.getLocation()).multiply(-0.4).toVector());
+				Rule.buffmanager.selectBuffTime(target, "stun", 0);
+				ARSystem.addBuff(target, new Silence(target), 6);
 				target.setNoDamageTicks(0);
 				target.damage(4,player);
+				Entity tg = target;
+				delay(()->{
+					tg.setVelocity(ULocal.lookAt(tg.getLocation().clone(), player.getLocation()).getDirection().multiply(1.2f));
+				},0);
 				if(AMath.random(3) == 2) ARSystem.playSound((Entity)target, "0attack4");
 				sk1 = 0;
 				target = null;

@@ -90,7 +90,7 @@ public class c1700shou extends c00main{
 			return;
 		}
 		skill("c1017_s0");
-		cooldown[1] *= 12;
+		cooldown[1] *= 14;
 	}
 	
 	void s1(){ // 원거리
@@ -98,7 +98,7 @@ public class c1700shou extends c00main{
 			player.setVelocity(player.getLocation().getDirection().multiply(-1));
 		}
 		skill("c1017_s1");
-		cooldown[1] *= 3;
+		cooldown[1] *= 4;
 	}
 	void s2(double r){ // 돌진
 		player.setFallDistance(0);
@@ -114,10 +114,10 @@ public class c1700shou extends c00main{
 		player.setFallDistance(0);
 		if(AMath.random(10) <= 5) {
 			skill("c1017_s3");
-			cooldown[1] *= 0.3;
+			cooldown[1] *= 0.4;
 		} else {
 			skill("c1017_s3_1");
-			cooldown[1] *= 0.5;
+			cooldown[1] *= 0.6;
 		}
 	}
 	void s4(Entity target){ // 서치 공격
@@ -134,7 +134,7 @@ public class c1700shou extends c00main{
 		if(player.isOnGround()) {
 			player.setVelocity(player.getLocation().getDirection().multiply(1));
 			skill("c1017_s4");
-			cooldown[1] *= 0.3;
+			cooldown[1] *= 0.4;
 			delay(()->{
 				Location locs = player.getLocation();
 				locs = ULocal.lookAt(locs, target.getLocation());
@@ -142,12 +142,12 @@ public class c1700shou extends c00main{
 			},4);
 		} else {
 			skill("c1017_s4_1");
-			cooldown[1] *= 0.6;	
+			cooldown[1] *= 0.7;	
 		}
 	}
 	void s5(){ // 회복
-		ARSystem.heal(player, 5);
-		cooldown[1] *= 3;
+		ARSystem.heal(player, 4);
+		cooldown[1] *= 4;
 		skill("c1017_s5");
 	}
 	void s6(){ // 이동

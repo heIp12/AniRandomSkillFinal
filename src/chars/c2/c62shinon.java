@@ -58,6 +58,13 @@ public class c62shinon extends c00main{
 	int delay = 0;
 	List<Entity> target;
 	
+	int st = 0;
+	
+	@Override
+	public void setStack(float f) {
+		st = (int)f;
+	}
+	
 	public c62shinon(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 62;
@@ -167,9 +174,15 @@ public class c62shinon extends c00main{
 								if(ARSystem.isTarget(e, player) && !target.contains(e)) {
 									target.add(e);
 									ARSystem.potion(e, 24, 5, 5);
+									player.sendTitle("§c§l》《", ""+target.get(0).getName(), 0, 5, 0);
 									if(targets <= 0) {
 										targets = 40;
 										ARSystem.playSound(player, "c62s1"+(1+AMath.random(2)));
+										if(st == 52 && cooldown[1] <= 0) {
+											Holo.create(player.getLocation(), "§a매크로 사용중",200,new Vector(0,0.1,0));
+											skill1();
+											cooldown[1] = setcooldown[1];
+										}
 									}
 								}
 							}

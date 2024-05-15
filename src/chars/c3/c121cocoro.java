@@ -174,6 +174,9 @@ public class c121cocoro extends c00main{
 			scoreBoardText.add("&c ["+Main.GetText("c121:sk4")+ "] : &f" + Main.GetText("c121:p"+head));
 			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c121:sk0")+ "] : &f" + sp +" / 40");
 		}
+		if(sp >= 100) {
+			Rule.playerinfo.get(player).tropy(121, 1);
+		}
 		if(sp >= 40 && !isps) {
 			spskillon();
 			spskillen();

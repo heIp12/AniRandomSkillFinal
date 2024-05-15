@@ -11,6 +11,8 @@ import com.nisovin.magicspells.util.MagicConfig;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Airborne;
+import buff.Exposure;
+import buff.NoHeal;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.Panic;
@@ -73,6 +75,15 @@ public class MagicSpellVar extends InstantSpell implements TargetedEntitySpell{
 				if(set == 5) ARSystem.addBuff(e, new Timeshock(e), (int) (number*20), 0);
 				if(set == 6) ARSystem.addBuff(e, new Panic(e), (int) (number*20), 0);
 				if(set == 7) ARSystem.addBuff(e, new Airborne(e), (int) (number*20), 0);
+				if(set == 8) ARSystem.addBuff(e, new NoHeal(e), (int) (number*20), 0);
+				if(set == 99) {
+					if(!Rule.buffmanager.isBuff(e, "exposure")) {
+						ARSystem.giveBuff(e, new Exposure(e) , 100, 0.1f);
+					} else {
+						Rule.buffmanager.selectBuffTime(e, "exposure", 100);
+						Rule.buffmanager.selectBuffAddValue(e, "exposure", (float) (0.1f + Rule.buffmanager.GetBuffValue(e, "exposure")*0.03f));
+					}
+				}
 			} else {
 				if(set == 0) ARSystem.giveBuff(e, new TimeStop(e), (int) (number*20));
 				if(set == 1) ARSystem.giveBuff(e, new Silence(e), (int) (number*20));
@@ -82,6 +93,7 @@ public class MagicSpellVar extends InstantSpell implements TargetedEntitySpell{
 				if(set == 5) ARSystem.giveBuff(e, new Timeshock(e), (int) (number*20));
 				if(set == 6) ARSystem.giveBuff(e, new Panic(e), (int) (number*20));
 				if(set == 7) ARSystem.giveBuff(e, new Airborne(e), (int) (number*20));
+				if(set == 8) ARSystem.giveBuff(e, new NoHeal(e), (int) (number*20));
 			}
 		}
 	}

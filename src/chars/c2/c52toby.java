@@ -5,27 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.events.SpellTargetEvent;
-
 import Main.Main;
-import aliveblock.ABlock;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Noattack;
@@ -34,16 +22,13 @@ import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
 import chars.c.c00main;
-import event.Skill;
-import manager.AdvManager;
 import types.box;
-
 import util.AMath;
-import util.Holo;
+import util.BlockUtil;
 import util.InvSkill;
 import util.Inventory;
-import util.MSUtil;
 import util.Map;
+import util.ULocal;
 
 public class c52toby extends c00main{
 	double mana = 30;
@@ -51,12 +36,10 @@ public class c52toby extends c00main{
 	int sk1 = 0;
 	boolean sk2 = false;
 	int sk3 = 0;
-	boolean sk4 = false;
-	int count = 0;
+	int sk4 = 0;
+	List<Player> sp = new ArrayList<Player>();
 	
-	List<Entity> camui = null;
-	Location camuiloc = null;
-	
+
 	public c52toby(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 52;
@@ -69,26 +52,13 @@ public class c52toby extends c00main{
 	public void setStack(float f) {
 		mana = mana2 = f;
 	}
-	
 
 	@Override
 	public boolean skill1() {
-		if(sk2) {
-			cooldown[1] = 0;
-			return false;
-		}
-		if(mana > 1) {
-			mana -= 1;
-			ARSystem.addBuff(player, new Stun(player), 10);
-			sk1++;
-			if(sk1 > 2) {
-				sk1 = 0;
-				skill("c52s2");
-				ARSystem.playSound((Entity)player, "c52s12");
-			} else {
-				ARSystem.playSound((Entity)player, "c52s1");
-				skill("c52s1");
-			}
+		if(mana2 > 2) {
+			mana2-=2;
+			ARSystem.playSound((Entity)player, "c52s1");
+			skill("c52s1");
 		} else {
 			cooldown[1] = 0;
 		}
@@ -97,17 +67,13 @@ public class c52toby extends c00main{
 	
 	@Override
 	public boolean skill2() {
-		if(!sk2 && mana >= 1) {
+		if(!sk2 && mana >= 2) {
+			mana -= 2;
 			ARSystem.playSound((Entity)player, "c52s2");
-			delay(()->{
-				sk2 = true;
-				ARSystem.giveBuff(player, new Nodamage(player), 20);
-				ARSystem.giveBuff(player, new Noattack(player), 20);
-				cooldown[2] = 0;
-			},20);
+			sk2 = true;
+			ARSystem.giveBuff(player, new Noattack(player), 30);
 		} else if(sk2){
 			sk2 = false;
-			Rule.buffmanager.selectBuffTime(player, "nodamage",0);
 			Rule.buffmanager.selectBuffTime(player, "noattack",0);
 			ARSystem.playSound((Entity)player, "c52s52");
 		}
@@ -120,197 +86,203 @@ public class c52toby extends c00main{
 			cooldown[3] = 0;
 			return false;
 		}
-		if(mana > 8) {
-			mana-=8;
-			ARSystem.playSound((Entity)player, "c52s3");
-			ARSystem.giveBuff(player, new Stun(player), 20);
-			delay(()->{ sk3 = 60; },20);
+		if(mana2 > 5 && player.isOnGround()) {
+			mana2-=5;
+			ARSystem.playSound((Entity)player, "c52s4");
+			ARSystem.playSound((Entity)player, "c52down");
+			player.setGameMode(GameMode.SPECTATOR);
+			player.teleport(player.getLocation().clone().add(0,-1,0));
+			sk3 = 10000;
 			return true;
 		}
 		cooldown[3] = 0;
 		return true;
 	}
 	
-	int tick = 0;
 	@Override
 	public boolean skill4() {
-		
-		if(sk2) {
-			cooldown[4] = 0;
-			return false;
-		}
-		if(mana2 > 5 && !sk4) {
-			mana2 -= 5;
-			sk4 = true;
-			List<ABlock> ablock = new ArrayList<ABlock>();
-			for(ABlock ab : aliveblock.Main.Aliveblock) {
-				if(ab.getName().equals("camui")){
-					ablock.add(ab);
+		if(sk3 <= 0 && sk4 <= 0 && Rule.c.size() > 1) {
+			boolean bsp = true;
+			for(Player p : Rule.c.keySet()) {
+				if(!sp.contains(p) && sp != player && ARSystem.isTarget(p, player, box.TARGET)) {
+					bsp = false;
 				}
 			}
-			for(ABlock ab : ablock) {
-				ab.removeBlock(20);
-				aliveblock.Main.Aliveblock.remove(ab);
-			}
-			if(AMath.random(100) <= count*5 && skillCooldown(0)) {
-				spskillen();
+			if(bsp && skillCooldown(0)) {
 				spskillon();
-				ARSystem.playSound((Entity)player, "c52sp");
-				ARSystem.giveBuff(player, new TimeStop(player), 40);
+				spskillen();
+				ARSystem.giveBuff(player, new TimeStop(player), 60);
+				ARSystem.playSoundAll("c52sp");
+				Rule.buffmanager.selectBuffTime(player, "noattack",0);
+				sk2 = false;
+				
 				delay(()->{
-					List<Entity> entitys = ARSystem.box(player, new Vector(200,200,200),box.ALL);
-					if(entitys.size() > 4) 	Rule.playerinfo.get(player).tropy(52,1);
-					
-					camuiloc = player.getLocation();
-					String loc = player.getLocation().getWorld().getName();
-					loc+=","+player.getLocation().getBlockX()+","+(player.getLocation().getBlockY()-1)+","+player.getLocation().getBlockZ();
-					camui = entitys;
-					camui.add(player);
-					for(Entity e : entitys) {
-						ARSystem.giveBuff((LivingEntity) e, new Stun((LivingEntity) e), 20);
-					}
-					
-					if(entitys.size() > 0) {
-						ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-						Bukkit.dispatchCommand(console, "ab spawn camui "+loc+ " camui 10 c");
-					}
-				},20);
-			} else {
-				ARSystem.playSound((Entity)player, "c52s4");
-				ARSystem.giveBuff(player, new TimeStop(player), 20);
-				delay(()->{
-					List<Entity> entitys = ARSystem.box(player, new Vector(8,8,8),box.TARGET);
-					if(entitys.size() > 4) 	Rule.playerinfo.get(player).tropy(52,1);
-					camuiloc = player.getLocation().clone().add(0,1,0);
-					String loc = player.getLocation().getWorld().getName();
-					loc+=","+player.getLocation().getBlockX()+","+(player.getLocation().getBlockY()-1)+","+player.getLocation().getBlockZ();
-					camui = entitys;
-					camui.add(player);
-					for(Entity e : entitys) ARSystem.giveBuff((LivingEntity) e, new Stun((LivingEntity) e), 20);
-					
-					if(entitys.size() > 0) {
-						ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-						Bukkit.dispatchCommand(console, "ab spawn camui "+loc+ " camui 10 c");
-					}
-				},20);
+					ARSystem.playSoundAll("c52s3");
+					delay(()->{
+						int i = 0;
+						for(Player p : sp) {
+							delay(()->{
+								ARSystem.giveBuff(player, new Silence(player), 10);
+								ARSystem.giveBuff(player, new Nodamage(player), 20);
+								Location lc = p.getLocation();
+								lc.setPitch(0);
+								lc.setYaw(AMath.random(360));
+								player.teleport(ULocal.offset(lc, new Vector(-1,0,0)));
+								ARSystem.playSound((Entity)p,"c52s11");
+								ARSystem.playSound((Entity)p,"0attack");
+								ARSystem.spellCast(player, p, "c52_sp");
+								skillmult += 0.05f;
+								p.setNoDamageTicks(0);
+								p.damage(4 * (skillmult+sskillmult),player);
+								p.setVelocity(lc.getDirection().multiply(3.5f));
+							},i*10);
+							i++;
+						}
+						delay(()->{
+							sp.clear();
+							player.teleport(Map.randomLoc());
+						},sp.size()*10+10);
+					},20);
+				},40);
+				cooldown[4] = 0;
+				return false;
 			}
+		} 
+		if(mana > 10) {
+			mana-=10;
+			ARSystem.giveBuff(player, new Stun(player), 20);
+			ARSystem.giveBuff(player, new Silence(player), 20);
+			ARSystem.playSound((Entity)player, "c52hide");
+			delay(()->{
+				sk4 = 1000;
+				player.setGameMode(GameMode.SPECTATOR);
+			},20);
+		} else {
 			cooldown[4] = 0;
 		}
-		else if(sk4) {
-			camui();
-			return true;
-		}
-		cooldown[4] = 0;
-		return true;
-	}
-	
-	public void camui() {
-		sk4 = false;
-		camui = null;
-		camuiloc = null;
-		cooldown[4] = setcooldown[4];
-		ARSystem.playSound((Entity)player, "c52s2");
-		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-		Bukkit.dispatchCommand(console, "ab remove camui 10");
 		
-	}
-	@Override
-	public void PlayerDeath(Player p, Entity e) {
-		if(p == player && sk4) {
-			camui();
-		}
+		return true;
 	}
 
 	@Override
+	public boolean skill5() {
+		invskill = new InvSkill(player) {
+			@Override
+			public void Start(String st) {
+				player.closeInventory();
+			}
+		};
+
+		Set<Player> Player = ((HashMap<Player, c00main>) Rule.c.clone()).keySet();
+		Player.remove(player);
+		for(Player p : sp) Player.remove(p);
+		Inventory.getlist(invskill,player,Player);
+		invskill.openInventory(player);
+		return true;
+	}
+	boolean skc = true;
+	@Override
 	public boolean tick() {
-		tick++;
-		if(tick%400 == 0) count++;
-		
-		if(sk4) {
-			if(tk%40==0) {
-				for(Entity e : camui) {
-					if(e !=player) {
-						((LivingEntity)e).damage(1,player);
-					}
-				}
-			}
-			if(tk%20==0) {
-				mana2-=1;
-			}
-			if(mana2 <= 0) {
-				camui();
-			}
-			if(camui != null && camui.size() > 0) {
-				for(Entity e : camui) {
-					if(e.getLocation().distance(camuiloc) > 8) {
-						e.teleport(camuiloc.clone().add(0,1,0));
-						if(e != player) {
-							((LivingEntity)e).setNoDamageTicks(0);
-							((LivingEntity)e).damage(8,player);
-						}
-					}
-				}
-			}
+		if(skc && sskillmult+skillmult >= 3) {
+			skc = false;
+			Rule.playerinfo.get(player).tropy(52,1);
 		}
 		if(sk3 > 0) {
 			sk3--;
-			ARSystem.potion(player, 14, 4, 0);
-			player.teleport(player.getLocation().add(player.getLocation().getDirection().clone().multiply(1.4)));
-			if(player.isSneaking()) sk3 = 0;
-			
-			if(sk3 == 0) {
-				ARSystem.playSound((Entity)player, "c52s32");
+			mana2 -= 0.1;
+			if(sk3 <= 0 || mana2 <0 || BlockUtil.isPathable(player.getLocation().getBlock())) {
 				cooldown[3] = setcooldown[3];
+				sk3 = 0;
+				ARSystem.playSound((Entity)player, "c52down");
+				ARSystem.playSound((Entity)player, "c52s32");
+				player.setGameMode(GameMode.ADVENTURE);
+				Location lc = player.getLocation();
+				for(int i = 0; i< 60; i++) {
+					if(BlockUtil.isPathable(lc.getBlock())) {
+						break;
+					} else {
+						lc = lc.clone().add(0,0.1,0);
+					}
+				}
+				player.teleport(lc);
+				skill("c52_s3");
+			}
+		}
+		if(sk4 > 0) {
+			sk4--;
+			if(sk4 <= 0 || mana <= 0 || player.isSneaking()) {
+				ARSystem.playSound((Entity)player, "c52hide2");
+				player.setGameMode(GameMode.ADVENTURE);
+				sk4 = 0;
+				ARSystem.giveBuff(player, new Stun(player), 20);
+				ARSystem.giveBuff(player, new Silence(player), 20);
+			} else {
+				mana -= 0.15f;
 			}
 		}
 		if(tk%20 == 0) {
 			if(!sk2) {
-				if(ARSystem.isGameMode("zombie")) {
-					mana+= 0.4 * (skillmult + sskillmult);
-					if(!sk4) mana2+= 0.3 * (skillmult + sskillmult);
-				} else {
-					mana+= 0.8 * (skillmult + sskillmult);
-					if(!sk4) mana2+= 0.6 * (skillmult + sskillmult);
+				if(sk4 <= 0) mana+= 0.6 * (skillmult + sskillmult);
+				if(sk3 <= 0) mana2+= 0.5 * (skillmult + sskillmult);
+				if(!isBattle()) {
+					if(sk4 <= 0) mana+= 0.6 * (skillmult + sskillmult);
+					if(sk3 <= 0) mana2+= 0.5 * (skillmult + sskillmult);
 				}
 				if(mana > 30) mana = 30;
 				if(mana2 > 20) mana2 = 20;
 			} else {
-				mana-=2;
-				if(mana < 2) {
+				mana-=3;
+				if(mana < 3) {
 					sk2 = false;
-					Rule.buffmanager.selectBuffTime(player, "nodamage",0);
 					Rule.buffmanager.selectBuffTime(player, "noattack",0);
 					ARSystem.playSound((Entity)player, "c52s52");
 					cooldown[2] = setcooldown[2];
 				} else {
-					ARSystem.addBuff(player, new Nodamage(player), 20);
-					ARSystem.addBuff(player, new Noattack(player), 20);
+					ARSystem.giveBuff(player, new Nodamage(player), 30);
+					ARSystem.giveBuff(player, new Noattack(player), 30);
 				}
 			}
 			scoreBoardText.add("&c ["+Main.GetText("c52:t1")+ "] : "+ AMath.round(mana,1));
 			scoreBoardText.add("&c ["+Main.GetText("c52:t2")+ "] : "+ AMath.round(mana2,1));
-			if(psopen) {
-				scoreBoardText.add("&c ["+Main.GetText("c52:sk0")+ "] : "+ count*5 + "%");
-			}
 		}
 
 		return true;
+	}
+	
+	@Override
+	public void PlayerDeath(Player p, Entity e) {
+		if(sp != null && sp.contains(p)) {
+			sp.remove(p);
+		}
 	}
 
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
+			
 		} else {
+			if(sk2) {
+				e.setDamage(0);
+				e.setCancelled(true);
+				ARSystem.playSound((Entity)player, "c52miss");
+				return false;
+			}
 		}
 		return true;
 	}
 	
 	@Override
 	protected boolean skill9() {
-		if(AMath.random(2) == 1) {
+		for(Entity e : ARSystem.box(player, new Vector(8,8,8), box.TARGET)) {
+			if(Rule.c.get(e) != null && !sp.contains(e)) {
+				sp.add((Player)e);
+			}
+		}
+		
+		if(AMath.random(2) == 3) {
 			ARSystem.playSound((Entity)player,"c52db");
 		} else {
-			ARSystem.playSound((Entity)player,"c52db2");
+			ARSystem.playSound((Entity)player,"c52db"+AMath.random(2));
 		}
 		return true;
 	}

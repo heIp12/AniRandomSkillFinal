@@ -47,7 +47,9 @@ public class c1100yasuo extends c00main{
 	@Override
 	public boolean skill2() {
 		skill("c1011_s2");
-		ARSystem.giveBuff(player, new Reflect(player), 30, 1);
+		Reflect rp = new Reflect(player);
+		rp.SetNoDamage(true);
+		ARSystem.giveBuff(player, rp, 30, 1);
 		return true;
 	}
 	

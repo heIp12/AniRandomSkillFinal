@@ -153,6 +153,10 @@ public class c76naohumi extends c00main{
 				spskillen();
 				ARSystem.playSound((Entity)player, "c76sp");
 			}
+
+			if(ARSystem.isGameMode("lobotomy") && damage > 500) {
+				damage = 500;
+			}
 		}
 		return true;
 	}

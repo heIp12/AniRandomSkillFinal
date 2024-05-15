@@ -11,18 +11,20 @@ import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.compat.EventUtil;
 
+import ars.ARSystem;
 import ars.Rule;
 import event.Skill;
 
 public class MagicSpellDamage extends InstantSpell implements TargetedEntitySpell{
 	double damage;
 	boolean remove;
-    
+    boolean fixed;
 
 	public MagicSpellDamage(MagicConfig config, String spellName) {
 		super(config, spellName);
 		this.damage = getConfigDouble("damage", 1.0);
 		this.remove = getConfigBoolean("remove", false);
+		this.fixed = getConfigBoolean("fixed", false);
 	}
 
 	@Override
@@ -32,11 +34,15 @@ public class MagicSpellDamage extends InstantSpell implements TargetedEntitySpel
 
 	@Override
 	public boolean castAtEntity(Player arg0, LivingEntity arg1, float arg2) {
-		if(remove && Rule.c.get(arg1) != null) {
-			Skill.remove(arg1, arg0);
+		if(fixed) {
+			ARSystem.fixedDamage(arg1, arg0, damage);
 		} else {
-			arg1.setNoDamageTicks(0);
-			arg1.damage(damage,arg0);
+			if(remove && Rule.c.get(arg1) != null) {
+				Skill.remove(arg1, arg0);
+			} else {
+				arg1.setNoDamageTicks(0);
+				arg1.damage(damage,arg0);
+			}
 		}
 		return true;
 	}

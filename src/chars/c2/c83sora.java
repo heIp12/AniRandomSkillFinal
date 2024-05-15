@@ -64,8 +64,11 @@ public class c83sora extends c00main{
 	Player zero = null;
 	
 	int type = 1;
-	int stack = 0;
+	int stack = 5;
 	int cc = 0;
+	
+	int range = 0;
+	float yaw = 0;
 	
 	@Override
 	public void setStack(float f) {
@@ -83,12 +86,17 @@ public class c83sora extends c00main{
 
 	@Override
 	public boolean skill1() {
+		Location lc = player.getLocation();
+		lc.setPitch(0);
 		if(player.isSneaking() && type != 1) {
 			skill("c83_s1c-"+type);
 			ARSystem.playSound((Entity)player, "c16get", 0.8f);
 		} else {
 			if(stack <= 0) return false;
-			skill("c83_s1-"+type);
+			
+			lc = ULocal.offset(lc, new Vector(range,0,0));
+			lc.setYaw(lc.getYaw() + yaw);
+			ARSystem.spellLocCast(player, lc, "c83_s1-"+type);
 			ARSystem.playSound((Entity)player, "c16get", 0.5f);
 			stack--;
 		}
@@ -100,7 +108,7 @@ public class c83sora extends c00main{
 		LivingEntity target = (LivingEntity)ARSystem.boxSOne(player, new Vector(10,5,10), box.TARGET);
 		if(target != null) {
 			cc++;
-			if(cc >= 5 ) Rule.playerinfo.get(player).tropy(83,1);
+			if(cc >= 5) Rule.playerinfo.get(player).tropy(83,1);
 			ARSystem.playSound((Entity)player, "c83s2");
 			ARSystem.giveBuff(target, new Noattack(target), 100);
 			ARSystem.giveBuff(target, new Nodamage(target), 100);
@@ -115,7 +123,12 @@ public class c83sora extends c00main{
 	
 	@Override
 	public boolean skill3() {
-		skill("c83_s3");
+
+		Location lc = player.getLocation();
+		lc.setPitch(0);
+			lc = ULocal.offset(lc, new Vector(range,0,0));
+		lc.setYaw(lc.getYaw() + yaw);
+		ARSystem.spellLocCast(player, lc, "c83_s2");
 		ARSystem.playSound((Entity)player, "c83s3");
 		return true;
 	}
@@ -135,13 +148,27 @@ public class c83sora extends c00main{
 	
 	@Override
 	public boolean skill5() {
-		if(stack < 4) {
-			cooldown[5] = 0;
-			return false;
+		if(player.getLocation().getPitch() >= 75) {
+			range = 0;
+			yaw = 0;
+		} else if(player.getLocation().getPitch() <= -75) {
+			if(!player.isSneaking()) {
+				yaw += 45;
+				if(yaw >= 360) yaw = 0;
+			} else {
+				yaw -= 45;
+				if(yaw < 0) yaw = 315;
+			}
+		} else {
+			if(!player.isSneaking()) {
+				range+=3;
+				if(range > 12) range = 0;
+			} else {
+				range-=3;
+				if(range < 0) range = 12;
+			}
 		}
-		stack -=4;
-		for(int i=0;i<4;i++) skill("c83_s1-1");
-		ARSystem.playSound((Entity)player, "c16get", 0.2f);
+		player.sendTitle("Range : " + range, "Yaw : " + yaw,0,20,0);
 		return true;
 	}
 	
@@ -216,7 +243,10 @@ public class c83sora extends c00main{
 		}
 		if(n.equals("2")) {
 			target.damage(1,player);
-			ARSystem.giveBuff(target, new Stun(target), 20);
+			ARSystem.giveBuff(target, new Stun(target), 8);
+		}
+		if(n.equals("3")) {
+			Rule.buffmanager.selectBuffTime(target, "nodamage", 0);
 		}
 	}
 	

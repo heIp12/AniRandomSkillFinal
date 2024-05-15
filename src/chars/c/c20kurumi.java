@@ -52,6 +52,7 @@ public class c20kurumi extends c00main{
 		load();
 		text();
 		shdow = 130 + (Rule.buffmanager.GetBuffTime(player, "silence")/20);
+		if(shdow < 100) shdow = 100;
 	}
 	
 	@Override
@@ -190,7 +191,7 @@ public class c20kurumi extends c00main{
 			} else {
 				time = 0;
 			}
-			if(time >= 30 && !isps) {
+			if(time >= 30 && !isps && skillCooldown(0)) {
 				time = 0;
 				shdow+=60;
 				ARSystem.playSoundAll("c20sp");

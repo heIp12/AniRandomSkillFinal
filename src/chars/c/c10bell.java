@@ -28,7 +28,7 @@ import util.MSUtil;
 public class c10bell extends c00main{
 	int count = 0;
 	int Damagecount = 0;
-	
+	boolean ev = true;
 	public c10bell(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 10;
@@ -81,7 +81,12 @@ public class c10bell extends c00main{
 	}
 	
 	@Override
-	public boolean tick() {;
+	public boolean tick() {
+		if(Rule.buffmanager.GetBuffValue(player, "panic") > 180 && ev) {
+			ev = false;
+			ARSystem.playSound((Entity)player, "c10panic");
+		}
+			
 		if(tk%20 ==0) {
 			scoreBoardText.add("&c ["+Main.GetText("c10:ps")+ "]&f : " + Damagecount*10 + "%");
 		}
@@ -90,7 +95,7 @@ public class c10bell extends c00main{
 	
 	@Override
 	public void PlayerSpCast(Player p) {
-		if(Rule.c.get(p).number == 10) return;
+		if(Rule.c.get(p) != null && Rule.c.get(p).number == 10) return;
 		
 		if(!MSUtil.isbuff(player, "c10_spd")) {
 			spskillon();

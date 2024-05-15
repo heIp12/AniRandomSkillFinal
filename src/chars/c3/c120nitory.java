@@ -72,8 +72,8 @@ import util.Text;
 
 public class c120nitory extends c00main{
 	TargetMap<LivingEntity, Double> target;
-	int s1 = 0;
-	
+	boolean s1 = false;
+	int w = 250;
 	int spcount = 0;
 	
 	public c120nitory(Player p,Plugin pl,c00main ch) {
@@ -93,12 +93,18 @@ public class c120nitory extends c00main{
 
 	@Override
 	public boolean skill1() {
-		s1 = 20;
+		s1 = !s1;
 		return true;
 	}
 	
 	@Override
 	public boolean skill2() {
+		if(w > 50) {
+			w-= 50;
+		} else {
+			cooldown[2] = 0;
+			return true;
+		}
 		ARSystem.playSound((Entity)player, "c120s2");
 		skill("c120_s2");
 		return true;
@@ -108,6 +114,7 @@ public class c120nitory extends c00main{
 	@Override
 	public boolean skill3() {
 		ARSystem.playSound((Entity)player, "c120s3");
+		player.setVelocity(player.getLocation().getDirection().multiply(1.4f));
 		ARSystem.potion(player, 14, 120, 1);
 		return true;
 	}
@@ -126,7 +133,7 @@ public class c120nitory extends c00main{
 	
 	@Override
 	public boolean skill5() {
-		List<Entity> entitys = ARSystem.PlayerBeamBox(player, 20, 10, box.TARGET);
+		List<Entity> entitys = ARSystem.PlayerBeamBox(player, 20, 10, box.ALL);
 		
 		if((score-200) >= 100 + (spcount*200) && ((player.isSneaking() && entitys.size() > 0 && Rule.c.get(entitys.get(0)) != null) || !player.isSneaking())) {
 			s_score -= (400 + (spcount*200));
@@ -146,16 +153,39 @@ public class c120nitory extends c00main{
 
 		return true;
 	}
+	
+	int wt = 0;
+	
 	@Override
 	public boolean tick() {
+		if(player.getRemainingAir() <= 40) {
+			player.setVelocity(player.getLocation().getDirection().multiply(1.2f));
+			player.setRemainingAir(40);
+		}
+		if(tk%20 == 0) {
+			scoreBoardText.add("&c [물] : &f" + w*0.1 +"l");
+		}
+		int id = player.getLocation().getBlock().getTypeId();
+
+		if(ARSystem.isGameMode("lobotomy") && w < 250 && !s1 && tk%2 == 1) {
+			w++;
+		}
+		if(id == 8 || id == 9) {
+			w+= 2+(skillmult+sskillmult);
+			if(w > 250) w = 250;
+			wt++;
+			if(wt > 400) Rule.playerinfo.get(player).tropy(120, 1);
+		} else {
+			wt = 0;
+		}
 		for(LivingEntity e : target.get().keySet()) {
 			if(target.get(e) > 0 && !e.isDead()) {
 				scoreBoardText.add("&c ["+e.getName()+ "] : &f" + AMath.round(target.get(e),2));
 			}
 		}
 		if(isps) scoreBoardText.add("&c ["+Text.get("c120:p0")+ "] : &f" + (100 + (spcount*200)));
-		if(s1 > 0) {
-			s1--;
+		if(s1 && Rule.buffmanager.selectBuffType(player, BuffType.SILENCE).size() == 0 && w > 0) {
+			if(tk%2 == 0) w--;
 			skill("c120_s1");
 			ARSystem.playSound((Entity)player, "minecraft:weather.rain",2,0.2f);
 		}
@@ -169,11 +199,11 @@ public class c120nitory extends c00main{
 
 			ARSystem.spellCast(player, target, "c120se");
 			target.setVelocity(player.getLocation().getDirection().multiply(0.5));
-			float damage = (float) ((skillmult+sskillmult)*0.1f);
+			float damage = (float) ((skillmult+sskillmult)*0.2f);
 			
 			if(Rule.buffmanager.GetBuffTime(target, "bubble") > 0) {
 				((Bubble)Rule.buffmanager.selectBuff(target, "bubble")).Movement.add(player.getLocation().getDirection().multiply(0.08));
-				damage+= 0.2f;
+				damage+= 0.5f;
 			}
 			
 			if(id == 8 || id == 9) {

@@ -21,6 +21,7 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.NoHeal;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.TimeStop;
@@ -124,6 +125,7 @@ public class c2400sinobu extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
+			ARSystem.giveBuff(target, new NoHeal(target), 40);
 			ARSystem.overheal(player, e.getDamage()/2);
 		} else {
 			

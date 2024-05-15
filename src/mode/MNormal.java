@@ -32,6 +32,7 @@ public class MNormal extends ModeBase{
 	
 	public void tick(int time) {
 		MNormal.time = time;
+		if(Map.mapid > 1000) return;
 		if(Map.mapid == 15) {
 			if(Bgm.bgmcode.equals("mk16")) {
 				ARSystem.AniRandomSkill.time-=2;

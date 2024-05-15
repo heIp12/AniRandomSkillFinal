@@ -183,7 +183,7 @@ public class c68origami extends c00main{
 							}
 						}
 					}
-					if(jr && AMath.random(0,10) <= 5) {
+					if(jr && AMath.random(0,10) <= 5 && !ARSystem.isGameMode("lobotomy")) {
 						Rule.c.put(player, new c6800origami(player,Rule.gamerule, this));
 					} else {
 						ps = true;

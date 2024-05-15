@@ -223,6 +223,9 @@ public class c123rin extends c00main{
 				ARSystem.playSound(player, "c123p4");
 			}
 		}
+		if(e == player && this.p == 0) {
+			Rule.playerinfo.get(player).tropy(123, 1);
+		}
 	}
 	
 	@Override

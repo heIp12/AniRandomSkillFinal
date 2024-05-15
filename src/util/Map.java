@@ -1,9 +1,12 @@
 package util;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -13,6 +16,10 @@ import ars.Rule;
 import buff.Minecart;
 import buff.Silence;
 import event.Skill;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import io.lumine.xikage.mythicmobs.mobs.MobManager;
 import types.MapType;
 import manager.AdvManager;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -22,18 +29,20 @@ public class Map {
 	public static Location loc_f;
 	public static Location loc_l;
 	static String name;
-	static String type;
-	static int mapCount = 0;
-	static int mapCount2 = 0;
+	public static String type;
+	public static int mapCount = 0;
+	public static int mapCount2 = 0;
 	
 	public static int maphuman = 10;
 	
-	public static String Version = "1.89";
+	public static String Version = "1.9b";
 	public static MapType mapType = MapType.NORMAL;
 	public static World world = Bukkit.getWorld("world");
 	public static int lastplay = 0;
 	
 	public static int mapid = 0;
+	
+	public static MobManager mm;
 	
 	static public void randomMap(int map) {
 		mapCount = Integer.parseInt(Main.GetText("map:map"));
@@ -81,6 +90,7 @@ public class Map {
 	}
 	
 	static public void sizeM(int Msize) {
+		if(mapid >= 1000) return;
 		if (world.getWorldBorder().getSize() >= maphuman) {
 			int size = (loc_l.getBlockX() - loc_f.getBlockX());
 			if(Msize < 0) {
@@ -127,18 +137,6 @@ public class Map {
 			BaseComponent[] component = new ComponentBuilder("§c§l[NoMap]").create();
 			p.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR,component);
 		}
-		if(type != null) {
-			if(!ismap && type.contains("falldamage")) {
-				Map.playeTp(p);
-				ARSystem.giveBuff(p, new Silence(p), 20);
-				p.setFallDistance(0);
-				if(p.getHealth() - p.getMaxHealth()/5 > 1) {
-					p.setHealth(p.getHealth() - p.getMaxHealth()/5);
-				} else {
-					Skill.death(p, p);
-				}
-			}
-		}
 		return ismap;
 	}
 	
@@ -184,19 +182,21 @@ public class Map {
 			},40);
 		}
 		if(i >= 100 && i <= 999) {
-			int x = (loc_f.getBlockX() + ((loc_l.getBlockX() - loc_f.getBlockX())/2));
-			int z = (loc_f.getBlockZ() + ((loc_l.getBlockZ() - loc_f.getBlockZ())/2));
-			world.getWorldBorder().setCenter(x, z);
-			world.getWorldBorder().setSize(500,0);
-			int size = (loc_l.getBlockX() - loc_f.getBlockX());
-			if(size < (loc_l.getBlockZ() - loc_f.getBlockZ())) size = (loc_l.getBlockZ() - loc_f.getBlockZ());
-			world.getWorldBorder().setSize(size,10);
+			setting();
 		}else {
 			world.getWorldBorder().setCenter(0, 0);
 			world.getWorldBorder().setSize(10000,0);
 		}
 	}
-	
+	static public void setting() {
+		int x = (loc_f.getBlockX() + ((loc_l.getBlockX() - loc_f.getBlockX())/2));
+		int z = (loc_f.getBlockZ() + ((loc_l.getBlockZ() - loc_f.getBlockZ())/2));
+		world.getWorldBorder().setCenter(x, z);
+		world.getWorldBorder().setSize(500,0);
+		int size = (loc_l.getBlockX() - loc_f.getBlockX());
+		if(size < (loc_l.getBlockZ() - loc_f.getBlockZ())) size = (loc_l.getBlockZ() - loc_f.getBlockZ());
+		world.getWorldBorder().setSize(size,10);
+	}
 	static public void playerTpall() {
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			playeTp(p);
@@ -270,7 +270,7 @@ public class Map {
 		while(While) {
 			Location ploc = loc_f.clone();
 			Location plocs = loc_l.clone().subtract(loc_f.clone());
-			if(count > 1000) break;
+			if(count > 1000) While = false;
 			if(count > 300 ) {
 				ploc.add(AMath.random(plocs.getBlockX()), AMath.random(plocs.getBlockY()), AMath.random(plocs.getBlockZ()));
 			} else if(count > 100) {
@@ -296,6 +296,12 @@ public class Map {
 	}
 
 	static public void loby() {
+		if(Bukkit.getOnlinePlayers().size() <= 1) {
+			getMapinfo(10000);
+			ARSystem.killall();
+			Rule.team.reload();
+			return;
+		}
 		getMapinfo(0);
 		playerTpall();
 		ARSystem.killall();
@@ -410,23 +416,36 @@ public class Map {
 		return loc_f.clone().add(l2.multiply(0.5));
 	}
 	
+	static public Entity spawnMMOwner(String name,Location loc,UUID uuid) {
+		ActiveMob m = mm.spawnMob(name, loc);
+		m.setOwner(uuid);
+		return m.getEntity().getBukkitEntity();
+	}
+	
+	static public LivingEntity spawnMM(String name,Location loc) {
+		LivingEntity e = null;
+		if (mm.getMythicMob(name) != null) {
+			ActiveMob l = mm.spawnMob(name, loc);
+			e = l.getLivingEntity();
+		} else {
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn "+name+" 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());
+		}
+		return e;
+	}
+	
 	public static void spawn(String name,int count) {
 		for(int i = 0; i < count; i++) {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule,()->{
-				Location loc = Map.randomLoc();
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn "+name+" 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());
-			},i);
+			Location loc = Map.randomLoc();
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{spawnMM(name,loc);});
 		}
 	}
 	public static void spawn(String name,Location loc,int count) {
 		if(count == 1) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn "+name+" 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());
+			spawnMM(name,loc);
 			return;
 		}
 		for(int i = 0; i < count; i++) {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule,()->{
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn "+name+" 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());
-			},i);
+			spawnMM(name,loc);
 		}
 	}
 }

@@ -154,24 +154,48 @@ import chars.c3.c130yuzi;
 import chars.c3.c131saito;
 import chars.c3.c132tsuna;
 import chars.c3.c133yukina;
+import chars.c3.c134siro;
+import chars.c3.c135tom;
+import chars.c3.c136laiza;
+import chars.c3.c137mlim;
+import chars.c3.c138cotoco;
+import chars.c3.c1393lolan;
+import chars.c3.c139lolan;
+import chars.c3.c140eruna;
+import chars.c3.c141hajama;
+import chars.c3.c142miyaco;
+import chars.c3.c143minene;
+import chars.c3.c145hubuki;
+import chars.c3.c146sanraku;
+import chars.c3.c147bellp;
+import chars.c3.c148mocou;
+import chars.c3.c149lanser;
+import chars.c3.c150tenshi;
+import chars.c3.c144jostar;
 import chars.ca.c0100minato;
 import chars.ca.c0200kirito;
 import chars.ca.c0202kirito;
 import chars.ca.c0300remuru;
 import chars.ca.c0400sans;
 import chars.ca.c0500touma;
+import chars.ca.c0600gura;
 import chars.ca.c0700shana;
 import chars.ca.c0702shana;
 import chars.ca.c0800yuuki;
 import chars.ca.c0900youmu;
 import chars.ca.c100001;
+import chars.ca.c1000gay;
 import chars.ca.c1090kirua;
 import chars.ca.c1100yasuo;
 import chars.ca.c1110artorya;
+import chars.ca.c1123rin;
 import chars.ca.c1130shimakaze;
+import chars.ca.c1134siro;
+import chars.ca.c1220yuyuco;
 import chars.ca.c1240coishi;
 import chars.ca.cc1180Ai;
 import chars.ca.c1300nagisa;
+import chars.ca.c1394matan;
 import chars.ca.c1500tina;
 import chars.ca.c1600saki;
 import chars.ca.c1700shou;
@@ -182,14 +206,19 @@ import chars.ca.c2100abigeil;
 import chars.ca.c2200byakuya;
 import chars.ca.c2300madoka;
 import chars.ca.c2400sinobu;
+import chars.ca.c2500Accelerator;
+import chars.ca.c2501Systers;
 import chars.ca.c2600ribai;
 import chars.ca.c3000siro;
 import chars.ca.c3002siro;
+import chars.ca.c3600kaneki;
+import chars.ca.c3700subaru;
 import chars.ca.c3900sakuya;
 import chars.ca.c4000megumin;
 import chars.ca.c4200touno;
 import chars.ca.c4300yuno;
 import chars.ca.c4400izuna;
+import chars.ca.c4600zero;
 import chars.ca.c4800yoshino;
 import chars.ca.c4900aria;
 import chars.ca.c5000sayaka;
@@ -200,6 +229,7 @@ import chars.ca.c6500cohina;
 import chars.ca.c6600akame;
 import chars.ca.c6800origami;
 import chars.ca.c7200plan;
+import chars.ca.c7300nyaruco;
 import chars.ca.c8100saitama;
 import chars.ca.c9200susu;
 import chars.ca.c9201flan;
@@ -211,6 +241,7 @@ import chars.ch.h003rentaro;
 import chars.ch.h004alice;
 import chars.ch.h005mery;
 import chars.ch.h006zagara;
+import chars.ch.h007anduin;
 import mode.ModeBase;
 /**
  * 캐릭터 추가 방법
@@ -222,18 +253,18 @@ import mode.ModeBase;
  *
  */
 public class GetChar {
-	static int count = 133;
+	static int count = 150;
 	public static HashMap<String,List<Integer>> charban;
 	/**
 	 * {어벤번호,그 번호 어벤 갯수}
 	 */
 	public static int[][] adv = {
 			{1,1},{2,2},{3,1},{4,1},{5,1},
-			{7,2},{8,1},{9,1},{11,1},{13,1},
-			{15,1},{17,1},{18,1},{19,1},{20,1},{22,1},{26,1},
-			{30,1},{39,1},{42,1},{44,1},{48,1},{49,1},
-			{50,1},{55,1},{56,1},{65,1},{66,1},{72,1},{81,1},{63,1},{93,1},{100,1},
-			{109,1},{111,1},{113,1},{124,1}};
+			{7,2},{8,1},{9,1},{11,1},{13,1},{16,1},
+			{15,1},{17,1},{18,1},{19,1},{20,1},{22,1},{26,1},{36,1},
+			{30,1},{37,1},{39,1},{42,1},{44,1},{48,1},{49,1},{46,1},
+			{50,1},{55,1},{56,1},{65,1},{66,1},{72,1},{73,1},{81,1},{63,1},{93,1},{100,1},
+			{109,1},{111,1},{113,1},{122,1},{123,1},{124,1}};
 	
 	static public int getCount() {
 		return count;
@@ -248,6 +279,7 @@ public class GetChar {
 	
 	static public ItemStack getColor(int i) {
 		if(i == 1118) return ItemCreate.Item(277,1501);
+		if(i == 1006) return ItemCreate.Item(277,1502);
 		if(i > 1000) i%=1000;
 		return ItemCreate.Item(277,i+500);
 	}
@@ -264,11 +296,11 @@ public class GetChar {
 		if(charban == null) charban = new HashMap<>();
 		charban.put("normal",new ArrayList<>());
 		charban.put("player3",ca(new int[]{12,28,37,43,53,59,81,107}));
-		charban.put("arena",ca(new int[]{12,17,24,28,37,38,40,43,46,53,58,59,70,79,81,90,92,95,105,107,118}));
+		charban.put("arena",ca(new int[]{12,17,24,28,37,38,40,43,46,53,58,59,70,79,81,90,92,95,105,107,118,138}));
 		charban.put("mirror",ca(new int[]{3,12,17,25,28,37,43,52,53,59,74,89,92,112,118}));
 		charban.put("teammatch",ca(new int[]{12,28,35,37,43,53,58,79,90}));
 		charban.put("team",ca(new int[] {43,53,58,79}));
-		charban.put("lobotomy",ca(new int[]{12,16,17,18,23,28,30,35,37,46,53,59,70,78,79,81,90,95,100,107,121}));
+		charban.put("lobotomy",ca(new int[]{12,17,18,23,28,35,37,46,53,70,78,79,81,90,100,107,128,129,134,138}));
 		
 		for(int i=0;i<count;i++) {
 			if((Boolean)Rule.Var.Load("#ARS.ban.normal"+(i+1))) charban.get("normal").add(i+1);
@@ -297,44 +329,48 @@ public class GetChar {
 	static public c00main get(Player p,Plugin pl,String name,c00main crt) {
 		int i = 0;
 		if(p != null) {
-			if(!name.contains("86")) {
-				if(!Rule.playerinfo.get(p).abchar && AMath.random(1000) <= Integer.parseInt(Main.GetText("general:hidden_chance"))) {
-					return getHiden(p);
-				} else if(Rule.playerinfo.get(p).abchar && AMath.random(1000) <= Integer.parseInt(Main.GetText("general:hidden_code_chance"))) {
-					return getHiden(p);
-				}
-			}
-			for(int[] k : adv) {
-				if(name.equals(""+k[0])) {
-					i = Integer.parseInt(Main.GetText("general:adv_chance"));
-					if((""+Rule.playerinfo.get(p).playerc).equals(""+k[0]) || Rule.playerinfo.get(p).playerc == 0) {
-						i = Integer.parseInt(Main.GetText("general:adv_pick_chance"));
-						break;
+			if(!ARSystem.isGameMode("lobotomy")) {
+				if(!name.contains("86")) {
+					if(!Rule.playerinfo.get(p).abchar && AMath.random(1000) <= Integer.parseInt(Main.GetText("general:hidden_chance"))) {
+						return getHiden(p);
+					} else if(Rule.playerinfo.get(p).abchar && AMath.random(1000) <= Integer.parseInt(Main.GetText("general:hidden_code_chance"))) {
+						return getHiden(p);
 					}
 				}
+				for(int[] k : adv) {
+					if(name.equals(""+k[0])) {
+						i = Integer.parseInt(Main.GetText("general:adv_chance"));
+						if((""+Rule.playerinfo.get(p).playerc).equals(""+k[0]) || Rule.playerinfo.get(p).playerc == 0) {
+							i = Integer.parseInt(Main.GetText("general:adv_pick_chance"));
+							break;
+						}
+					}
+				}
+				if(i > 0) i *=  Float.parseFloat(Main.GetText("general:adv_code_mult"));
+				
+				int i2 = 0;
+				if(name.equals("23") || name.equals("118") || name.equals("40") || name.equals("6")) {
+					i2 = Integer.parseInt(Main.GetText("general:adv_pick_chance")) ;
+					i2 *=  Float.parseFloat(Main.GetText("general:adv_code_mult"));
+				}
+	
+				if(name.equals("23") && Rule.playerinfo.get(p).isTropy(23, 1)&& AMath.random(500) <= i2) {
+					return new c2300madoka(p,pl,crt);
+				}
+				if(name.equals("118") && Rule.playerinfo.get(p).isTropy(118, 1)&& AMath.random(100) <= i2) {
+					return new cc1180Ai(p,pl,crt);
+				}
+				if(name.equals("40") && AMath.random(100) <= i2) {
+					return new c4000megumin(p,pl,crt);
+				}
+				if(name.equals("6") && Rule.playerinfo.get(p).isTropy(6, 2)&& AMath.random(100) <= i2) {
+					return new c0600gura(p,pl,crt);
+				}
 			}
-			if(i > 0) i *=  Float.parseFloat(Main.GetText("general:adv_code_mult"));
-			
-			int i2 = 0;
-			if(name.equals("23") || name.equals("118") || name.equals("40")) {
-				i2 = Integer.parseInt(Main.GetText("general:adv_pick_chance")) ;
-				i2 *=  Float.parseFloat(Main.GetText("general:adv_code_mult"));
-			}
-
-			if(name.equals("23") && Rule.playerinfo.get(p).isTropy(23, 1)&& AMath.random(500) <= i2) {
-				return new c2300madoka(p,pl,crt);
-			}
-			if(name.equals("118") && Rule.playerinfo.get(p).isTropy(118, 1)&& AMath.random(100) <= i2) {
-				return new cc1180Ai(p,pl,crt);
-			}
-			if(name.equals("40") && Rule.playerinfo.get(p).isTropy(118, 1)&& AMath.random(100) <= i2) {
-				return new c4000megumin(p,pl,crt);
+			if(AMath.random(100) <= i) {
+				return getAdv(p,pl,name,crt);
 			}
 		}
-		if(AMath.random(100) <= i) {
-			return getAdv(p,pl,name,crt);
-		}
-		
 		
 		if(name.equals("-1")) return new c001nb(p,pl,crt);
 		if(name.equals("1")) return new c01minato(p,pl,crt);
@@ -470,6 +506,24 @@ public class GetChar {
 		if(name.equals("131")) return new c131saito(p,pl,crt);
 		if(name.equals("132")) return new c132tsuna(p,pl,crt);
 		if(name.equals("133")) return new c133yukina(p,pl,crt);
+		if(name.equals("134")) return new c134siro(p,pl,crt);
+		if(name.equals("135")) return new c135tom(p,pl,crt);
+		if(name.equals("136")) return new c136laiza(p,pl,crt);
+		if(name.equals("137")) return new c137mlim(p,pl,crt);
+		if(name.equals("138")) return new c138cotoco(p,pl,crt);
+		if(name.equals("139")) return new c139lolan(p,pl,crt);
+		if(name.equals("140")) return new c140eruna(p,pl,crt);
+		if(name.equals("141")) return new c141hajama(p,pl,crt);
+		if(name.equals("142")) return new c142miyaco(p,pl,crt);
+		if(name.equals("143")) return new c143minene(p,pl,crt);
+		if(name.equals("144")) return new c144jostar(p,pl,crt);
+		if(name.equals("145")) return new c145hubuki(p,pl,crt);
+		if(name.equals("146")) return new c146sanraku(p,pl,crt);
+		if(name.equals("147")) return new c147bellp(p,pl,crt);
+		if(name.equals("148")) return new c148mocou(p,pl,crt);
+		if(name.equals("149")) return new c149lanser(p,pl,crt);
+		if(name.equals("150")) return new c150tenshi(p,pl,crt);
+		
 		
 		
 		if(name.equals("86f1")) return new c8601iriya(p,pl, crt);
@@ -478,10 +532,12 @@ public class GetChar {
 		if(name.equals("86f4")) return new c8604iriya(p,pl, crt);
 		if(name.equals("86f5")) return new c8605iriya(p,pl, crt);
 		if(name.equals("86f6")) return new c8606iriya(p,pl, crt);
+		if(name.equals("mt")) return new c1394matan(p,pl,crt);
 		
 		if(name.equals("000")) return new c100001(p,pl, crt);
 		if(name.equals("no")) return new c000humen(p,pl, crt);
 		if(name.equals("no2")) return new c001humen2(p,pl,crt);
+		if(name.equals("boy")) return new c1000gay(p,pl,crt);
 
 		if(name.equals("⑨")) return new h001chruno(p,pl, crt);
 		if(name.equals("백색자정의시련")) return new h002claw(p,pl, crt);
@@ -489,12 +545,13 @@ public class GetChar {
 		if(name.equalsIgnoreCase("NeverLeftWithoutSayingGoodbye")) return new h004alice(p, pl, crt);
 		if(name.equals("들켜버렸다~♪알아버렸다~♪메리의비밀~☆")) return new h005mery(p,pl, crt);
 		if(name.equals("여왕이시여,영원하소서!")) return new h006zagara(p,pl, crt);
+		if(name.equals("빛이승리를불러올것입니다!")) return new h007anduin(p,pl, crt);
 		
 		return getAdv(p,pl,name,crt);
 	}
 	
 	static public c00main getAdv(Player p, Plugin pl, String name, c00main crt) {
-		try {
+
 			int n = Integer.parseInt(name);
 			for(int[] k : adv) {
 				if(k[0] == n) {
@@ -505,7 +562,11 @@ public class GetChar {
 			name = ""+n;
 			if(name.equals("1021")) return new c2100abigeil(p,pl, new c21abigeil(p, pl, crt));
 			if(name.equals("1024")) return new c2400sinobu(p,pl, new c24sinobu(p, pl, crt));
+
+			if(name.equals("1046")) return new c4600zero(p,pl, crt);
+			if(name.equals("1123")) return new c1123rin(p,pl, crt);
 			
+			if(name.equals("1100")) return new cc1000kuroko(p,pl, crt);
 			if(name.equals("1113")) return new c1130shimakaze(p,pl, crt);
 			if(name.equals("1124")) return new c1240coishi(p,pl, crt);
 			if(name.equals("1068")) return new c6800origami(p,pl, crt);
@@ -521,8 +582,10 @@ public class GetChar {
 			if(name.equals("1039")) return new c3900sakuya(p,pl, crt);
 			if(name.equals("1040")) return new c4000megumin(p,pl, crt);
 			if(name.equals("1044")) return new c4400izuna(p,pl, crt);
+			if(name.equals("1037")) return new c3700subaru(p,pl, crt);
 			if(name.equals("1050")) return new c5000sayaka(p,pl, crt);
 			if(name.equals("1072")) return new c7200plan(p,pl, crt);
+			if(name.equals("1073")) return new c7300nyaruco(p,pl, crt);
 			if(name.equals("1042")) return new c4200touno(p,pl, crt);
 			if(name.equals("1013")) return new c1300nagisa(p,pl, crt);
 			if(name.equals("1019")) return new c1900sinjjan(p,pl, crt);
@@ -531,6 +594,8 @@ public class GetChar {
 			if(name.equals("1018")) return new c1800misogi(p,pl, crt);
 			if(name.equals("1007")) return new c0700shana(p,pl, crt);
 			if(name.equals("1009")) return new c0900youmu(p,pl, crt);
+			if(name.equals("1025")) return new c2500Accelerator(p,pl, crt);
+			if(name.equals("2025")) return new c2501Systers(p,pl, crt);
 			if(name.equals("1004")) return new c0400sans(p,pl, crt);
 			if(name.equals("1003")) return new c0300remuru(p,pl, crt);
 			if(name.equals("2002")) return new c0202kirito(p,pl, crt);
@@ -547,25 +612,29 @@ public class GetChar {
 			if(name.equals("2030")) return new c3002siro(p,pl, crt);
 			if(name.equals("1049")) return new c4900aria(p,pl, crt);
 			if(name.equals("1063")) return new c6300micoto(p,pl, crt);
+			if(name.equals("1006")) return new c0600gura(p,pl, crt);
 			if(name.equals("1055")) return new c5500yaya(p,pl, crt);
 			if(name.equals("1081")) return new c8100saitama(p,pl, crt);
 			if(name.equals("1109")) return new c1090kirua(p,pl, crt);
 			if(name.equals("1093")) return new c9300bakugo(p,pl, crt);
+			if(name.equals("1139")) return new c1393lolan(p,pl, crt);
+			if(name.equals("1122")) return new c1220yuyuco(p,pl, crt);
+			if(name.equals("1134")) return new c1134siro(p,pl, crt);
+			if(name.equals("1036")) return new c3600kaneki(p,pl, crt);
 			if(name.equals("1118") && Rule.playerinfo.get(p).isTropy(118, 1)) return new cc1180Ai(p,pl, crt);
 			if(name.equals("1023") && Rule.playerinfo.get(p).isTropy(23, 1)) return new c2300madoka(p,pl, crt);
-		} catch (Exception e) {
-			
-		}
+
 		return new c001nb(p,pl,crt);
 	}
 	static public c00main getHiden(Player p) {
-		int z = AMath.random(6);
+		int z = AMath.random(7);
 		if(z == 1) return new h001chruno(p, Rule.gamerule, null);
 		if(z == 2) return new h002claw(p, Rule.gamerule, null);
 		if(z == 3) return new h003rentaro(p, Rule.gamerule, null);
 		if(z == 4) return new h004alice(p, Rule.gamerule, null);
 		if(z == 5) return new h005mery(p, Rule.gamerule, null);
-		return new h006zagara(p, Rule.gamerule, null);
+		if(z == 6) return new h006zagara(p, Rule.gamerule, null);
+		return new h007anduin(p, Rule.gamerule, null);
 	}
 	public static ArrayList<Integer> advList() {
 		ArrayList<Integer> list = new ArrayList<>();

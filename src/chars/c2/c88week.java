@@ -68,7 +68,7 @@ public class c88week extends c00main{
 	int sdelay = 0;
 	int spsound = 0;
 	boolean ds = false;
-	boolean[] skills = new boolean[13];
+	boolean[] skills = new boolean[15];
 	int scount = 0;
 	
 	@Override
@@ -85,9 +85,9 @@ public class c88week extends c00main{
 		c = this;
 		for(int i=0;i<skills.length;i++)skills[i] = false;
 		if(Map.lastplay == 106) {
-			maxst = st = 2000;
-			maxspeed = 2000;
-			addspeed = 5;
+			maxst = st = 1400;
+			maxspeed = 1400;
+			addspeed = 3;
 		}
 	}
 
@@ -146,11 +146,11 @@ public class c88week extends c00main{
 			},400- (int)(40*(skillmult * sskillmult)));
 		}
 		if(i == 4) {
-			st += 500;
-			ARSystem.heal(player, 10);
+			st += 800;
+			ARSystem.heal(player, 15);
 			delay(()->{
 				skills[4] = true;
-			},400 - (int)(40*(skillmult * sskillmult)));
+			},600 - (int)(40*(skillmult * sskillmult)));
 		}
 		if(i == 5) {
 			maxspeed += 200;
@@ -211,8 +211,10 @@ public class c88week extends c00main{
 		}
 		if(i == 12) {
 			maxspeed += 200;
+			skillmult += 0.3f;
 			delay(()->{
 				maxspeed -= 200;
+				skillmult -= 0.3f;
 			},200);
 			delay(()->{
 				skills[12] = true;
@@ -226,6 +228,26 @@ public class c88week extends c00main{
 			delay(()->{
 				skills[13] = true;
 			},600 - (int)(60*(skillmult * sskillmult)));
+		}
+		if(i == 14) {
+			skillmult += 0.5f;
+			delay(()->{
+				skillmult -= 0.5f;
+			},100);
+			delay(()->{
+				skills[14] = true;
+			},600 - (int)(60*(skillmult * sskillmult)));
+		}
+		if(i == 15) {
+			maxspeed += 500;
+			addspeed += 30;
+			delay(()->{
+				maxspeed -= 500;
+				addspeed -= 30;
+			},40);
+			delay(()->{
+				skills[15] = true;
+			},300 - (int)(60*(skillmult * sskillmult)));
 		}
 		if(st > maxst) st = maxst;
 	}
@@ -257,8 +279,8 @@ public class c88week extends c00main{
 					ARSystem.playSound(player, "c88s"+AMath.random(10));
 				}
 			}
-			int rd = 100 - (int)(5*(skillmult * sskillmult));
-			if(rd < 10) rd = 10;
+			int rd = 90 - (int)(5*(skillmult * sskillmult));
+			if(rd < 5) rd = 5;
 			if(AMath.random(rd) == 1) skon();
 			if(speed < maxspeed) {
 				speed += addspeed;
@@ -371,5 +393,13 @@ public class c88week extends c00main{
 		} else {
 		}
 		return true;
+	}
+	
+	@Override
+	public String getBgm() {
+		if(!isps) {
+			return "c88-2";
+		}
+		return super.getBgm();
 	}
 }

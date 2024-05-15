@@ -15,6 +15,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
 import Main.Main;
 import aliveblock.ABlock;
@@ -22,11 +23,14 @@ import ars.gui.G_CharInfo;
 import ars.gui.G_Menu;
 import ars.gui.G_Tropy;
 import ars.gui.G_UMenu;
+import ars.gui.solo.G_SoloMenu;
 import buff.Buff;
 import chars.c.c001humen2;
 import chars.c.c00main;
 import chars.c.c16saki;
 import chars.c.c38hajime;
+import chars.ca.c1600saki;
+import io.lumine.xikage.mythicmobs.MythicMobs;
 import manager.AdvManager;
 import manager.Bgm;
 import manager.BuffManager;
@@ -39,6 +43,7 @@ import mode.ModeBase;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import types.GameModes;
+import types.box;
 import util.GetChar;
 import util.Map;
 import util.Text;
@@ -67,9 +72,12 @@ public class Rule extends JavaPlugin{
     
     public static List<Player> removePlayers = new ArrayList<Player>();
 	
+    public static Event evt;
+    
 	@Override
 	public void onEnable() {
-		getServer().getPluginManager().registerEvents(new Event(this), this);
+		evt = new Event(this);
+		getServer().getPluginManager().registerEvents(evt, this);
 		Bukkit.getWorld("world").getWorldBorder().setCenter(0, 0);
 		Bukkit.getWorld("world").getWorldBorder().setSize(10000,0);
 		System.out.println("Start : Gamerule");
@@ -77,6 +85,7 @@ public class Rule extends JavaPlugin{
 		playerinfo = new HashMap<Player,PlayerInfo>();
 		cooldown = new timeSystem(this);
 		Map.getMapinfo(0);
+		Map.mm = MythicMobs.inst().getMobManager();
 		gamerule = this;
 		
 		team = new Team();
@@ -225,8 +234,8 @@ public class Rule extends JavaPlugin{
 	}
 	
 	public boolean opCommand(Player p, Command cmd, String s, String[] a) {
-		if(!(!ARSystem.isGameMode("lobotomy") || ishelp(p))) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"tm anitext "+p.getName()+" SUBTITLE true 40 main:lb10/main:lb9");
+		if(!(!ARSystem.isGameMode("lobotomy") || ishelp(p) || Rule.oplist.contains(p.getName()))) {
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"tm anitext "+p.getName()+" SUBTITLE true 40 lobo:lb10/lobo:lb9");
 			return false;
 		}
 		if(p==null || p.isOp() || ishelp(p)) {
@@ -247,6 +256,20 @@ public class Rule extends JavaPlugin{
 			}
 			if(a[0].equalsIgnoreCase("stack")) {
 				c.get(p).setStack(Float.parseFloat(a[1]));
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("kiyaho")) {
+				Player pl = Bukkit.getPlayer(a[1]);
+				pl.setPassenger(p);
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("uhoy")) {
+				if(a.length == 1) {	
+					p.setPassenger(ARSystem.box(p, new Vector(3, 5, 5), box.ALL).get(0));
+				} else {
+					Player pl = Bukkit.getPlayer(a[1]);
+					p.setPassenger(pl);
+				}
 				return true;
 			}
 			if(a[0].equalsIgnoreCase("cd")) {
@@ -286,7 +309,7 @@ public class Rule extends JavaPlugin{
 				return true;
 			}
 			if(a[0].equalsIgnoreCase("sakiruck")) {
-				if(c.get(p) != null&& c.get(p).getCode() == 16) {
+				if(c.get(p) != null&& c.get(p).getCode()%10000 == 16) {
 					((c16saki)c.get(p)).luck();
 				}
 				return true;
@@ -302,7 +325,50 @@ public class Rule extends JavaPlugin{
 				return true;
 			}
 			if(a[0].equalsIgnoreCase("bgm")) {
-				Bgm.setBgm(a[1]);
+				if(Main.GetText("bgm:"+a[1]) != null) {
+					Bgm.setBgm(a[1]);
+				} else {
+					if(p != null) p.sendMessage("§a§l[ARSystem] : §cBgm Code is NULL");
+					System.out.println("[ARSystem] : Bgm Code is NULL");
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("nextbgm")) {
+				if(Main.GetText("bgm:"+a[1]) != null) {
+					if(p != null) p.sendMessage("§a§l[ARSystem] : §aBgm Next ["+(Bgm.nextbgm.size()+1)+"] §f§l" + Main.GetText("bgm:"+a[1]));
+					System.out.println("[ARSystem] : Bgm Next ["+(Bgm.nextbgm.size()+1)+"] " + Main.GetText("bgm:"+a[1]));
+					Bgm.nextbgm.add(a[1]);
+				} else {
+					if(p != null) p.sendMessage("§a§l[ARSystem] : §cBgm Code is NULL");
+					System.out.println("[ARSystem] : Bgm Code is NULL");
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("resetbgm")) {
+				Bgm.nextbgm.clear();
+				Bgm.bgmlock = false;
+				if(p != null) p.sendMessage("§a§l[ARSystem] : §aBgm List Clear");
+				System.out.println("[ARSystem] : Bgm List Clear");
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("cbgm")) {
+				Bgm.cbgm = !Bgm.cbgm;
+				if(p != null) p.sendMessage("§a§l[ARSystem] : §cMVP Bgm : " + Bgm.cbgm);
+				System.out.println("[ARSystem] : MVP Bgm : " + Bgm.cbgm);
+				
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("lbbf")) {
+				MLoboTomy.addbuff(a[1]);
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("lbdbf")) {
+				MLoboTomy.adddebuff(a[1]);
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("lblv")) {
+				MLoboTomy.level=Integer.parseInt(a[1]);
+				MLoboTomy.count=Integer.parseInt(a[2]);
 				return true;
 			}
 			if(a[0].equalsIgnoreCase("cm")) {
@@ -311,6 +377,12 @@ public class Rule extends JavaPlugin{
 			}
 			if(a[0].equalsIgnoreCase("time")) {
 				ARSystem.time = Integer.parseInt(a[1]);
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("hime") && (ishelp(p) || oplist.contains(p.getName()))) {
+				if(c.get(p) != null&& c.get(p).getCode()%10000 == 1016) {
+					((c1600saki)c.get(p)).luck();
+				}
 				return true;
 			}
 			if(a[0].equalsIgnoreCase("autotime")) {
@@ -343,7 +415,7 @@ public class Rule extends JavaPlugin{
 				}
 				return true;
 			}
-			if(a[0].equalsIgnoreCase("cradit")&& (ishelp(p) || oplist.contains(p.getName()))) {
+			if(a[0].equalsIgnoreCase("cradit") && (ishelp(p) || oplist.contains(p.getName()))) {
 				if(!a[1].equals("all")) {
 					Rule.playerinfo.get(Bukkit.getPlayer(a[1])).addcradit(Integer.parseInt(a[2]),Main.GetText("main:msg102"));
 					ARSystem.playSound(Bukkit.getPlayer(a[1]),"0event3");
@@ -395,12 +467,10 @@ public class Rule extends JavaPlugin{
 			if(a[0].equalsIgnoreCase("admin") && (p == null || ishelp(p) || oplist.contains(p.getName()))) {
 				if(oplist.contains(Bukkit.getPlayer(a[1]).getName())) {
 					oplist.remove(Bukkit.getPlayer(a[1]).getName());
-					if(p != null) p.sendMessage("§a§l[ARSystem] : §c§l Remove Admin : "+a[1]);
-					else System.out.println("[ARSystem] : Remove Admin : "+a[1]);
+					if(p != null) Bukkit.broadcastMessage("§a§l[ARSystem] : §c§l Remove Admin : "+a[1]);
 				} else {
 					oplist.add(Bukkit.getPlayer(a[1]).getName());
-					if(p != null) p.sendMessage("§a§l[ARSystem] : §a§l Give Admin : "+a[1]);
-					else System.out.println("[ARSystem] : Give Admin : "+a[1]);
+					if(p != null) Bukkit.broadcastMessage("§a§l[ARSystem] : §a§l Give Admin : "+a[1]);
 				}
 				return true;
 			}
@@ -442,6 +512,9 @@ public class Rule extends JavaPlugin{
 		return false;
 	}
 	public boolean deopCommand(Player p, Command cmd, String s, String[] a) {
+		if(a[0].equalsIgnoreCase("test") && (Bukkit.getOnlinePlayers().size() <= 1 || ishelp(p) || Rule.oplist.contains(p.getName()))) {
+			new G_SoloMenu(p);
+		}
 		if(a[0].equalsIgnoreCase("help")) {
 			if(c.get(p) == null) {
 				p.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:cmderror1"));
@@ -584,16 +657,16 @@ public class Rule extends JavaPlugin{
 		        		}
 		        		if(Rule.buffmanager.getBuffs(e) != null && Rule.buffmanager.getBuffs(e).getBuff() != null) {
 		        			// Error
-		        			try {
+		        			//try {
 					        	for(Buff buff : Rule.buffmanager.getBuffs(e).getBuff()) {
 					        		if(buff != null) {
 					        			buff.onTick();
 					        		}
 					    		}
 					        	Rule.buffmanager.getBuffs(e).bufforder();
-		        			} catch (Exception ee) {
-		        				
-		        			}
+		        			/*} catch (Exception ee) {
+		                		Bukkit.broadcastMessage("[Error : Buff]");
+		        			}*/
 		        		}
 		        	}
 		        	for(LivingEntity e : el) {
@@ -680,8 +753,7 @@ public class Rule extends JavaPlugin{
 		        		}
 		        		if(!Rule.buffmanager.isBuff(p, "timestop")) {
 		        			c.get(p).ticks();
-		        			
-			        		if(tick%2 == 1) c.get(p).cooldown();
+		        			if(tick%2 == 1) c.get(p).cooldown();
 			        		
 		        		}
 		        		if(tick%10 == 1) {
@@ -700,7 +772,7 @@ public class Rule extends JavaPlugin{
 		        		}
 		        	}
 
-		        	if(tick%10 == 1) {
+		        	if(tick%10 == 1 && Bgm.cbgm) {
 			        	if(c.get(one) != null&&c.get(two) != null) {
 		
 				        	if(c.get(one).getScore() > c.get(two).getScore()*2 && one != bgm)
@@ -722,6 +794,7 @@ public class Rule extends JavaPlugin{
 	    			ARSystem.Stop();
 	        	}
         	} catch(ConcurrentModificationException e) {
+        		Bukkit.broadcastMessage("[Error : Game Stop]");
         		ARSystem.Stop();
         	}
         	removePlayers = new ArrayList<Player>();

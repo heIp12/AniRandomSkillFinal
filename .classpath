@@ -13,5 +13,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/HeIpApi.jar"/>
+	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/MythicMobs-4.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

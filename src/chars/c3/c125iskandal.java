@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -128,8 +129,10 @@ public class c125iskandal extends c00main{
 			if(horse != null) horse.remove();
 			
 			horse = (Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
+			horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.12f + (AMath.random((int)(40*(skillmult+sskillmult)))*0.005f));
 			horse.setAge(30000);
 			horse.setStyle(Style.BLACK_DOTS);
+			horse.setBreed(false);
 			horse.setOwner(player);
 			horse.addPassenger(player);
 			horse.getInventory().setItem(0, ItemCreate.Item(329));
@@ -181,6 +184,7 @@ public class c125iskandal extends c00main{
 			horse = (Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
 			horse.setAge(30000);
 			horse.setStyle(Style.BLACK_DOTS);
+			horse.setBreed(false);
 			horse.setOwner(player);
 			horse.addPassenger(player);
 			horse.getInventory().setItem(0, ItemCreate.Item(329));
@@ -285,6 +289,8 @@ public class c125iskandal extends c00main{
 				s2t.removeAdd(db);
 			}
 		}
+		
+		
 		for(LivingEntity db : p.get().keySet()) {
 			p.add(db, -0.05);
 			if(p.get(db) <= 0) {
@@ -311,6 +317,13 @@ public class c125iskandal extends c00main{
 
 		}
 		return true;
+	}
+
+	@Override
+	public void PlayerDeath(Player p, Entity e) {
+		if(e == player && s_kill >= 2) {
+			Rule.playerinfo.get(player).tropy(125, 1);
+		}
 	}
 	
 	@Override

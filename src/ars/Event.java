@@ -40,6 +40,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.Inventory;
@@ -99,6 +100,12 @@ public class Event
 		if(Rule.isben(e.getPlayer())) e.getPlayer().kickPlayer("https://cafe.naver.com/helpgames");
 		
 		if(Bukkit.getOnlinePlayers().size() == 1) {
+			Map.loby();
+		} else if(Bukkit.getOnlinePlayers().size() == 2) {
+			Map.loby();
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				p.teleport(Map.randomLoc());
+			}
 			ARSystem.spellLocCast(e.getPlayer(), new Location(Map.world,-7,33.5,-108), "heIp");
 		}
 		if(Rule.playerinfo.get(e.getPlayer()) == null) {
@@ -117,6 +124,30 @@ public class Event
 		}
 		Rule.isEvent(e.getPlayer());
 		
+	}
+
+	@EventHandler
+	public void quit(PlayerQuitEvent e) {
+		if(Rule.c.get(e.getPlayer()) != null) {
+			Rule.c.remove(e.getPlayer());
+			if(ARSystem.AniRandomSkill != null && Rule.c.size() >= 2) {
+				ARSystem.Stop();
+				
+				if(Rule.Var.Load(e.getPlayer().getName()+".info.quit2") == null || !(Rule.Var.Load(e.getPlayer().getName()+".info.quit2") instanceof Long)) {
+					Rule.Var.Save(e.getPlayer().getName()+".info.quit2",System.currentTimeMillis());
+				}
+				if(Rule.Var.Load(e.getPlayer().getName()+".info.quit2") != null && (long)Rule.Var.Load(e.getPlayer().getName()+".info.quit2") - System.currentTimeMillis() > 0) {
+					Rule.Var.Save(e.getPlayer().getName()+".info.quit",System.currentTimeMillis()+600000);
+					Rule.Var.Save(e.getPlayer().getName()+".info.quit2",System.currentTimeMillis()+1800000);
+				} else {
+					Rule.Var.Save(e.getPlayer().getName()+".info.quit",System.currentTimeMillis()+120000);
+					Rule.Var.Save(e.getPlayer().getName()+".info.quit2",System.currentTimeMillis()+1800000);
+				}
+				
+				Rule.playerinfo.get(e.getPlayer()).gamejoin = false;
+				Rule.Var.Save(e.getPlayer().getName()+".gamejoin", Rule.playerinfo.get(e.getPlayer()).gamejoin);
+			}
+		}
 	}
 	
 	@EventHandler
@@ -140,14 +171,6 @@ public class Event
 		}
 	}
 	
-		
-	@EventHandler
-	public void quit(PlayerQuitEvent e) {
-		if(Rule.c.get(e.getPlayer()) != null) {
-			Rule.c.remove(e.getPlayer());
-			if(ARSystem.AniRandomSkill != null) ARSystem.Stop();
-		}
-	}
 	
 	@EventHandler
 	public void noFarmlanddestroy(PlayerInteractEvent event){
@@ -256,6 +279,9 @@ public class Event
 			if(t.equals("0-35")) s = "b";
 			if(t.equals("23-2")) s = "d";
 			if(t.equals("27-1")) s = "n";
+			if(t.equals("4-1")) {
+				ARSystem.playSound((Entity)e.getPlayer(), "c4db");
+			}
 			
 			boolean chat = true;
 			for(Player p : Rule.c.keySet()) {
@@ -301,6 +327,13 @@ public class Event
 			}
 		} catch(Exception ev) {
 			
+		}
+	}
+
+	@EventHandler
+	public void playertp(PlayerTeleportEvent e) {
+		if(e.getCause() == TeleportCause.SPECTATE && Rule.c.get(e.getPlayer()) != null) {
+			e.setCancelled(true);
 		}
 	}
 	
@@ -368,7 +401,7 @@ public class Event
 			}
 		}
 		if(!e.isCancelled() && e.getFinalDamage() > 0&& e.getCause() != DamageCause.ENTITY_ATTACK && e.getCause() != DamageCause.CUSTOM) {
-			damageText(e.getEntity().getLocation(),"§d§l⚕ ",e.getDamage());
+			ARSystem.damageText(e.getEntity().getLocation(),"§d§l⚕ ",e.getDamage());
 			if(Rule.c.get(e.getEntity()) != null && !e.isCancelled()) {
 				if(((LivingEntity)e.getEntity()).getHealth() - e.getDamage() < 1) {
 					e.setCancelled(true);
@@ -380,19 +413,7 @@ public class Event
 		return true;
 	}
 	
-	public void damageText(Location e,String s,double damage) {
-		int val = (int) AMath.round(damage,0);
-		if(val > 20) val = 20;
-		if(val <= 0) val = 1;
-		
-		double vector1 = (0.01*(21-val)) - AMath.random(21-val)*0.02;
-		double vector3 =(0.01*(21-val)) -  AMath.random(21-val)*0.02;
-		if(val > 10) vector1 = vector3 = 0;
-		double vector2 = 0.55 - (val*0.05);
-		if(vector2 <= 0.01) vector2 = 0.01;
-		e = e.add(new Vector(0.5-AMath.random(100)*0.01,0.2-AMath.random(40)*0.01,0.5-AMath.random(100)*0.01));
-		Holo.create(e,s+" "+ AMath.round(damage,2),2+((int)damage*4),new Vector(vector1,vector2,vector3));
-	}
+
 	
 	@EventHandler
 	private void TargetSpell(SpellTargetEvent e) {
@@ -487,6 +508,7 @@ public class Event
 				Rule.c.get(e.getEntity()).setFrist_Damage(e, false);
 			}
 		}
+		
 		if(e.getDamage() <= 0.01 || e.isCancelled()) {
 			e.setCancelled(true);
 		} else {
@@ -510,7 +532,7 @@ public class Event
 					}
 					if(!e.isCancelled() && e.getDamage() > 0 && e.getEntity().getLocation() != null) {
 						if(e.getEntity() instanceof Player || e.getDamager() instanceof Player) {
-							damageText(e.getEntity().getLocation(),"§c§l⚔ ",e.getDamage());
+							ARSystem.damageText(e.getEntity().getLocation(),"§c§l⚔ ",e.getDamage());
 						}
 						((LivingEntity)e.getEntity()).setNoDamageTicks(20);
 					}

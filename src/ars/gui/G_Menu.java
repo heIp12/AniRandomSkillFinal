@@ -13,6 +13,7 @@ import Main.Main;
 import ars.ARSystem;
 import ars.PlayerInfo;
 import ars.Rule;
+import ars.gui.solo.G_SoloMenu;
 import chars.c2.c58nao;
 import util.AMath;
 import util.BlockUtil;
@@ -36,7 +37,7 @@ public class G_Menu extends GUIBase{
 			page = new int[]
 					{
 							   0,50, 0, 0, 0, 0, 0, 0, 0,
-							   0, 1, 0, 2, 3, 6, 5, 4, 0,
+							   0, 1,51, 2, 3, 6, 5, 4, 0,
 							   0, 0, 0, 0, 0, 0, 0, 0, 0,
 							   0, 13, 0, 7, 8, 0, 0,11,12,
 							   0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -46,7 +47,7 @@ public class G_Menu extends GUIBase{
 			page = new int[]
 					{
 							   0,50, 0, 0, 0, 0, 0, 0, 0,
-							   0, 1, 0, 2, 3, 6, 5, 4, 0,
+							   0, 1,51, 2, 3, 6, 5, 4, 0,
 							   0, 0, 7, 0, 0, 0, 0, 0, 0
 					};
 			line = 3;
@@ -54,7 +55,7 @@ public class G_Menu extends GUIBase{
 			page = new int[]
 				{
 						   0,50, 0, 0, 0, 0, 0, 0, 0,
-						   0, 1, 0, 2, 3, 6, 5, 4, 0,
+						   0, 1,51, 2, 3, 6, 5, 4, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0
 				};
 			line = 3;
@@ -183,11 +184,24 @@ public class G_Menu extends GUIBase{
 		item = ItemCreate.Name(item,"§f"+Text.get("main:shop19"));
 		return item;
 	}
+	public ItemStack gui51(){
+		if(!(Bukkit.getOnlinePlayers().size() <= 1 || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return gui0();
+		ItemStack item = ItemCreate.Item(449);
+		item = ItemCreate.Name(item,"§f"+Text.get("main:info0"));
+		return item;
+	}
 	
 	public void click0(boolean right,boolean shift) {}
 	public void click1(boolean right,boolean shift) {
 		ARSystem.playSound(player,"0click");
 		if(shift) {
+			if(Rule.Var.Load(player.getName()+".info.quit") != null && Rule.Var.Load(player.getName()+".info.quit") instanceof Long) {
+				long tm = (long)Rule.Var.Load(player.getName()+".info.quit") - System.currentTimeMillis();
+				if(tm > 0) {
+					player.sendMessage("§a§l[ARSystem] : §c탈주 패널티 적용중! ["+AMath.round(tm*0.001f,2)+"초]");
+					return;
+				}
+			}
 			info.gamejoin = !info.gamejoin;
 			Rule.Var.Save(player.getName()+".gamejoin", info.gamejoin);
 			if(info.gamejoin) {
@@ -205,11 +219,18 @@ public class G_Menu extends GUIBase{
 				String s = Main.GetText("tropy:c"+info.playerTrophy+"_"+k);
 				if(s != null) {
 					if(s.contains("[Effect]")) {
-						if(MSUtil.isbuff(player, "ty"+info.playerTrophy)) {
-							MSUtil.buffoff(player, "ty"+info.playerTrophy);
+						if(info.playerTrophy.equals("16-4")) {
+							String ty = (String)Rule.Var.Load(player.getName()+".info.himeP");
+							String msgs = (String)Rule.Var.Load(player.getName()+".info.himeD");
+							System.out.println("§e§l★자랑하기】§a§n"+player.getName()+ "§e§l]>§f §c§f"+k+"§c§f" + ty);
+							for(Player p : Bukkit.getOnlinePlayers()) p.spigot().sendMessage(Text.hover(player,"§e§l★자랑하기】§a§n"+player.getName()+ "§e§l]>§f "+ ty, msgs));
 						} else {
-							MSUtil.resetbuff(player);
-							player.performCommand("c ty"+info.playerTrophy);
+							if(MSUtil.isbuff(player, "ty"+info.playerTrophy)) {
+								MSUtil.buffoff(player, "ty"+info.playerTrophy);
+							} else {
+								MSUtil.resetbuff(player);
+								player.performCommand("c ty"+info.playerTrophy);
+							}
 						}
 					}
 				}
@@ -270,5 +291,8 @@ public class G_Menu extends GUIBase{
 	
 	public void click50(boolean right,boolean shift) {
 		new G_Imj(player);
+	}
+	public void click51(boolean right,boolean shift) {
+		new G_SoloMenu(player);
 	}
 }

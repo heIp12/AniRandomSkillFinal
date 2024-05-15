@@ -107,7 +107,7 @@ public class c4400izuna extends c00main{
 			delay(()->{
 				ARSystem.spellCast(player, t, "bload");
 				t.setNoDamageTicks(0);
-				t.damage(12,player);
+				t.damage(18,player);
 			},10);
 		}
 		return true;

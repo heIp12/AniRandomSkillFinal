@@ -49,6 +49,7 @@ public class c21abigeil extends c00main{
 	HashMap<Entity,Integer> fear = new HashMap<Entity,Integer>();
 	Entity witch = null;
 	int count = 0;
+	boolean stack = true;
 	
 	public c21abigeil(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -84,8 +85,8 @@ public class c21abigeil extends c00main{
 	}
 	@Override
 	public boolean skill1() {
-		count++;
 		passive();
+		stack = true;
 		ARSystem.playSound((Entity)player, "c21s");
 		for(Entity e : ARSystem.box(player, new Vector(6,6,6), box.TARGET)) {
 			LivingEntity en = (LivingEntity)e;
@@ -93,6 +94,10 @@ public class c21abigeil extends c00main{
 			ARSystem.addBuff(en,new Panic(en), 60);
 			ARSystem.addBuff(en,new Stun(en), fear.get(e)*4);
 			ARSystem.spellCast(player, en, "c21_s");
+			if(stack) {
+				stack = false;
+				count++;
+			}
 		}
 		for(Entity e : ARSystem.box(player, new Vector(6,6,6), box.TEAM)) {
 			LivingEntity en = (LivingEntity)e;
@@ -106,6 +111,7 @@ public class c21abigeil extends c00main{
 	@Override
 	public boolean skill2() {
 		passive();
+		stack = true;
 		ARSystem.playSound((Entity)player, "c21s2");
 		skill("c21_s2");
 		return true;
@@ -117,6 +123,10 @@ public class c21abigeil extends c00main{
 			addFear(target, 6);
 			ARSystem.addBuff(target,new Panic(target), 120);
 			ARSystem.addBuff(target,new Rampage(target), 120);
+			if(stack) {
+				stack = false;
+				count++;
+			}
 		}
 		if(n.equals("2")) {
 			target.damage(111,player);

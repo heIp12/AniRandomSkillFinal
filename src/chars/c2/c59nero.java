@@ -29,8 +29,10 @@ import aliveblock.ABlock;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Cindaella;
+import buff.NoCC;
 import buff.Noattack;
 import buff.Nodamage;
+import buff.Nodie;
 import buff.Panic;
 import buff.Silence;
 import buff.Stun;
@@ -181,7 +183,7 @@ public class c59nero extends c00main{
 			if(player.getHealth() < 3 && !sirosp) {
 				sp++;
 				if(!ARSystem.gameMode2) sp+=2;
-				if(sp > 400 && !isps) {
+				if(sp > 400 && !isps && skillCooldown(0)) {
 					skill0();
 				}
 			}
@@ -203,8 +205,8 @@ public class c59nero extends c00main{
 			if(ps && player.getHealth() - e.getDamage() <= 1) {
 				ps = false;
 				e.setDamage(0);
-				ARSystem.addBuff(player, new Nodamage(player), 60);
-				player.setHealth(player.getMaxHealth()/2);
+				ARSystem.addBuff(player, new Nodie(player), 140);
+				ARSystem.addBuff(player, new NoCC(player), 140);
 				skill("c59_p");
 			}
 		}

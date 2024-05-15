@@ -50,6 +50,8 @@ public class c38hajime extends c00main{
 		,TRIPLE
 		,CRIT
 		,STEN
+		,REP
+		,SPEED
 	}
 	
 	List<gun> mygun = new ArrayList<gun>();
@@ -59,6 +61,8 @@ public class c38hajime extends c00main{
 	int replay = 1;
 	int tick = 0;
 	int heal = 0;
+	int ruck = 0;
+	int timer = 0;
 	
 	int en = 0;
 
@@ -139,8 +143,11 @@ public class c38hajime extends c00main{
 				}
 			}
 		}
-		if(tk%20==0 && heal > 0) {
-			scoreBoardText.add("&a "+Main.GetText("c38:sk3")+ " : " + heal);
+		if(tk%20==0) {
+			if(psopen) scoreBoardText.add("&a "+Main.GetText("c38:sk0")+ " : " + AMath.round(timer*0.05,2));
+			if(heal > 0) {
+				scoreBoardText.add("&a "+Main.GetText("c38:sk3")+ " : " + heal);
+			}
 		}
 		if(tk%2==0) {
 			for(int i = 0; i < cooldownc.length; i++) {
@@ -152,11 +159,13 @@ public class c38hajime extends c00main{
 				}
 			}
 		}
+		timer++;
 		return true;
 	}
 	
 	public void wepone() {
 		int e = 4;
+		ruck = 0;
 		e+= AMath.random(3);
 		if(AMath.random(10) == 1) {
 			e = 8;
@@ -308,7 +317,7 @@ public class c38hajime extends c00main{
 		if(isAttack) {
 			
 		} else {
-			if(!isps && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time < 30 && ((LivingEntity)e.getEntity()).getHealth() <= e.getDamage()+1) {
+			if(!isps && timer < 600 && ((LivingEntity)e.getEntity()).getHealth() <= e.getDamage()+1) {
 				spskillon();
 				spskillen();
 				heal = 2;
@@ -410,10 +419,14 @@ public class c38hajime extends c00main{
 					sp*=1.2;
 				}
 			}
-			if(i == 4 && AMath.random(10) <= 2) {
+			if(i == 4 && AMath.random(100) <= 60 -(ruck*25)) {
+				ruck++;
 				while(E.size() < c38hajime.Enchent.values().length) {
 					c38hajime.Enchent ec = c38hajime.Enchent.values()[AMath.random(c38hajime.Enchent.values().length)-1];
 					if(E.indexOf(ec) == -1) {
+						if(ec == Enchent.SPEED) {
+							speed *= 0.5;
+						}
 						E.add(ec);
 						break;
 					}
@@ -490,8 +503,8 @@ public class c38hajime extends c00main{
 				}
 			}
 			if(E.indexOf(c38hajime.Enchent.CRIT) > -1 ){
-				if(AMath.random(10)<=3) {
-					damage*=2;
+				if(Rule.buffmanager.GetBuffTime(e, "nodamage") > 0) {
+					Rule.buffmanager.selectBuffTime(e, "nodamage", 0);
 				}
 			}
 			if(E.indexOf(c38hajime.Enchent.STEN) > -1 ){
@@ -499,6 +512,16 @@ public class c38hajime extends c00main{
 				ARSystem.giveBuff(player, new Stun(player), (int) (damage/(speed)));
 				
 			}
+			if(E.indexOf(c38hajime.Enchent.REP) > -1 ){
+				cooldown[1] *= 0.5f;
+				mybullet+=1;
+			}
+			if(E.indexOf(c38hajime.Enchent.SPEED) > -1 ){
+				cooldown[1] *= 0.8f;
+				cooldown[2] = 0;
+				cooldown[5] *= 0.9;
+			}
+			
 			e.setNoDamageTicks(0);
 			e.damage(damage, player);
 		}

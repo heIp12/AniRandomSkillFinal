@@ -126,42 +126,7 @@ public class c105suya extends c00main{
 		}
 		return true;
 	}
-	
-	public String getloc(Location loc) {
-		Location local = ULocal.lookAt(player.getLocation(), loc);
-		float yaw = local.getYaw() - player.getLocation().getYaw();
-		if (yaw > 180) {
-			yaw -= 360;
-		} else if (yaw < -180) {
-			yaw += 360;
-		}
-		String locstr = "";
-		if(yaw > -22.5 && yaw < 22.5) {
-			locstr = "↑";
-		}
-		else if(yaw >= 22.5 && yaw < 67.5) {
-			locstr = "↗";
-		}
-		else if(yaw >= 67.5 && yaw < 112.5) {
-			locstr = "→";
-		}
-		else if(yaw >= 112.5 && yaw > 157.5) {
-			locstr = "↘";
-		}
-		else if(yaw <= -22.5 && yaw > -67.5) {
-			locstr = "↖";
-		}
-		else if(yaw <= -67.5 && yaw > -112.5) {
-			locstr = "←";
-		}
-		else if(yaw <= -112.5 && yaw > -157.5) {
-			locstr = "↙";
-		} else {
-			locstr = "↓";
-		}
-		
-		return locstr;
-	}
+
 	
 
 	@Override
@@ -176,6 +141,7 @@ public class c105suya extends c00main{
 				item = Map.randomLoc();
 				item.setY(0);
 				count++;
+				if(count > 1000) break;
 			}
 		}
 		if(time%1200 == 0) {
@@ -187,13 +153,14 @@ public class c105suya extends c00main{
 				sleep = Map.randomLoc();
 				sleep.setY(0);
 				count++;
+				if(count > 1000) break;
 			}
 		}
 		
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c105:s")+ "] : &f" + mp );
-			if(sleep != null) scoreBoardText.add("&c ["+Main.GetText("c105:ps")+ "]  &f" + sleep.getX() + "," + + sleep.getZ() + "&e | "+ AMath.round(local.distance(sleep),2 )+"["+getloc(sleep)+"]");
-			if(item != null) scoreBoardText.add("&c ["+Main.GetText("c105:p")+ "]  &f" + item.getX() + "," + + item.getZ()+ "&e | "+ AMath.round(local.distance(item),2)+"["+getloc(item)+"]");
+			if(sleep != null) scoreBoardText.add("&c ["+Main.GetText("c105:ps")+ "]  &f" + sleep.getX() + "," + + sleep.getZ() + "&e | "+ AMath.round(local.distance(sleep),2 )+"["+ARSystem.getloc(sleep,player.getLocation())+"]");
+			if(item != null) scoreBoardText.add("&c ["+Main.GetText("c105:p")+ "]  &f" + item.getX() + "," + + item.getZ()+ "&e | "+ AMath.round(local.distance(item),2)+"["+ARSystem.getloc(item,player.getLocation())+"]");
 			scoreBoardText.add("&c ["+Main.GetText("c105:sk2")+ "]  &f" + itemlv1);
 			scoreBoardText.add("&c ["+Main.GetText("c105:sk3")+ "]  &f" + itemlv2);
 		}

@@ -83,6 +83,7 @@ public class c04sans extends c00main{
 				ARSystem.spellLocCast(player, loc, "c4_s0_e");
 				loc.setYaw(loc.getYaw()+180);
 				ARSystem.spellLocCast(player, loc, "c4_s0_e");
+				count++;
 				if(count >= 50) {
 					Rule.playerinfo.get(player).tropy(4,1);
 				}

@@ -151,7 +151,7 @@ public class c108suwaco extends c00main{
 	@Override
 	public boolean tick() {
 		time++;
-		if(time%(170 - Math.min(90,10.0*(skillmult+sskillmult))) == 0) {
+		if(time%(130 - Math.min(90,10.0*(skillmult+sskillmult))) == 0) {
 			if(p < 8) p++;
 		}
 		if(tk%20 == 0) {

@@ -227,7 +227,7 @@ public class c1090kirua extends c00main{
 			sk3--;
 			if(ARSystem.box(player, new Vector(5, 2, 5), box.TARGET).size() > 0) {
 				sp++;
-				if(sp >= 100 && skillCooldown(0)) {
+				if(sp >= 140 && skillCooldown(0)) {
 					skill0();
 				}
 			} else {
