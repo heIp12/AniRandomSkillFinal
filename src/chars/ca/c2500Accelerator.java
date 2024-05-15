@@ -226,7 +226,7 @@ public class c2500Accelerator extends c00main{
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
 		if(e == p && p != player) {
-			if(Rule.c.get(p) != null && Rule.c.get(p).number == 2025) {
+			if(Rule.c.get(p) != null && Rule.c.get(p).number == 3025 && BlockUtil.isAirbone(player.getLocation(), 2)) {
 				ARSystem.playSoundAll("c2025e"+AMath.random(2));
 				sp= true;
 			} else {

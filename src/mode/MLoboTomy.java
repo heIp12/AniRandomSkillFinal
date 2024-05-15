@@ -871,12 +871,12 @@ public class MLoboTomy extends ModeBase{
 				}
 				dango = true;
 				rvv.clear();
-				for(LivingEntity en : vilager) if(en.getHealth() < 90 || en.isDead()) rvv.add(en);
+				for(LivingEntity en : vilager) if(en.getHealth() / en.getMaxHealth() < 0.8|| en.isDead()) rvv.add(en);
 				for(LivingEntity en : rvv) {
 					villager_Death++;
-					if(villager_Death == 20) text(393,"§f"+Text.get("lobo:dango1"));
-					if(villager_Death == 60) text(393,"§f"+Text.get("lobo:dango2"));
-					if(villager_Death == 100) text(393,"§f"+Text.get("lobo:dango3"));
+					if(villager_Death == 30) text(393,"§f"+Text.get("lobo:dango1"));
+					if(villager_Death == 80) text(393,"§f"+Text.get("lobo:dango2"));
+					if(villager_Death == 150) text(393,"§f"+Text.get("lobo:dango3"));
 					
 					vilager.remove(en);
 					en.remove();
@@ -1018,10 +1018,10 @@ public class MLoboTomy extends ModeBase{
 		
 		for(int i = 0; i < size; i++) {
 			if(name.equals("dango")){
-				if(villager_Death >= 20) {
-					if(villager_Death >= 60) {
+				if(villager_Death >= 30) {
+					if(villager_Death >= 80) {
 						en = Map.spawnMM("dango2" , Map.randomLoc());
-						if(villager_Death >= 100) {
+						if(villager_Death >= 150) {
 							en.setMaxHealth(en.getMaxHealth()*2);
 							en.setHealth(en.getMaxHealth());
 							ARSystem.potion(en, 10, 100000, 8);
@@ -1129,9 +1129,9 @@ public class MLoboTomy extends ModeBase{
 		for(LivingEntity en : rmv) mobs.remove(en);
 		for(LivingEntity en : rvv) {
 			villager_Death++;
-			if(villager_Death == 20) text(393,"§f"+Text.get("lobo:dango1"));
-			if(villager_Death == 60) text(393,"§f"+Text.get("lobo:dango2"));
-			if(villager_Death == 100) text(393,"§f"+Text.get("lobo:dango3"));
+			if(villager_Death == 30) text(393,"§f"+Text.get("lobo:dango1"));
+			if(villager_Death == 80) text(393,"§f"+Text.get("lobo:dango2"));
+			if(villager_Death == 150) text(393,"§f"+Text.get("lobo:dango3"));
 			vilager.remove(en);
 		}
 
@@ -1142,7 +1142,7 @@ public class MLoboTomy extends ModeBase{
 		if(buff.contains("b10")) c-= 5;
 		int size = vilager.size();
 
-		for(LivingEntity en : vilager) if(en.getHealth() <= 90 || en.isDead()) size--;
+		for(LivingEntity en : vilager) if(en.getHealth()/en.getMaxHealth() <= 0.8 || en.isDead()) size--;
 		for(LivingEntity en : rmv) {
 			if(!Map.inMap(en.getLocation())) {
 				en.teleport(Map.randomLoc());

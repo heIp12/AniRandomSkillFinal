@@ -31,6 +31,7 @@ import ars.Rule;
 import buff.Buff;
 import buff.Cindaella;
 import buff.Curse;
+import buff.NoHeal;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.Panic;
@@ -82,7 +83,9 @@ public class c80aqit extends c00main{
 		load();
 		text();
 		c = this;
-		
+		delay(()->{
+			ARSystem.giveBuff(p, new NoHeal(p), 100000);
+		},200);
 	}
 
 	@Override

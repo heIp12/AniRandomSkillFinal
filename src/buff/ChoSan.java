@@ -31,7 +31,7 @@ public class ChoSan extends Buff{
 			for(Player p : Rule.c.keySet()) {
 				Rule.c.get(p).hpCost(e.getDamage() * 0.05, true);
 			} 
-			e.setDamage(e.getDamage() * 0.6); 
+			e.setDamage(e.getDamage() * 0.1); 
 		}
 		return false;
 	}
