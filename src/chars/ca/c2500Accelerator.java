@@ -154,7 +154,7 @@ public class c2500Accelerator extends c00main{
 			Location l2 = Map.getCenter();
 			l1.setY(0);
 			l2.setY(0);
-			if(l1.distance(l2) <= 3 && skillCooldown(0) && sp) {
+			if(l1.distance(l2) <= 3 && sp && !BlockUtil.isAirbone(player.getLocation(), 2) && skillCooldown(0)) {
 				sp = false;
 				spskillon();
 				spskillen();
@@ -170,7 +170,7 @@ public class c2500Accelerator extends c00main{
 							if(power <= 8) {
 								power = 0.3;
 							} else {
-								power = 0.26 - Math.min(0.25,power*0.015);
+								power = 0.27 - Math.min(0.25,power*0.008);
 							}
 							Location l = e.getLocation().clone();
 							Vector v = e.getVelocity();
@@ -225,8 +225,8 @@ public class c2500Accelerator extends c00main{
 	
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
-		if(e == p && p != player) {
-			if(Rule.c.get(p) != null && Rule.c.get(p).number == 3025 && BlockUtil.isAirbone(player.getLocation(), 2)) {
+		if(p != player) {
+			if(Rule.c.get(p) != null && Rule.c.get(p).number == 3025) {
 				ARSystem.playSoundAll("c2025e"+AMath.random(2));
 				sp= true;
 			} else {

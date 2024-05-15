@@ -350,7 +350,6 @@ public class c141hajama extends c00main{
 				spt = 0;
 				spskillon();
 				spskillen();
-				cooldown[1] = cooldown[2] = cooldown[3] = cooldown[4] = 0;
 				skillmult += 2;
 				delay(()->{
 					skillmult -=2;
