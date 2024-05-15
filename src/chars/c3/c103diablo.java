@@ -154,29 +154,26 @@ public class c103diablo extends c00main{
 			List<Player> e = ARSystem.PlayerOnlyBeamBox(player, 50, 2, box.TARGET);
 			if(e.size() > 0) {
 				player.sendTitle(e.get(0).getName(), ""+ e.get(0).getHealth() + " / " + e.get(0).getMaxHealth(),0,20,0);
-			}
-			
-			for(Player p : Rule.c.keySet()) {
-				if(Rule.c.get(p).number%1000 == 3) {
+				if(Rule.c.get(e.get(0)) != null && Rule.c.get(e.get(0)).number%1000 == 3) {
 					if(!isps) {
 						spskillon();
 						spskillen();
 						ARSystem.playSound((Player)player, "c103rimuru");
-						owner = p;
+						owner = (Player)e.get(0);
 						player.setFlySpeed(0.1f);
 						player.setAllowFlight(true);
+						player.setHealth(8);
+						player.setMaxHealth(8);
 					}
 				}
 			}
+			
 			if(isps && Rule.c.get(owner) == null) {
 				hpCost(player.getHealth() * 0.9f, true);
 				isps = false;
 				player.setFlying(false);
 				player.setAllowFlight(false);
 				player.setFlySpeed(0.1f);
-			}
-			if(Rule.c.size() <= 2 && Rule.c.get(owner) != null) {
-				Skill.quit(player);
 			}
 		}
 		return true;

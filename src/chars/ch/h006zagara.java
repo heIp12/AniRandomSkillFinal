@@ -115,7 +115,7 @@ public class h006zagara extends c00main{
 	
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
-		if(p == player && e != player) {
+		if(p != player && e == player) {
 			sp++;
 			if(sp >= 2 && !isps) {
 				spskillon();

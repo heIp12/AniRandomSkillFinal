@@ -49,7 +49,7 @@ import util.MSUtil;
 import util.Map;
 
 public class c63micoto extends c00main{
-	double l = 50;
+	double l = 0;
 	int s2= 0;
 	boolean s3 = false;
 	List<Entity> s1;
@@ -90,7 +90,7 @@ public class c63micoto extends c00main{
 			ARSystem.giveBuff(player, new Stun(player), 80);
 			ARSystem.giveBuff(player, new Silence(player), 80);
 			for(Entity e : ARSystem.box(player, new Vector(999,999,999), box.TARGET)) {
-				ARSystem.giveBuff((LivingEntity) e, new Silence((LivingEntity) e), 60);
+				ARSystem.giveBuff((LivingEntity) e, new Silence((LivingEntity) e), 40);
 				ARSystem.giveBuff((LivingEntity) e, new Stun((LivingEntity) e), 20);
 			}
 			ARSystem.playSoundAll("c63sp");
@@ -100,9 +100,9 @@ public class c63micoto extends c00main{
 				skill("c63_sp");
 			},55);
 
-		} else if(l>=10) {
+		} else if(l>=25) {
 			s1.clear();
-			l-=10;
+			l-=25;
 			ARSystem.playSound((Entity)player, "c63s1");
 			ARSystem.giveBuff(player, new Stun(player), 20);
 			ARSystem.giveBuff(player, new Silence(player), 20);

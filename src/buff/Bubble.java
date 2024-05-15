@@ -21,7 +21,7 @@ public class Bubble extends Buff{
 	public Bubble(LivingEntity target) {
 		super(target);
 		bufftype.add(BuffType.DEBUFF);
-		bufftype.add(BuffType.CC);
+		bufftype.add(BuffType.HEADCC);
 		buffName = "bubble";
 		color = "§b";
 		onlyone = true;

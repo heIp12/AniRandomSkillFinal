@@ -83,15 +83,12 @@ public class c43yuno extends c00main{
 		};
 		
 
-		delay(new Runnable() {
-			@Override
-			public void run() {
-				Set<Player> Player = ((HashMap<Player, c00main>) Rule.c.clone()).keySet();
-				Player.remove(player);
-				Inventory.getlist(invskill,player,Player);
-				invskill.openInventory(player);
-			}
-		},40);
+		delay(()-> {
+			Set<Player> Player = ((HashMap<Player, c00main>) Rule.c.clone()).keySet();
+			Player.remove(player);
+			Inventory.getlist(invskill,player,Player);
+			invskill.openInventory(player);
+		},10);
 		
 		delay(new Runnable() {
 			@Override
@@ -154,7 +151,7 @@ public class c43yuno extends c00main{
 			start = false;
 			team();
 		}
-		if(yuki == null && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time > 10) {
+		if(yuki == null && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time > 15) {
 			Rule.c.put(player,new c4300yuno(player, plugin, null));
 		}
 		else if(yuki != null) {

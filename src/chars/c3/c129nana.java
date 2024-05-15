@@ -88,7 +88,7 @@ public class c129nana extends c00main{
 	public void setStack(float f) {
 		sp = (int)f;
 	}
-
+	
 	@Override
 	public boolean skill1() {
 		ARSystem.playSound((Entity)player, "c129s1");
@@ -159,6 +159,9 @@ public class c129nana extends c00main{
 			if(mob > 0) {
 				for(int i=0;i<10;i++) {
 					if(cooldown[i] > 0) cooldown[i] -= mob*0.02f;
+				}
+				if(mob >= 30) {
+					Rule.playerinfo.get(player).tropy(129, 1);
 				}
 			}
 		}

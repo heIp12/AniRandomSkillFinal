@@ -42,6 +42,7 @@ import buff.Timeshock;
 import buff.Wound;
 import chars.c.c000humen;
 import chars.c.c00main;
+import chars.c3.c137mlim;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
@@ -81,14 +82,20 @@ public class c90arabe extends c00main{
 		if(tick > 0) {
 			tick--;
 			if(tick == 0) {
-				tick = 200 + AMath.random(200);
+				tick = 200 + AMath.random(140);
 				count2++;
-				if(count2 > 2) {
+				if(count2 > 2 && skillCooldown(0)) {
 					count2 = 0;
 					spskillon();
 					spskillen();
+					for(Player p :Rule.c.keySet()) {
+						if(p != player && Rule.c.get(p) instanceof c90arabe) {
+							Rule.c.get(p).cooldown[0] += 15;
+						}
+					}
+					count+=3;
 					for(Player p : Rule.c.keySet()) {
-						if(p != player) ARSystem.giveBuff(p, new Choice(p,(int) (count*2)), 400);
+						if(p != player) ARSystem.giveBuff(p, new Choice(p,count), 400);
 					}
 				} else {
 					ARSystem.giveBuff(player, new Choice(player,count++), 200);

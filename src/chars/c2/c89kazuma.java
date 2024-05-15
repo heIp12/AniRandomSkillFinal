@@ -111,7 +111,7 @@ public class c89kazuma extends c00main{
 			} else {
 				for (LivingEntity e : player.getWorld().getLivingEntities()) {
 					if(e.getLocation().distance(loc) <= 6 && e != player) {
-						if(Rule.c.get(e) != null) target = e;
+						if(Rule.c.get(e) != null && ((Player)e).getGameMode() != GameMode.SPECTATOR) target = e;
 					}
 				}
 			}
@@ -119,7 +119,7 @@ public class c89kazuma extends c00main{
 		}
 		
 		if(target != null && Rule.c.get(target) != null) {
-			if(AMath.random(100) <= 5 && skillCooldown(0)) {
+			if(AMath.random(100+dbf) <= 5 && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				Rule.c.get(target).cooldown[1] = 120;
@@ -169,32 +169,41 @@ public class c89kazuma extends c00main{
 			} else {
 				ARSystem.playSound((Entity)player, "c89s4");
 				int number = Rule.c.get(target).number;
-				while(number%1000 == 5 || number%1000 == 16 || number%1000 == 24 || number%1000 == 57 || number%1000 == 86 || number%1000 == 52 || (number < 1000 && number >= 900)) number = AMath.random(GetChar.getCount());
+				while(isNumber(number)) number = AMath.random(GetChar.getCount());
 				
 				try {
 					stil = GetChar.get(null, Rule.gamerule, ""+number);
 				} catch (Exception e) {
 					number = AMath.random(GetChar.getCount());
-					while(number%1000 == 5 || number%1000 == 16 || number%1000 == 24 || number%1000 == 57 || number%1000 == 86 ||number%1000 == 52 || (number < 1000 && number >= 900)) number = AMath.random(GetChar.getCount());
+					while(isNumber(number)) number = AMath.random(GetChar.getCount());
 					stil = GetChar.get(null, Rule.gamerule, ""+number);
 				}
+				stil.inGame = true;
 				stil.player = player;
 				charlist.add(stil, 10);
-				sk4 = 200;
+				sk4 = 100;
 			}
 			count++;
 			if(count>= 15)Rule.playerinfo.get(player).tropy(89,1);
 		} else {
 			cooldown[4] = 0;
 		}
+		dbf+=10;
 		return true;
 	}
-	
-	
+	boolean isNumber(int o) {
+		int n = o%1000;
+		if(n == 5 || n == 16 || n == 24 || n == 57 || n == 86 ||n == 52|| n == 92) return true;
+		if(o == 1084 || n == 139) return true;
+		if(o < 1000 && o >= 900) return true;
+		return false;
+	}
+	int dbf = 0;
 	@Override
 	public boolean key(PlayerItemHeldEvent e) {
-		if(stil != null && sk4 > 0) {
+		if(stil != null && sk4 > 0 && cooldown[4] > 0) {
 			try {
+				cooldown[4] += stil.setcooldown[e.getNewSlot()+1]*0.5f;
 				if(e.getNewSlot()+1 == 1) stil.skill1();
 				if(e.getNewSlot()+1 == 2) stil.skill2();
 				if(e.getNewSlot()+1 == 3) stil.skill3();
@@ -206,6 +215,7 @@ public class c89kazuma extends c00main{
 			if(e.getNewSlot()+1 <= 5) {
 				sk4 = 0;
 				stil = null;
+				dbf = 0;
 			}
 			e.setCancelled(true);
 			return true;

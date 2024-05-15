@@ -53,6 +53,7 @@ public class c127jack extends c00main{
 	public boolean skill1() {
 		ARSystem.playSound((Entity)player, "c127s1");
 		Location loc = player.getLocation();
+		t = false;
 		delay(()->{
 			player.setVelocity(new Vector(0,0.4,0));
 			delay(()->{
@@ -103,7 +104,7 @@ public class c127jack extends c00main{
 			} else {
 				Curse cs = new Curse((LivingEntity) e);
 				cs.setCaster(player);
-				ARSystem.giveBuff((LivingEntity) e, cs, 60 , 1);
+				ARSystem.giveBuff((LivingEntity) e, cs, 60 , 0.65);
 			}
 		}
 		((LivingEntity)e).setNoDamageTicks(0);
@@ -178,7 +179,13 @@ public class c127jack extends c00main{
 
 		return true;
 	}
-	
+
+	@Override
+	public void PlayerDeath(Player p, Entity e) {
+		if(e == player && s_kill >= 3) {
+			Rule.playerinfo.get(player).tropy(127, 1);
+		}
+	}
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
@@ -191,6 +198,9 @@ public class c127jack extends c00main{
 						range = p.getLocation().distance(e.getEntity().getLocation());
 					}
 				}
+			}
+			if(ARSystem.isGameMode("lobotomy")) {
+				range*=4;
 			}
 			if(p > 0 && range >= 50 && skillCooldown(0)) {
 				ARSystem.giveBuff(player, new TimeStop(player), 200);

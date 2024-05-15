@@ -85,9 +85,44 @@ public class c94yukari extends c00main{
 
 	@Override
 	public boolean skill1() {
-		if(p > 20) {
+		if(p >= 20) {
 			p-=20;
-			if(own_loc != null) tow_loc = own_loc;
+			if(own_loc != null) {
+				if(player.isSneaking() && p >= 60) {
+					Location own_loc = this.own_loc.clone();
+					p-=60;
+					skill("c94_remove");
+					skill("c94_s1");
+					ARSystem.playSound((Entity)player, "c94s13");
+					ARSystem.giveBuff(player, new Noattack(player), 40);
+					ARSystem.giveBuff(player, new Nodamage(player), 40);
+					ARSystem.giveBuff(player, new Stun(player), 40);
+					ARSystem.giveBuff(player, new Silence(player), 40);
+					ARSystem.potion(player, 14, 40, 1);
+					ARSystem.spellLocCast(player, player.getLocation().clone().add(0,0.4f,0), "c94_yukari");
+					delay(()->{
+						player.teleport(own_loc);
+					},35);
+					for(Entity e : ARSystem.box(player, new Vector(6,4,6), box.TARGET)){
+						LivingEntity en = (LivingEntity)e;
+						en.teleport(player.getLocation());
+						ARSystem.giveBuff(en, new Stun(en), 38);
+						delay(()->{
+							ARSystem.giveBuff(en, new Noattack(en), 40);
+							ARSystem.potion(en, 14, 40, 1);
+						},5);
+						delay(()->{
+							ARSystem.giveBuff(en, new Stun(en), 20);
+							en.teleport(player.getLocation());
+						},40);
+					}
+					this.own_loc = null;
+					tow_loc = null;
+					return true;
+				} else {
+					tow_loc = own_loc;
+				}
+			}
 			own_loc = ULocal.offset(player.getLocation(),new Vector(4,0,0));
 			if(player.isSneaking()) own_loc = player.getLocation();
 			skill("c94_remove");

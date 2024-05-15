@@ -58,10 +58,11 @@ public class G_Shop extends GUIBase{
 				  99, 99, 99, 99, 99, 99, 99, 99,  0,
 				   0,105,  0,  0,  0,  0,  0,  0,  0, //사망이펙트
 				   0, 61, 62, 63, 64, 65, 66,  0,  0,
-				   0, 67, 68, 99, 99, 99, 99,  0,  0,
+				   0, 67, 68, 69, 70, 71, 99,  0,  0,
 				   0,  0,  0,  0,  0,  0,  0,  0,  0,
 				  99, 99, 99, 99, 99, 99, 99, 99,  0,
 				   0,106,  0,  0,  0,  0,  0,  0,  0, //이모티콘
+				   0,  0,  0,  0,  0,  0,  0,  0,  0,
 				   0,  0,  0,  0,  0,  0,  0,  0,  0,
 				   0,  0,  0,  0,  0,  0,  0,  0,  0,
 				   0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -81,10 +82,10 @@ public class G_Shop extends GUIBase{
 		Money.putAll(ca(new int[][] {{7,100},{11,200} }));
 		Money.putAll(ca(new int[][] {{21,5000},{22,1000},{23,2000},{24,1000},{25,500},{26,3000},{27,5000},{28,50000}}));
 		Money.putAll(ca(new int[][] {{41,100},{42,200},{43,500},{44,500},{45,500},{46,1000},{47,1000},{48,1000},{49,2000},{50,10000}}));
-		Money.putAll(ca(new int[][] {{61,500},{62,500},{63,500},{64,500},{65,500},{66,2000},{67,3000},{68,1000}}));
+		Money.putAll(ca(new int[][] {{61,500},{62,500},{63,500},{64,500},{65,500},{66,2000},{67,3000},{68,1000},{69,500},{70,500},{71,1000}}));
 		
 		int j = 24*9+1;
-		for(int i =0; i<42; i++){
+		for(int i =0; i<44; i++){
 			if(j%9 == 7) j+=3;
 			Money.put(201+i,1000);
 			ItemStack item = ItemCreate.Item(293,1401+i);
@@ -698,6 +699,48 @@ public class G_Shop extends GUIBase{
 		}
 		else if(Buy(Money.get(click))) {
 			info.kille = 8;
+			Rule.Var.setInt(player.getName()+".info.ke",info.kille);
+		}
+	}
+	public ItemStack gui69(){
+		ItemStack item = ItemCreate.Item(377);
+		return ItemCreate.Lore(item,"§f"+t("ke9"),new String[] {j()});
+	}
+	public void click69(boolean right,boolean shift) {
+		if(info.kille==9) {
+			player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:cmderror7"));
+			return;
+		}
+		else if(Buy(Money.get(click))) {
+			info.kille = 9;
+			Rule.Var.setInt(player.getName()+".info.ke",info.kille);
+		}
+	}
+	public ItemStack gui70(){
+		ItemStack item = ItemCreate.Item(377);
+		return ItemCreate.Lore(item,"§f"+t("ke10"),new String[] {j()});
+	}
+	public void click70(boolean right,boolean shift) {
+		if(info.kille==10) {
+			player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:cmderror7"));
+			return;
+		}
+		else if(Buy(Money.get(click))) {
+			info.kille = 10;
+			Rule.Var.setInt(player.getName()+".info.ke",info.kille);
+		}
+	}
+	public ItemStack gui71(){
+		ItemStack item = ItemCreate.Item(377);
+		return ItemCreate.Lore(item,"§f"+t("ke11"),new String[] {j()});
+	}
+	public void click71(boolean right,boolean shift) {
+		if(info.kille==11) {
+			player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:cmderror7"));
+			return;
+		}
+		else if(Buy(Money.get(click))) {
+			info.kille = 11;
 			Rule.Var.setInt(player.getName()+".info.ke",info.kille);
 		}
 	}

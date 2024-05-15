@@ -139,9 +139,11 @@ public class c7200plan extends c00main{
 	public boolean tick() {
 		if(sk2 > 0) {
 			sk2--;
-			for(LivingEntity t : target.get().keySet()) {
-				t.setNoDamageTicks(0);
-				t.damage(target.get().get(t)*2,player);
+			if(sk2 == 0) { 
+				for(LivingEntity t : target.get().keySet()) {
+					t.setNoDamageTicks(0);
+					t.damage(target.get().get(t)*2,player);
+				}
 			}
 		}
 		if(!isps && Rule.buffmanager.GetBuffValue(player, "plushp") > 30) {

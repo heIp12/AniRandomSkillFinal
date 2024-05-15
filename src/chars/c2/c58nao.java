@@ -84,7 +84,7 @@ public class c58nao extends c00main{
 
 	@Override
 	public boolean tick() {
-		if(tk%2 == 0) {
+		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time > 2 && tk%2 == 0) {
 			Player pl = null;
 			double l = 1000;
 			for(Player p : Rule.c.keySet()) {

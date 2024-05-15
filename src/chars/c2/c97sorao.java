@@ -112,12 +112,8 @@ public class c97sorao extends c00main{
 					}
 				}
 				
-				if(target.getHealth()- damage >= 1) {
-					s_damage+=damage;
+				if(!ARSystem.fixedDamage(target, player, damage).isCancelled()) {
 					ARSystem.giveBuff(target, new Stun(target), 10);
-					target.setHealth(target.getHealth() - damage);
-				} else {
-					Skill.death(target, player);
 				}
 			} else {
 				target.damage(damage,player);
@@ -138,7 +134,7 @@ public class c97sorao extends c00main{
 		if(loc.distance(player.getLocation()) >= 6 && pc <= 0) {
 			pc = 10;
 			skillmult += 0.1;
-			Rule.buffmanager.selectBuffValue(player, "barrier", 10 );
+			Rule.buffmanager.selectBuffValue(player, "barrier", 10);
 			ARSystem.heal(player, 5);
 			tp++;
 		}
@@ -147,7 +143,7 @@ public class c97sorao extends c00main{
 			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c97:sk0")+ "] : "+ tp +" / 30");
 		}
 		
-		if(!isps && tp > 29) {
+		if(!isps && tp > 29 && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			ARSystem.playSoundAll("c97sp1");
@@ -198,7 +194,9 @@ public class c97sorao extends c00main{
 				}
 			},140);
 		}
-		
+		if(ARSystem.isGameMode("lobotomy") && tp > 30) {
+			tp = 30;
+		}
 		if(MSUtil.isbuff(player, "c97_s2")) {
 			Location loc = player.getLocation().clone();
 			for(int i=0;i<27;i++) {

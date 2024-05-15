@@ -22,25 +22,30 @@ import com.nisovin.magicspells.shaded.org.apache.commons.stat.correlation.Covari
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Nodamage;
 import buff.Stun;
 import buff.TimeStop;
+import chars.c2.c60gil;
+import event.FixedDealEvent;
 import event.Skill;
 import event.WinEvent;
+import types.BuffType;
 import types.box;
 
 import util.AMath;
+import util.Holo;
 import util.MSUtil;
 import util.Map;
 import util.Text;
 import util.ULocal;
 
 public class c16saki extends c00main{
-	String set[] = {"㊊","一","二","三","四"};
+	String set[] = Main.GetText("c16:p").split(",");
 	String dack[] = new String[set.length*4];
 	boolean decks[] = new boolean[set.length*4];
 	boolean pe[] = new boolean[9];
 	String text = "";
-	int pescore[] = {5,6,3,10,20,4,0,6,2};
+	int pescore[] = {3,3,3,8,12,7,0,6,2};
 	int score = 0;
 	String info = "";
 	int count = 0;
@@ -49,9 +54,21 @@ public class c16saki extends c00main{
 	String hand = "";
 	String drow = "";
 	int handcount = 11;
-	boolean iskang = false;
+	int iskang = 0;
 	String kanf = "";
 	int kan = 0;
+	
+	int stack = 0;
+	
+	String voice = "c16";
+	float kangadd = 1.75f;
+	
+	@Override
+	public void setStack(float f) {
+		stack = (int)f;
+		if(stack != 52) Rule.buffmanager.selectBuffValue(player, "plushp",f);
+	}
+	
 	public String handColor() {
 		String str = hand;
 		
@@ -78,20 +95,19 @@ public class c16saki extends c00main{
 	public void reset() {
 		kanf = hand = handf = drow = info = "";
 		kan = score = 0;
-		iskang = false;
+		iskang = 0;
 		int i = 0;
-		dack[i++] = dack[i++] = dack[i++] = dack[i++] = set[0];
-		dack[i++] = dack[i++] = dack[i++] = dack[i++] = set[1];
-		dack[i++] = dack[i++] = dack[i++] = dack[i++] = set[2];
-		dack[i++] = dack[i++] = dack[i++] = dack[i++] = set[3];
-		dack[i++] = dack[i++] = dack[i++] = dack[i] = set[4];
+		for(int o = 0; o < set.length; o++) {
+			if(o == set.length-1) dack[i++] = dack[i++] = dack[i++] = dack[i] = set[o];
+			else dack[i++] = dack[i++] = dack[i++] = dack[i++] = set[o];
+		}
 		for(i=0; i<decks.length;i++){
 			decks[i] = true;
 		}
 		for(i=0; i<pe.length;i++){
 			pe[i] = false;
 		}
-		if(AMath.random(100) <= 8) {
+		if(AMath.random(100) <= Integer.parseInt(Main.GetText("c16:luck"))) {
 			luck();
 		}
 	}
@@ -101,12 +117,13 @@ public class c16saki extends c00main{
 		decks[1] = false;
 		decks[2] = false;
 		decks[3] = false;
-		skill("c"+number+"ps");
+		ARSystem.playSound((Entity)player, voice+"ps" ,1 , 2);
 	}
 	
 
 	public void drow() {
 		if(hand.length() < handcount) {
+			iskang = 0;
 			int i = AMath.random(decks.length)-1;
 			while(!decks[i]) {
 				i = AMath.random(decks.length)-1;
@@ -170,18 +187,8 @@ public class c16saki extends c00main{
 						handf+=dack[i];
 					}
 					kan++;
-					if(drow.equals(set[0])) {
-						iskang = true;
-					}
-					if(kan == 1) {
-						skill("c"+number+"kang1");
-					}
-					if(kan == 2) {
-						skill("c"+number+"kang2");
-					}
-					if(kan == 3) {
-						skill("c"+number+"kang3");
-					}
+					iskang = 120;
+					ARSystem.playSound((Entity)player, voice+"kang" + kan);
 					handset();
 				}
 				return true;
@@ -260,12 +267,12 @@ public class c16saki extends c00main{
 				pe[3] = true;
 			}
 			
-			if(drow.equals(set[0]) && kan == 0) {
+			if(drow.equals(set[0])) {
 				pe[4] = true;
 			} else if(kan == 0) {
 				pe[5] = true;
 			}
-			if(kan > 0 && !iskang) {
+			if(kan > 0 && iskang > 0) {
 				pe[7] = true;
 			}
 		}
@@ -274,16 +281,39 @@ public class c16saki extends c00main{
 	
 	public c16saki(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
+		if(p != null)
 		number = 16;
+		if(Rule.playerinfo.get(p).playerTrophy.equals("86-1")) {
+			voice = "c10016";
+			ARSystem.playSound(player, "c86select");
+			picksound = false;
+			number = 10016;
+		}
 		load();
 		text();
 		if(p != null) reset();
 	}
 	
+	@Override
+	public boolean tick() {
+		if(stack == 52) {
+			if(cooldown[1] == 0 && player.isSneaking() && Rule.buffmanager.selectBuffType(player, BuffType.SILENCE).size() <= 0) {
+				cooldown[1] = setcooldown[1];
+				if(tk%10 == 0) Holo.create(player.getLocation(), "§a매크로 사용중",10,new Vector(0,0.2,0));
+				skill1();
+			}
+		}
+		if(iskang > 0) {
+			iskang--;
+			if(iskang <= 0) pe[7] = false;
+		}
+		return true;
+	}
+	
 	public void deal() {
 		score = 0;
 		info = "";
-		if(pe[0]&&pe[1]&&pe[2]&&pe[3]&&pe[7]&&!iskang) {
+		if(pe[0]&&pe[1]&&pe[2]&&pe[3]&&pe[7]&&iskang > 0) {
 			spskillon();
 			info = "32000!";
 			return;
@@ -297,7 +327,7 @@ public class c16saki extends c00main{
 					info += " "+ Main.GetText("c16:text"+(i+1))+"("+pescore[i]+")";
 				}
 			}
-			score *= 1+(kan*0.2);
+			for(int i = 0; i < kan; i++) score *= kangadd;
 		} else {
 			info = "§c✖";
 		}
@@ -311,12 +341,14 @@ public class c16saki extends c00main{
 		if(e instanceof Player) {
 			Player p = (Player)e;
 			if(pe[8]) {
-				p.sendTitle(Main.GetText("c16:text"+9), handColor(),5,20,5);
-				if(p == player) skill("c"+number+"tumo");
+				p.sendTitle(Main.GetText(voice+"text"+9), handColor(),5,20,5);
+				if(p == player) ARSystem.playSound((Entity)player, voice+"tumo",1,2);
 				for(int i=0; i< pe.length-1;i++) {
 					if(pe[i]) {
 						text = ""+i;
-						score+=pescore[i];
+						int damage = pescore[i];
+						for(int z = 0; z < kan; z++) damage *= kangadd;
+						score+=damage;
 	
 						delay(new Runnable() {
 							Entity ent = e;
@@ -327,9 +359,10 @@ public class c16saki extends c00main{
 								ARSystem.spellCast(player, e, "c16_e");
 								if(s > 8) ARSystem.spellCast(player, e, "c16_e2");
 								if(s > 12) ARSystem.spellCast(player, e, "c16_e2");
-								skill("c16p"+t);
+								ARSystem.playSound((Entity)player, voice+"p"+t,1,2);
+								
 								ARSystem.giveBuff((LivingEntity) e, new TimeStop((LivingEntity) e), 32);
-								p.sendTitle(Main.GetText("c16:text"+(t+1)),"Score : "+s,5,5,20);
+								p.sendTitle(Main.GetText(voice+":text"+(t+1)),"Score : "+s,5,5,20);
 							}
 						}, count*delay);
 						count++;
@@ -338,7 +371,6 @@ public class c16saki extends c00main{
 				if(p != player) {
 					delay(new Runnable() {
 						Entity ent = e;
-						int fscore = score;
 						int scores = score;
 						@Override
 						public void run() {
@@ -355,22 +387,9 @@ public class c16saki extends c00main{
 									}
 								}
 							}
-							
-							if(((LivingEntity)ent).getHealth()-scores > 0) {
-								((LivingEntity)ent).setHealth(((LivingEntity)ent).getHealth()-scores);
-								if(player.getMaxHealth() > player.getHealth()+fscore) {
-									player.setHealth(player.getHealth()+fscore);
-								} else {
-									if(ent instanceof Player && ((Player) ent).getGameMode() != GameMode.SPECTATOR) {
-										Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) (fscore - (player.getMaxHealth() -player.getHealth())));
-										player.setHealth(player.getMaxHealth());
-									}
-								}
-								player.sendTitle("","HP: +"+scores,0,30,10);
-							} else {
-								Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) (fscore));
-								Skill.remove(ent, player);
-							}
+							FixedDealEvent e = ARSystem.fixedDamage((LivingEntity)ent, player, scores);
+							ARSystem.overheal(player, e.getDamage());
+							player.sendTitle("","HP: +"+scores,0,30,10);
 						}
 					}, count*delay);
 				}
@@ -379,14 +398,14 @@ public class c16saki extends c00main{
 			for(int i=0; i< pe.length-1;i++) {
 				if(pe[i]) {
 					text = ""+i;
-					score+=pescore[i];
+					int damage = pescore[i];
+					for(int z = 0; z < kan; z++) damage *= kangadd;
+					score+=damage;
 					count++;
 				}
 			}
-			score *= 1+(kan*0.2);
 			delay(new Runnable() {
 				Entity ent = e;
-				int fscore = score;
 				int scores = score;
 				@Override
 				public void run() {
@@ -394,18 +413,10 @@ public class c16saki extends c00main{
 					if(scores > 8) ARSystem.spellCast(player, e, "c16_e2");
 					if(scores > 12) ARSystem.spellCast(player, e, "c16_e2");
 					
-					if(((LivingEntity)ent).getHealth()-scores > 0) {
-						((LivingEntity)ent).setHealth(((LivingEntity)ent).getHealth()-scores);
-						if(player.getMaxHealth() > player.getHealth()+fscore) {
-							player.setHealth(player.getHealth()+fscore);
-						} else {
-							Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) (fscore - (player.getMaxHealth() -player.getHealth())));
-							player.setHealth(player.getMaxHealth());
-						}
-						player.sendTitle("","HP: "+Rule.buffmanager.GetBuffValue(player, "plushp"),0,30,10);
-					} else {
-						Skill.remove(ent, player);
-					}
+					FixedDealEvent e = ARSystem.fixedDamage((LivingEntity)ent, player, scores);
+					ARSystem.overheal(player, e.getDamage());
+					player.sendTitle("","HP: +"+scores,0,30,10);
+
 				}
 			}, count*delay);
 		}
@@ -448,10 +459,12 @@ public class c16saki extends c00main{
 	
 	@Override
 	public boolean skill3() {
-		if(hand.length() > 4) {
-			skill("c"+number+"deck");
-			skill("c"+number+"drop");
+		if(hand.length() > 2) {
+			ARSystem.playSound((Entity)player, "c16deck",1,2);
+			ARSystem.playSound((Entity)player, voice+"drop",1,2);
 			reset();
+			ARSystem.potion(player, 1, 60, 1);
+			cooldown[1] = 3f;
 		} else {
 			cooldown[3] = 0;
 		}
@@ -461,9 +474,9 @@ public class c16saki extends c00main{
 	@Override
 	public boolean skill4() {
 		List<Entity> entity = ARSystem.box(player,new Vector(6,6,6),box.TARGET);
-		if(isps) {
+		if(skillCooldown(0) && isps) {
 			spskillen();
-			ARSystem.playSoundAll("c16sp");
+			ARSystem.playSoundAll(voice+"sp");
 			
 			WinEvent event = new WinEvent(player);
 			Bukkit.getPluginManager().callEvent(event);
@@ -487,7 +500,7 @@ public class c16saki extends c00main{
 					ARSystem.spellCast(player, e, "c16_e");
 					ARSystem.spellCast(player, e, "c16_e2");
 				}
-				player.performCommand("tm anitext all SUBTITLE true 90 c16:text10/§aScore : §c§kaaaaa");
+				player.performCommand("tm anitext all SUBTITLE true 90 c10016:text10/§aScore : §c§kaaaaa");
 	
 				Location locs = loc.clone();
 				delay(()->{
@@ -510,7 +523,7 @@ public class c16saki extends c00main{
 				},20);
 				delay(()->{
 					for(Player p : Bukkit.getOnlinePlayers()) {
-						p.sendTitle("§d"+Main.GetText("c16:text8"),"§fScore : §kaaaaa",10,40,0);
+						p.sendTitle("§d"+Main.GetText(voice+":text8"),"§fScore : §kaaaaa",10,40,0);
 					}
 					for(int i=0;i<6;i++) {
 						ARSystem.spellLocCast(player,ULocal.offset(player.getLocation(), new Vector(-6 + 2*i,0,2 + 1*i)), "c16_sp1");
@@ -518,9 +531,9 @@ public class c16saki extends c00main{
 					}
 				},140);
 				delay(()->{
-						ARSystem.playSoundAll("c16sp2");
+					ARSystem.playSoundAll(voice+"sp2");
 						for(Player p : Bukkit.getOnlinePlayers()) {
-							p.sendTitle("§4§l《§4"+Main.GetText("c16:text8")+"§4§l》","§dScore : 32000!!!",0,10,40);
+							p.sendTitle("§4§l《§4"+Main.GetText(voice+":text8")+"§4§l》","§dScore : 32000!!!",0,10,40);
 							ARSystem.spellCast(player, p, "c16_e");
 							ARSystem.spellCast(player, p, "c16_e2");
 							ARSystem.spellCast(player, p, "c16_sp2");
@@ -531,15 +544,16 @@ public class c16saki extends c00main{
 						delay(()->{
 							Skill.win(player);
 							tpsdelay(()->{
-								ARSystem.playSoundAll("c16win");
+								ARSystem.playSoundAll(voice+"win");
 							},40);
 						},60);
 				},160);
 			}
 		}
 		else if(hand.length() == handcount && entity.size() > 0 && pe[8]) {
-			skill("c"+number+"deck");
+			ARSystem.playSoundAll(voice+"deck");
 			s_score+= score;
+			ARSystem.giveBuff(player, new TimeStop(player), 40);
 			attack(player);
 			for(Entity e : entity) {
 				if (e instanceof ArmorStand) {
@@ -571,11 +585,30 @@ public class c16saki extends c00main{
 				double damage = e.getFinalDamage();
 					@Override
 					public void run() {
-						ARSystem.heal(player, damage/2);
+						ARSystem.heal(player, damage/4);
 					}
 				},20);
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	protected boolean skill9() {
+		if(number == 10016) {
+			ARSystem.playSound((Entity)player, "c86db");
+		} else {
+			ARSystem.playSound((Entity)player, "c16db");
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public String getBgm() {
+		if(number == 10016 && !isps) {
+			return "c16-2";
+		}
+		return super.getBgm();
 	}
 }

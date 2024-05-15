@@ -60,7 +60,13 @@ public class c73nyaruco extends c00main{
 	float p = 0;
 	float s1 = 1;
 	int sk2 = 60;
-
+	int stack = 0;
+	@Override
+	public void setStack(float f) {
+		if((int)f == 52) stack = 52;
+		f = s1;
+	}
+	
 	public c73nyaruco(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 73;
@@ -106,6 +112,9 @@ public class c73nyaruco extends c00main{
 				s1+=0.5;
 				target.damage(s1,player);
 			}
+			if(s1 > 20 && ARSystem.isGameMode("lobotomy")) {
+				s1 = 20;
+			}
 		}
 		if(s1 >= 12) Rule.playerinfo.get(player).tropy(73,1);
 	}
@@ -123,6 +132,13 @@ public class c73nyaruco extends c00main{
 			scoreBoardText.add("&c [Damage] : "+ AMath.round(s1,1));
 		}
 		if(sk2 > 0) sk2--;
+		
+		if(stack == 52) {
+			if(cooldown[1] == 0 && Rule.buffmanager.selectBuffType(player, BuffType.SILENCE).size() < 0) {
+				cooldown[1] = setcooldown[1];
+				skill1();
+			}
+		}
 		return true;
 	}
 	

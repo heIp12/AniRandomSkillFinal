@@ -164,6 +164,10 @@ public class c102sid extends c00main{
 					((LivingEntity)e).damage(999,player);
 				}
 			},400);
+
+			if(ARSystem.isGameMode("lobotomy") && stack > 20) {
+				stack = 20;
+			}
 		}
 		return true;
 	}

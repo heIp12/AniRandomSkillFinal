@@ -11,12 +11,15 @@ import org.bukkit.util.Vector;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Buff;
 import buff.Curse;
+import buff.NoCC;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
 import chars.c.c00main;
+import types.BuffType;
 import types.box;
 
 import util.AMath;
@@ -45,6 +48,7 @@ public class c126hera extends c00main{
 		// TODO Auto-generated method stub
 		p = (int)f;
 	}
+	
 	@Override
 	public boolean skill1() {
 		if(p <= 4 && skillCooldown(0)) {
@@ -60,12 +64,15 @@ public class c126hera extends c00main{
 				ARSystem.giveBuff(en, new Stun(en), 120);
 			}
 			
-			ARSystem.giveBuff(player, new TimeStop(player), 120);
+			ARSystem.giveBuff(player, new TimeStop(player), 60);
 			ARSystem.giveBuff(player, new Nodamage(player), 160);
 			ARSystem.giveBuff(player, new Silence(player), 160);
-			ARSystem.potion(player, 1, 160, 4);
+			ARSystem.potion(player, 1, 200, 7);
 			loc = player.getLocation();
 			sp = 140;
+			delay(()->{
+				ARSystem.giveBuff(player, new NoCC(player), 120);
+			},60);
 			return true;
 		}
 		if(p2 <= 0) {
@@ -112,8 +119,30 @@ public class c126hera extends c00main{
 		return true;
 	}
 
+	int tcc = 0;
+	
 	@Override
 	public boolean tick() {
+		if(tk%20 == 0) {
+			boolean iscc = false;
+			if(Rule.buffmanager.selectBuffType(player, BuffType.HEADCC) != null) {
+				for(Buff buff : Rule.buffmanager.selectBuffType(player, BuffType.HEADCC)) {
+					if(buff.getTime() > 0) {
+						iscc = true;
+						tcc++;
+						break;
+					}
+				}
+			}
+			if(tcc >= 8) {
+				tcc = 0;
+				skill("c126_s2");
+				ARSystem.playSound((Entity)player, "c126s2");
+				ARSystem.giveBuff(player, new NoCC(player), 20);
+				p2 = 20;
+			}
+			if(!iscc) tcc = 0;
+		}
 		if(tk%20 == 0) scoreBoardText.add("&c ["+Main.GetText("c126:ps")+ "] : &f"+p);
 		if(p2 <= 0 && Rule.buffmanager.GetBuffTime(player, "stun") <= 0 && sp <= 0 && AMath.random(1200) <= 12 - p) {
 			ARSystem.playSound((Entity)player, "c126s3");
@@ -151,7 +180,9 @@ public class c126hera extends c00main{
 	}
 	
 	void ps(Entity e) {
-		
+		if(p == 2) {
+			Rule.playerinfo.get(player).tropy(126, 1);
+		}
 		p2 = 0;
 		ARSystem.giveBuff(player, new Nodamage(player), 5);
 		p--;

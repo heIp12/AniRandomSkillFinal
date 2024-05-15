@@ -22,6 +22,7 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Buff;
+import buff.Ice;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
@@ -43,7 +44,7 @@ public class h001chruno extends c00main{
 		load();
 		text();
 		
-		ARSystem.playSound((Entity)player, "c_chrunoselect");
+		if(p != null) ARSystem.playSound((Entity)player, "c_chrunoselect");
 	}
 	
 	int skill1 = 0;
@@ -83,8 +84,7 @@ public class h001chruno extends c00main{
 		for(Entity e : ARSystem.box((Entity)player, new Vector(6,2,6),box.TARGET)) {
 			((LivingEntity)e).setNoDamageTicks(0);
 			((LivingEntity)e).damage(2,player);
-			ARSystem.giveBuff(((LivingEntity)e), new Stun(((LivingEntity)e)), 60);
-			ARSystem.giveBuff(((LivingEntity)e), new Silence(((LivingEntity)e)), 60);
+			ARSystem.giveBuff(((LivingEntity)e), new Ice(((LivingEntity)e),player), 80);
 			count++;
 		}
 		if(count >= 2 && !isps) {
@@ -139,6 +139,14 @@ public class h001chruno extends c00main{
 	protected boolean skill9() {
 		ARSystem.playSound((Entity)player, "c_chrunodb");
 		return true;
+	}
+	
+	 @Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			target.damage(8,player);
+			ARSystem.giveBuff(target, new Ice(target,player), 60);
+		}
 	}
 	
 	@Override

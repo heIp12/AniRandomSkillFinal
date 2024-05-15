@@ -79,13 +79,13 @@ public class c106ryel extends c00main{
 	@Override
 	public boolean skill1() {
 		List<Entity> entitys = ARSystem.box(player, new Vector(6,6,6), box.TARGET);
-		if(entitys.size() > 0 && mp > 1200) {
+		if(entitys.size() > 0 && mp > 1000) {
 			ARSystem.playSound((Entity)player, "c106s1");
-			mp -=1200;
+			mp -=1000;
 			skill("c106_s1-1");
-		} else if(mp > 2000) {
+		} else if(mp > 1800) {
 			ARSystem.playSound((Entity)player, "c106s1");
-			mp-=2000;
+			mp-=1800;
 			skill("c106_s1-2");
 			
 		} else {
@@ -106,14 +106,14 @@ public class c106ryel extends c00main{
 		if(target != null) {
 			cooldown[1] = 0;
 			s1time= 0;
-			if(target.getLocation().distance(player.getLocation()) > 5 && mp > 600) {
+			if(target.getLocation().distance(player.getLocation()) > 5 && mp > 400) {
 				ARSystem.playSound((Entity)player, "c106s2");
-				mp -=600;
+				mp -=400;
 				ARSystem.spellCast(player, target, "c106_move");
 				skill("c106_s2-2");
-			} else if(mp > 1200) {
+			} else if(mp > 1000) {
 				ARSystem.playSound((Entity)player, "c106s2");
-				mp -=1200;
+				mp -=1000;
 				skill("c106_s2-1");
 			}
 			target = null;
@@ -125,11 +125,11 @@ public class c106ryel extends c00main{
 	
 	@Override
 	public boolean skill3() {
-		if(mp > 1200 && stack < 5) {
-			mp-=1200;
+		if(mp > 1000 && stack < 5) {
+			mp-=1000;
 			ARSystem.playSound((Entity)player, "c106s3");
-			ARSystem.giveBuff(player, new Stun(player), 70);
-			ARSystem.giveBuff(player, new Silence(player), 70);
+			ARSystem.giveBuff(player, new Stun(player), 40);
+			ARSystem.giveBuff(player, new Silence(player), 60);
 			stack++;
 		} else {
 			cooldown[3] = 0;
@@ -182,7 +182,7 @@ public class c106ryel extends c00main{
 		if(isAttack) {
 
 		} else {
-
+			e.setDamage(e.getDamage()- (e.getDamage()*0.2*stack));
 			if(stack > 0) {
 				for(int i=0;i<stack;i++) {
 					delay(()->{

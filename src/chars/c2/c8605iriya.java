@@ -112,10 +112,9 @@ public class c8605iriya extends c00main{
 		if(n.equals("1")) {
 			float f = 3;
 			if(sk2 > 0) {
-				if(target.getHealth() - f*2 < 1) Skill.remove(target, player);
-				target.setHealth(target.getHealth() - f*2);
+				ARSystem.fixedDamage(target, player, f*2);
 			} else {
-				target.damage(f*2,player);
+				target.damage(f,player);
 			}
 		}
 	}
@@ -137,7 +136,7 @@ public class c8605iriya extends c00main{
 		if(isAttack) {
 			
 		} else {
-			
+			e.setDamage(e.getDamage() * 0.6f);
 		}
 		return true;
 	}

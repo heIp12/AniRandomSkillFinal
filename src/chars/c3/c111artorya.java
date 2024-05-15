@@ -209,7 +209,11 @@ public class c111artorya extends c00main{
 			if(target.getHealth() - damage < 1) {
 				stack += target.getMaxHealth()*10;
 			}
-			target.damage(damage, player);
+			float d = damage;
+			delay(()->{
+				target.setNoDamageTicks(0);
+				target.damage(d, player);
+			},0);
 		}
 	}
 	

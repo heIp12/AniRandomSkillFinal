@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -89,7 +90,13 @@ public class c118cotory extends c00main{
 		if(player.isSneaking()) {
 			makerSkill(player, "1");
 		} else {
-			ARSystem.spellCast(player,player,"c118_s1");
+			if(ARSystem.isGameMode("lobotomy")) {
+				for(Entity e : ARSystem.box(player, new Vector(8,5,8), box.TARGET)) {
+					makerSkill((LivingEntity)e, "1");
+				}
+			} else {
+				ARSystem.spellCast(player,player,"c118_s1");
+			}
 		}
 		return true;
 	}
@@ -97,24 +104,22 @@ public class c118cotory extends c00main{
 	@Override
 	public boolean skill2() {
 		ARSystem.playSound((Entity)player, "c118sk2");
-		tpsdelay(()->{
-			skill("c118_s2");
-			for(Entity e : ARSystem.box(player, new Vector(8,5,8), box.ALL)) {
-				nodamage.set((LivingEntity)e,60);
-				LivingEntity target = (LivingEntity)e;
-				for(Buff b : Rule.buffmanager.selectBuffType(target, BuffType.DEBUFF)) {
-					b.setTime(0);
-					nodamage.set(target,60);
-					p+=10;
-					s_damage += 5;
-				}
-			}
-			for(Buff b : Rule.buffmanager.selectBuffType(player, BuffType.DEBUFF)) {
+		skill("c118_s2");
+		for(Entity e : ARSystem.box(player, new Vector(8,5,8), box.ALL)) {
+			nodamage.set((LivingEntity)e,60);
+			LivingEntity target = (LivingEntity)e;
+			for(Buff b : Rule.buffmanager.selectBuffType(target, BuffType.DEBUFF)) {
 				b.setTime(0);
-				p+=2;
-				s_damage += 2;
+				nodamage.set(target,60);
+				p+=10;
+				s_damage += 5;
 			}
-		},20);
+		}
+		for(Buff b : Rule.buffmanager.selectBuffType(player, BuffType.DEBUFF)) {
+			b.setTime(0);
+			p+=2;
+			s_damage += 2;
+		}
 		return true;
 	}
 	
@@ -135,6 +140,13 @@ public class c118cotory extends c00main{
 		}
 		return true;
 	}
+
+	@Override
+	public boolean key(PlayerItemHeldEvent e) {
+		if(e.getNewSlot() == 1 && skillCooldown(2)) skill2();
+		return super.key(e);
+	}
+	
 	
 	@Override
 	public void makerSkill(LivingEntity target, String n) {

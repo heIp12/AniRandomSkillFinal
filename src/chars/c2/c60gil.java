@@ -104,12 +104,6 @@ public class c60gil extends c00main{
 	public void PlayerSpCast(Player p) {
 		if(Rule.c.get(p) != null && !(Rule.c.get(p) instanceof c60gil) && ARSystem.AniRandomSkill == null || (ARSystem.AniRandomSkill.getTime() >= 1)) {
 			count++;
-			if(ARSystem.AniRandomSkill.startplayer.size() > 5 && AMath.random(10) <= 3) {
-				count++;
-			}
-			if(ARSystem.AniRandomSkill.startplayer.size() > 10 && AMath.random(10) <= 3) {
-				count++;
-			}
 			if(count >= ARSystem.AniRandomSkill.startplayer.size()/2&& skillCooldown(0)) {
 				spskillon();
 				spskillen();

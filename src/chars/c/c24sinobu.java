@@ -21,6 +21,7 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.NoHeal;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.Silence;
@@ -107,7 +108,7 @@ public class c24sinobu extends c00main{
 		if(n.equals("1") && Rule.buffmanager.GetBuffTime(player, "timestop") <= 0) {
 			target.setNoDamageTicks(0);
 			target.damage(4,player);
-
+			ARSystem.giveBuff(target, new NoHeal(target), 40);
 
 			if(player.getMaxHealth() - player.getHealth() < 4) {
 				heal += 4 - (player.getMaxHealth() - player.getHealth());
@@ -203,6 +204,7 @@ public class c24sinobu extends c00main{
 						ARSystem.playSound((Entity)player, "c24p");
 						ps = true;
 						target = (LivingEntity) e;
+						player.sendTitle("", target.getName(),0,20,80);
 						break;
 					}
 				}

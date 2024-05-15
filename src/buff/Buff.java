@@ -3,16 +3,13 @@ package buff;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import Main.Main;
 import ars.Rule;
 import types.BuffType;
 import util.AMath;
@@ -99,6 +96,12 @@ public class Buff {
 				s += " &7"+AMath.round(value*100,0) + "%";
 			} else {
 				s += " &7"+AMath.round(value,2);
+			}
+		} else {
+			if(isValueP) {
+				s += " &6"+AMath.round(value*100,0) + "%";
+			} else {
+				s += " &6"+AMath.round(value,2);
 			}
 		}
 		return s;

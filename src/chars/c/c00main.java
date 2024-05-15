@@ -38,11 +38,13 @@ import buff.PlusHp;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
+import event.FixedDealEvent;
 import event.Skill;
 import event.WinEvent;
 import manager.AdvManager;
 import manager.BuffManager;
 import manager.ScoreBoard;
+import mode.MLoboTomy;
 import util.Text;
 import util.ULocal;
 import util.AMath;
@@ -94,12 +96,16 @@ public class c00main implements Listener {
 	
 	public List<String> scoreBoardText = new ArrayList<String>();
 	
-	private HashMap<Runnable,Double> delayEvent = new HashMap<>();
+	public HashMap<Runnable,Double> delayEvent = new HashMap<>();
 	
-	
-	protected float frist_damage = 1;
-	protected float frist_defence = 1;
+	public float frist_damage = 1;
+	public float frist_defence = 1;
 	protected Location startLoc = null;
+	
+	protected boolean maptp = true;
+	protected int battleTime = 0;
+	
+	protected boolean picksound = true;
 	
 	public void e(){
 		if(player == null) return;
@@ -138,6 +144,7 @@ public class c00main implements Listener {
 			player.setAllowFlight(false);
 			player.setFlySpeed(0.1f);
 			player.setWalkSpeed(0.2f);
+			player.getInventory().clear();
 		} else {
 			p = NpcPlayer.player;
 		}
@@ -184,9 +191,11 @@ public class c00main implements Listener {
 			}
 		}
 		Rule.Var.open(player.getName()+".Sp.c"+(number%1000),isps);
-		if(Rule.playerinfo.get(player).spopen.length > number%1000) {
-			Rule.playerinfo.get(player).spopen[number%1000] = (boolean)Rule.Var.Load(player.getName()+".Sp.c"+(number%1000));
-		}
+		try {
+			if(Rule.playerinfo.get(player).spopen.length > number%1000) {
+				Rule.playerinfo.get(player).spopen[number%1000] = (boolean)Rule.Var.Load(player.getName()+".Sp.c"+(number%1000));
+			}
+		} catch (Exception e) {}
 		Rule.playerinfo.get(player).save();
 		Rule.savePoint(player.getName(), (int) Rule.playerinfo.get(player).getcradit(), 0);
 		Rule.savePoint(player.getName(), (int) Rule.playerinfo.get(player).getScore(), 1);
@@ -204,7 +213,6 @@ public class c00main implements Listener {
 	}
 	
 	public void text() {
-		infoload();
 		if(player != null) {
 			player.sendMessage("§a§l§m|=-=-=-=-=-=-=-=-=-=-=-=-=-=|");
 			String name = "§e§l[No."+(number%1000)+"]§b"+Main.GetText("c"+number+":name1")+" "+Main.GetText("c"+number+":name2");
@@ -308,12 +316,12 @@ public class c00main implements Listener {
 		setcooldown[9] = 2;
 		hp = Integer.parseInt(Main.GetText("c"+number+":hp"));
 		if(player != null) {
-			player.playSound(player.getLocation(), "c"+number+"select", 1, 1);
+			if(picksound) player.playSound(player.getLocation(), "c"+number+"select", 1, 1);
 			player.setMaxHealth(hp);
 			player.setHealth(hp);
 			Rule.playerinfo.get(player).playchar = number;
-			
 		}
+		infoload();
 	}
 	
 	protected boolean spskillon() {
@@ -321,8 +329,11 @@ public class c00main implements Listener {
 		isps = true;
 		return true;
 	}
-	
 	protected void spskillen() {
+		spskillen(Main.GetText("c"+number+":sk0"));
+	}
+	
+	protected void spskillen(String st) {
 		for(Player p: Rule.c.keySet()) {
 			Rule.c.get(p).PlayerSpCast(player);
 		}
@@ -333,9 +344,9 @@ public class c00main implements Listener {
 		n +=Main.GetText("c"+number+":name2");
 		
 		for(Player p : Bukkit.getOnlinePlayers()) {
-			AdvManager.set(p, 399, 0 , "§f§l"+player.getName() +"§a("+ n +") §f§l" + Main.GetText("c"+number+":sk0"));
+			AdvManager.set(p, 399, 0 , "§f§l"+player.getName() +"§a("+ n +") §f§l" + st);
 		}
-		String na = "c"+number+":sk0"+"/&c!!!";
+		String na = st+"/&c!!!";
 		
 		player.performCommand("tm anitext "+player.getName()+" SUBTITLE true 40 "+na);
 	}
@@ -347,8 +358,17 @@ public class c00main implements Listener {
 	public boolean skill5(){ return false; }
 	public boolean skill6(){
 		if(player.isSneaking()) {
-			Rule.playerinfo.get(player).addcradit(-10,Main.GetText("main:msg105"));
-			ARSystem.Death(player,player);
+			if(battleTime > 60 || ARSystem.AniRandomSkill == null) {
+				if(ARSystem.isGameMode("lobotomy")) {
+					MLoboTomy.dieMsg((Player)player);
+					ARSystem.Death(player,player);
+				} else {
+					Rule.playerinfo.get(player).addcradit(-10,Main.GetText("main:msg105"));
+					ARSystem.Death(player,player);
+				}
+			} else {
+				player.sendMessage("§a§l[ARSystem]§f§l : "+ Main.GetText("main:msg26"));
+			}
 		} else {
 			player.sendMessage("§a§l[ARSystem]§f§l : "+ Main.GetText("main:msg21"));
 		}
@@ -375,6 +395,9 @@ public class c00main implements Listener {
 		ARSystem.spellCast(player, name);
 	}
 	protected boolean skillCooldown(int i) {
+		if(setcooldown[i] < -100) {
+			return false;
+		}
 		if(cooldown[i] <= 0) {
 			cooldown[i] = setcooldown[i];
 			return true;
@@ -466,6 +489,7 @@ public class c00main implements Listener {
 			if(Rule.buffmanager.GetBuffTime(player, "barrier") == 0) ARSystem.giveBuff(player, new Barrier(player), 0);
 			if(Rule.buffmanager.GetBuffTime(player, "buffac") == 0) ARSystem.giveBuff(player, new BuffAC(player), 0);
 		}
+		
 		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 0) {
 			tick();
 		} else if(ARSystem.AniRandomSkill == null){
@@ -474,11 +498,20 @@ public class c00main implements Listener {
 		
 		if(player.getGameMode() != GameMode.SPECTATOR && ARSystem.AniRandomSkill != null) {
 			Map.UniqeMap(player);
-			if(!Map.inMap(player) || (!BlockUtil.isPathable(player.getLocation().add(0,1,0).getBlock().getType()) && !BlockUtil.isPathable(player.getLocation().getBlock().getType()))) {
-				maptick++;
-				if(Map.mapid > 100 && Map.mapid < 1000) {
-					maptick+=2;
+			if(Map.type != null) {
+				if(!Map.inMap(player) && Map.type.contains("falldamage") && maptick > 5) {
+					Map.playeTp(player);
+					ARSystem.giveBuff(player, new Silence(player), 20);
+					player.setFallDistance(0);
+					if(player.getHealth() - player.getMaxHealth()/5 > 1) {
+						player.setHealth(player.getHealth() - player.getMaxHealth()/5);
+					} else {
+						Skill.death(player, player);
+					}
 				}
+			}
+			if(!Map.inMap(player) || (maptp && !BlockUtil.isPathable(player.getLocation().add(0,1,0).getBlock().getType()) && !BlockUtil.isPathable(player.getLocation().getBlock().getType()))) {
+				maptick++;
 			} else {
 				maptick = 0;
 			}
@@ -494,22 +527,24 @@ public class c00main implements Listener {
 			Map.playeTp(player);
 		}
 		
-		if(maptick > 60 && ARSystem.AniRandomSkill.time > 0) {
+		if(maptick > Text.getI("general:map_time") && ARSystem.AniRandomSkill.time > 0) {
 			maptick = 0;
-			if(Map.mapid > 100 && Map.mapid < 1000) {
-				player.teleport(ULocal.BoxNear(Map.loc_f, Map.loc_l, player.getLocation()));
-				player.setHealth(player.getHealth()/1.5f);
-				player.setVelocity(ULocal.lookAt(player.getLocation(), Map.getCenter()).getDirection().multiply(1.2f));
-				if(!BlockUtil.isPathable(player.getLocation().add(0,1,0).getBlock().getType()) && !BlockUtil.isPathable(player.getLocation().getBlock().getType())) {
+			if(Map.mapid > 100 && Map.mapid < 1000 && Boolean.parseBoolean(Main.GetText("general:bigmap_border_randomtp"))) {
+				Location locc = ULocal.BoxNear(Map.loc_f.clone().add(2,0,2), Map.loc_l.clone().add(-2,0,-2), player.getLocation());
+				if(player.getLocation().getY() <= Map.loc_f.getY() || !BlockUtil.isPathable(locc.clone().add(0,1,0).getBlock().getType()) && !BlockUtil.isPathable(locc.getBlock().getType())) {
 					Map.playeTp(player);
+				} else {
+					player.teleport(locc);
+					player.setVelocity(ULocal.lookAt(player.getLocation(), Map.getCenter()).getDirection().multiply(1.2f));
 				}
 			} else {
 				ARSystem.giveBuff(player, new Nodamage(player), 40);
 				ARSystem.giveBuff(player, new Noattack(player), 40);
 				ARSystem.giveBuff(player, new Silence(player), 40);
-				player.setHealth(player.getHealth()/2);
 				Map.playeTp(player);
 			}
+			double damage =  Text.getD("general:map_damage");
+			if(damage > 0) player.setHealth(player.getHealth() - (player.getHealth()*damage));
 			player.setFallDistance(0);
 		}
 		
@@ -529,7 +564,6 @@ public class c00main implements Listener {
 					scoreBoardText.add("&9&l ["+Main.GetText("main:s8")+"] : &b"+ (Math.round((Rule.buffmanager.GetBuffValue(player, "buffac"))*100))+"%");
 				}
 			}
-			
 			ScoreBoard.createScoreboard(player, scoreBoardText);
 		}
 		
@@ -539,13 +573,15 @@ public class c00main implements Listener {
 				Skill.quit(player);
 			}
 		}
+		battleTime++;
 		tk%=20;
 		tk++;
 		return false;
 	}
-	
+	public boolean fixeddamage(FixedDealEvent e) { return true; }
 	public boolean damage(EntityDamageEvent e) { return true; }
 	public void setFrist_Damage(EntityDamageByEntityEvent e,boolean isAttack) {
+		battleTime = 0;
 		if(isAttack) {
 			e.setDamage(e.getDamage()*frist_damage);
 		} else {
@@ -566,6 +602,14 @@ public class c00main implements Listener {
 	
 	public boolean firsttick() { return false; }
 	public boolean tick() { return false; }
+	
+	public boolean isBattle() {
+		return battleTime < 60;
+	}
+	
+	public int isBattleTime() {
+		return battleTime;
+	}
 	
 	public float getHp() {return hp;}
 	public int getCode() { return number; }
@@ -595,6 +639,11 @@ public class c00main implements Listener {
 	public void makerSkill(LivingEntity target, String n) {
 		
 	}
+	
+	public void select(String i) {
+		
+	}
+	
 	public void kill() {
 		s_kill++;
 		if(ARSystem.AniRandomSkill != null &&  ARSystem.AniRandomSkill.playerkill.size() == 0) {
@@ -606,7 +655,6 @@ public class c00main implements Listener {
 		}
 	}
 	public boolean chat(PlayerChatEvent e) {
-
 		return true;
 	}
 	public void delayLoop(double time) {

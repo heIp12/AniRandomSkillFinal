@@ -70,6 +70,12 @@ public class c80aqit extends c00main{
 	
 	HashMap<LivingEntity,Integer> attack;
 	
+	@Override
+	public void setStack(float f) {
+		mydamage = f*0.01f;
+		if(mydamage < 0.3) mydamage = 0.3;
+	}
+	
 	public c80aqit(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 80;
@@ -152,7 +158,7 @@ public class c80aqit extends c00main{
 		if(myhp < player.getHealth()) myhp = player.getHealth();
 		if(player.getHealth() > myhp) player.setHealth(myhp);
 		
-		if(t>10 && t%140 == 0 && mydamage >= 0.4) {
+		if(t>10 && t%160 == 0 && mydamage >= 0.4) {
 			mydamage= mydamage-0.1;
 		}
 		if(tk%20 == 0) {
@@ -195,9 +201,26 @@ public class c80aqit extends c00main{
 					ARSystem.addBuff(target, new TimeStop(target), 120);
 					ARSystem.spellCast(player, target, "look1");
 					ARSystem.spellCast(player, target, "look2");
+					Location lc = target.getLocation();
+					delay(()->{
+						ARSystem.spellLocCast(player, lc, "c80_spa");
+						for(int i =0; i<10; i++) {
+							delay(()->{
+								ARSystem.spellCast(player, target, "c80_spa1");
+							},i*5);
+						}
+					},40);
+					delay(()->{
+						ARSystem.spellLocCast(player, lc, "c80_spa2");
+						for(int i =0; i<20; i++) {
+							delay(()->{
+								ARSystem.spellCast(player, target, "c80_spa1");
+							},i);
+						}
+					},100);
 					delay(()->{
 						Skill.remove(target, player);
-						ARSystem.spellCast(player, target, "c80_sp3");
+						ARSystem.spellLocCast(player, lc, "c80_sp3");
 						for(Entity en : ARSystem.box(player, new Vector(999,999,999),box.ALL)) {
 							ARSystem.addBuff((LivingEntity) en, new TimeStop((LivingEntity) en), 120);
 						}

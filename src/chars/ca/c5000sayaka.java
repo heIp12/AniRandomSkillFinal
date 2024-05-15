@@ -27,6 +27,7 @@ import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Nodamage;
+import buff.Nodie;
 import buff.Stun;
 import buff.TimeStop;
 import buff.Timeshock;
@@ -97,6 +98,7 @@ public class c5000sayaka extends c00main{
 		player.getWorld().playSound(player.getLocation(), "c50db", 1, 1);
 		return true;
 	}
+	int sp = -1;
 	@Override
 	public boolean tick() {
 		if(tk%5==0 && AMath.random(100)<= 10) {
@@ -105,6 +107,49 @@ public class c5000sayaka extends c00main{
 		if(sk1 > 0) {
 			sk1--;
 			if(sk1 == 0) cooldown[1] = setcooldown[1];
+		}
+		
+		if(!isps && player.getHealth() / player.getMaxHealth() < 0.1 && player.getHealth() >= 1 && skillCooldown(0)) {
+			delay(()->{
+				if(player.getHealth() >= 1) {
+					spskillon();
+					spskillen();
+					ARSystem.playSoundAll("c1050sp");
+					ARSystem.giveBuff(player, new TimeStop(player), 100);
+					ARSystem.giveBuff(player, new Nodie(player), 200);
+					sp = 100;
+					delay(()->{
+						for(int i=0;i<10;i++) {
+							delay(()->{skill("c50_sp");},i*2);
+						}
+						delay(()->{
+							ARSystem.potion(player, 10, 100, 9);
+							ARSystem.spellCast(player, player, "bload");
+							delay(()->{
+								ARSystem.potion(player, 10, 100000, 2);
+							},110);
+						},15);
+					},80);
+					
+					delay(()->{
+						for(int i =0; i<4; i++)
+						delay(()->{
+							for(int k = 0; k<8;k++) {
+								skill("c1050_p");
+							}
+						},20*i);
+					},100);
+				}
+			},5);
+		}
+		if(sp >= 0) {
+			if(sp > 0) {
+				sp--;
+				if(sp <= 0) {
+					skill("c1050_sp0"+AMath.random(2));
+					sp = 40+20*AMath.random(10);
+				}
+			}
 		}
 		return true;
 	}
@@ -125,7 +170,7 @@ public class c5000sayaka extends c00main{
 		}
 		if(n.equals("3")) {
 			target.setNoDamageTicks(0);
-			target.damage(5,player);
+			target.damage(3,player);
 			if(target != this.target) {
 				this.target = target;
 				sk3 = 0;
@@ -160,4 +205,11 @@ public class c5000sayaka extends c00main{
 		return true;
 	}
 	
+	@Override
+	public String getBgm() {
+		if(isps) {
+			return "c50-2";
+		}
+		return super.getBgm();
+	}
 }

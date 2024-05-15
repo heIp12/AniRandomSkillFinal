@@ -15,6 +15,7 @@ import org.bukkit.util.Vector;
 
 import ars.ARSystem;
 import ars.Rule;
+import buff.Exposure;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.Silence;
@@ -64,7 +65,7 @@ public class c11yasuo extends c00main{
 	public boolean skill4() {
 		boolean airbone = false;
 		boolean allairbone = false;
-		if(ARSystem.getPlayerCount() < 0) {
+		if(ARSystem.getPlayerCount() <= 2) {
 			allairbone = true;
 		} else {
 			for(Player p :Rule.c.keySet()) {
@@ -102,10 +103,19 @@ public class c11yasuo extends c00main{
 			if(!airbone) {
 				cooldown[4] = 0;
 			} else {
-				Rule.buffmanager.selectBuffValue(player, "barrier",(float) (player.getMaxHealth()/4));
+				Rule.buffmanager.selectBuffValue(player, "barrier",(float) (player.getMaxHealth()/2));
 			}
 		}
 		return true;
+	}
+	
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			target.setNoDamageTicks(0);
+			target.damage(8,player);
+			ARSystem.giveBuff(target, new Exposure(target), 120, 2);
+		}
 	}
 
 	@Override
@@ -114,7 +124,7 @@ public class c11yasuo extends c00main{
 		
 		if(ticks >= 80) {
 			ticks = 0;
-			if(Rule.buffmanager.GetBuffValue(player, "barrier")< player.getMaxHealth()/4) {
+			if(Rule.buffmanager.GetBuffValue(player, "barrier")< player.getMaxHealth()/2) {
 				Rule.buffmanager.selectBuffAddValue(player, "barrier",1);
 			}
 		}
@@ -131,8 +141,19 @@ public class c11yasuo extends c00main{
 		if(l == null) {
 			l = player.getLocation();
 		}
+		if(delay > 0) delay--;
 		return true;
 	}
+	
+	int delay = 20;
+	@Override
+	public void PlayerDeath(Player p, Entity e) {
+		if(e == player && delay <= 0) {
+			skill("img43");
+			delay = 20;
+		}
+	}
+	
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {

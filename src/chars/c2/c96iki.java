@@ -34,6 +34,7 @@ import buff.Curse;
 import buff.NoHeal;
 import buff.Noattack;
 import buff.Nodamage;
+import buff.Nodie;
 import buff.Panic;
 import buff.Silence;
 import buff.Stun;
@@ -111,6 +112,7 @@ public class c96iki extends c00main{
 			skill("c96_sp");
 			skillmult = 11;
 			Rule.buffmanager.selectBuffValue(player, "buffac",10f);
+			ARSystem.giveBuff(player, new Nodie(player), 1000);
 			sp = 300;
 			count = s_kill;
 		} else {

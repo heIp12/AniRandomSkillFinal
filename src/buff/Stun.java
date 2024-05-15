@@ -28,19 +28,23 @@ public class Stun extends Buff{
 	}
 
 	public boolean onTicks() {
-		if(!(target instanceof Player)) {
-			if(loc != null) target.teleport(loc);
-			loc = target.getLocation();
+		if(tick > 0) {
+			if(!(target instanceof Player)) {
+				if(loc != null) target.teleport(loc);
+				loc = target.getLocation();
+			}
+			target.setVelocity(new Vector(0,0,0));
 		}
-		target.setVelocity(new Vector(0,0,0));
 		return false;
 	}
 	
 	
 	@Override
 	public boolean onMove(PlayerMoveEvent e) {
-		loc = e.getFrom();
-		if(!ULocal.isEqual(loc,e.getTo())) e.setCancelled(true);
+		if(tick > 0) {
+			loc = e.getFrom();
+			if(!ULocal.isEqual(loc,e.getTo())) e.setCancelled(true);
+		}
 		return false;
 	}
 }

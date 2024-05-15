@@ -21,6 +21,7 @@ import buff.Stun;
 import buff.TimeStop;
 import chars.c.c00main;
 import chars.c.c02kirito;
+import event.FixedDealEvent;
 import event.Skill;
 import types.box;
 
@@ -77,6 +78,7 @@ public class c133yukina extends c00main{
 		int mt = 20;
 		Location loc = e.getLocation();
 		loc = ULocal.lookAt(loc, player.getLocation());
+		if(s2count >= 30) Rule.playerinfo.get(player).tropy(133, 1);
 		if(s2count > 19) {
 			mt=1;
 			player.teleport(ULocal.lookAt(e.getLocation(), e.getLocation()));
@@ -217,12 +219,7 @@ public class c133yukina extends c00main{
 				Rule.buffmanager.selectBuffTime(target, "nodamage", 0);
 				ARSystem.spellCast(player, target, "c133_p2");
 				target.setNoDamageTicks(0);
-				float damage = 15;
-				if(target.getHealth() - damage >= 1) {
-					target.setHealth(target.getHealth() - damage);
-				} else {
-					Skill.remove(target, player);
-				}
+				ARSystem.fixedDamage(target, player, 15);
 			} else {
 				target.setNoDamageTicks(0);
 				target.damage(3,player);
@@ -246,11 +243,7 @@ public class c133yukina extends c00main{
 				Rule.buffmanager.selectBuffTime(target, "nodamage", 0);
 				target.setNoDamageTicks(0);
 				damage *= 5;
-				if(target.getHealth() - damage >= 1) {
-					target.setHealth(target.getHealth() - damage);
-				} else {
-					Skill.remove(target, player);
-				}
+				ARSystem.fixedDamage(target, player, damage);
 			} else {
 				target.setNoDamageTicks(0);
 				target.damage(damage,player);

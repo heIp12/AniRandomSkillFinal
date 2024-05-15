@@ -142,7 +142,7 @@ public class c95aya extends c00main{
 	
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
-		if(player != p && p.getLocation().distance(player.getLocation()) <= 6 && !isps) {
+		if(player != p && p.getLocation().distance(player.getLocation()) <= 6 && !isps && skillCooldown(0)) {
 			spskillen();
 			spskillon();
 			ARSystem.playSound((Entity)player, "c95sp");

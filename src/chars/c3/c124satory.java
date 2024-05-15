@@ -161,6 +161,14 @@ public class c124satory extends c00main{
 				}
 			}
 		} else {
+			if(Rule.c.get(e.getDamager()) != null) {
+				if(Rule.c.get(e.getDamager()).number%1000 == 123) {
+					e.setDamage(0);
+					e.setCancelled(true);
+					return false;
+				}
+			}
+			
 			damage += e.getDamage();
 			if(Rule.c.get(e.getDamager()) != null) {
 				int number = Rule.c.get(e.getDamager()).number;
@@ -200,17 +208,17 @@ public class c124satory extends c00main{
 				},180);
 				return false;
 			}
-			if(Rule.c.get(e.getDamager()) != null) {
-				if(Rule.c.get(e.getDamager()).number%1000 == 123) {
-					e.setDamage(0);
-					e.setCancelled(true);
-					return false;
-				}
-			}
 			e.setDamage(e.getDamage()*0.8f);
 		}
 		return true;
 	}
+	@Override
+	public void PlayerDeath(Player p, Entity e) {
+		if(e == player && Rule.c.size() <= 2) {
+			Rule.playerinfo.get(player).tropy(124, 1);
+		}
+	}
+	
 	@Override
 	protected boolean skill9() {
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);

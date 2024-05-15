@@ -45,6 +45,8 @@ public class c47ren extends c00main{
 	
 	int sp = 0;
 	
+	int bd = 0;
+	
 	public c47ren(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 47;
@@ -64,6 +66,7 @@ public class c47ren extends c00main{
 		return true;
 	}
 	void shrot(){
+		bd++;
 		float sp = 10f;
 		Location l = player.getLocation();
 
@@ -150,11 +153,19 @@ public class c47ren extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(e.getDamage() <= 1.4) stack++;
+			
 		} else {
 
 		}
 		return true;
+	}
+	
+	@Override
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			stack++;
+			target.damage(1,player);
+		}
 	}
 	
 	@Override

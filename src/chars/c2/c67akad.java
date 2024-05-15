@@ -55,7 +55,7 @@ public class c67akad extends c00main{
 	int p = 0;
 	int sk3 = 0;
 	double sp = 1;
-	double damage = 0.10;
+	double damage = 0.05;
 	boolean sk4 = false;
 	int stk = 0;
 	LivingEntity lasttarget = null;
@@ -139,11 +139,11 @@ public class c67akad extends c00main{
 		if(ARSystem.AniRandomSkill != null && tk%20==0 && ARSystem.AniRandomSkill.time%30 == 0 && ARSystem.AniRandomSkill.time > 10 && p < 4) {
 			p++;
 			if(p == 1) {
-				damage+=0.03;
+				damage+=0.02;
 				skillmult += 0.2;
 			}
 			if(p == 2) {
-				damage+=0.05;
+				damage+=0.03;
 				skillmult += 0.25;
 			}
 			if(p == 3) {

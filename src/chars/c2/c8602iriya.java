@@ -70,8 +70,8 @@ public class c8602iriya extends c00main{
 	
 	@Override
 	public boolean skill1() {
-		if(b.getValue() > 70) {
-			b.setValue(b.getValue()-70);
+		if(b.getValue() > 60) {
+			b.setValue(b.getValue()-60);
 			ARSystem.playSound((Entity)player, "c2086s1");
 			skill("c2086_s1");
 		} else {

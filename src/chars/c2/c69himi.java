@@ -59,6 +59,7 @@ public class c69himi extends c00main{
 	int pt = 0;
 	
 	List<Location> local = new ArrayList<>();
+	boolean e= false;
 	
 	public c69himi(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -67,7 +68,15 @@ public class c69himi extends c00main{
 		text();
 		c = this;
 	}
+	
 	void sp(){
+		if(ARSystem.isGameMode("lobotomy") && count > 20) {
+			count = 20;
+		}
+		if(ARSystem.isGameMode("lobotomy") && local.size() > 5) {
+			setcooldown[3] *= 1.75;
+			e = true;
+		}
 		if(count > 60) {
 			Rule.playerinfo.get(player).tropy(69,1);
 		}
@@ -78,6 +87,7 @@ public class c69himi extends c00main{
 			skillmult+=1;
 		}
 	}
+	
 	@Override
 	public boolean skill1() {
 		ARSystem.playSound((Entity)player, "c69s");

@@ -16,6 +16,7 @@ import org.bukkit.util.Vector;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Noattack;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
@@ -23,6 +24,8 @@ import types.box;
 
 import util.AMath;
 import util.MSUtil;
+import util.Map;
+import util.Text;
 
 public class c08yuuki extends c00main{
 	double cooldowns = skillmult;
@@ -104,7 +107,7 @@ public class c08yuuki extends c00main{
 	
 	@Override
 	public boolean tick() {
-		if(player.getHealth() <= 7) {
+		if(player.getHealth() <= player.getMaxHealth()*0.25f) {
 			if(cooldown[4] <= 0) {
 				if(!isps) {
 					spskillon();
@@ -112,6 +115,13 @@ public class c08yuuki extends c00main{
 			}
 		}
 		cool();
+		if(maptick+10 > Text.getI("general:map_time")) {
+			maptick = 0;
+			ARSystem.giveBuff(player, new Silence(player), 40);
+			ARSystem.giveBuff(player, new Noattack(player), 20);
+			player.setMaxHealth(player.getMaxHealth() * 0.75f);
+			player.teleport(Map.randomLoc());
+		}
 		return true;
 	}
 	

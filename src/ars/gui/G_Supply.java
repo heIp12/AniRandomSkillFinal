@@ -13,6 +13,8 @@ import ars.ARSystem;
 import ars.PlayerInfo;
 import ars.Rule;
 import buff.Buff;
+import buff.NoCC;
+import buff.Nodie;
 import buff.PowerUp;
 import buff.TimeStop;
 import types.BuffType;
@@ -39,9 +41,16 @@ public class G_Supply extends GUIBase{
 						   0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0
 				};
-		page[10] = page[13] = page[16] = AMath.random(7);
-		while(page[10] == page[13]) page[13] = AMath.random(7);
-		while(page[13] == page[16] || page[10] == page[16]) page[16] = AMath.random(7);
+		page[10] = page[13] = page[16] = AMath.random(9);
+		while(page[10] == page[13]) page[13] = AMath.random(9);
+		while(page[13] == page[16] || page[10] == page[16]) page[16] = AMath.random(9);
+		if(Rule.c.get(player) == null || Rule.c.get(player).number > 1000) {
+			while(page[10] == 7 || page[13] == 7 || page[16] == 7) {
+				page[10] = page[13] = page[16] = AMath.random(9);
+				while(page[10] == page[13]) page[13] = AMath.random(9);
+				while(page[13] == page[16] || page[10] == page[16]) page[16] = AMath.random(9);
+			}
+		}
 		info = Rule.playerinfo.get(player);
 		if(Rule.c.get(player) == null) player.closeInventory();
 		InvCreate(line,0);
@@ -84,6 +93,16 @@ public class G_Supply extends GUIBase{
 		return item;
 	}
 	
+	public ItemStack gui8(){
+		ItemStack item = ItemCreate.Item(301, 0);
+		item = ItemCreate.Lore(item,"§f"+Text.get("main:supply8"),Text.getLine("main:supply8-", 1));
+		return item;
+	}
+	public ItemStack gui9(){
+		ItemStack item = ItemCreate.Item(449, 0);
+		item = ItemCreate.Lore(item,"§f"+Text.get("main:supply9"),Text.getLine("main:supply9-", 1));
+		return item;
+	}
 	public void click0(boolean right,boolean shift) {}
 	public void click1(boolean right,boolean shift) {
 		Rule.c.get(player).skillmult += 1;
@@ -97,6 +116,13 @@ public class G_Supply extends GUIBase{
 		end();
 	}
 	public void click3(boolean right,boolean shift) {
+		if(AMath.random(3) == 2) {
+			for(int i=0;i<10;i++) Rule.c.get(player).setcooldown[i] *= 2f;
+			player.sendMessage("§a§l[ARSystem] §4§l아~ 들어가면 클났죠 이거는");
+			player.sendMessage("§a§l[ARSystem] §4§l쿨다운 x2");
+			end();
+			return;
+		}
 		int r = AMath.random(5)-1;
 		for(int i =0; i<5; i++) {
 			if(i == r) {
@@ -114,17 +140,19 @@ public class G_Supply extends GUIBase{
 		end();
 	}
 	public void click4(boolean right,boolean shift) {
-		ARSystem.heal(player, 10000);
 		for(int i =0; i<10; i++) {
 			Rule.c.get(player).cooldown[i] = 0;
 		}
 		for(Buff buff : Rule.buffmanager.getBuffs(player).getBuff()) {
 			buff.setTime(0);
 		}
+		Rule.c.get(player).skillmult = 1;
+		Rule.c.get(player).sskillmult = 0;
+		ARSystem.heal(player, 10000);
 		end();
 	}
 	public void click5(boolean right,boolean shift) {
-		ARSystem.overheal(player, player.getMaxHealth());
+		ARSystem.overheal(player, player.getMaxHealth()*1.5f);
 		end();
 	}
 	public void click6(boolean right,boolean shift) {
@@ -140,6 +168,22 @@ public class G_Supply extends GUIBase{
 		}
 		end();
 	}
+	public void click8(boolean right,boolean shift) {
+		ARSystem.heal(player, player.getHealth()*0.4f);
+		ARSystem.giveBuff(player, new NoCC(player), 2400);
+		ARSystem.spellCast(player, "notp");
+		end();
+	}
+	public void click9(boolean right,boolean shift) {
+		ARSystem.giveBuff(player, new NoCC(player), 200);
+		ARSystem.giveBuff(player, new Nodie(player), 200);
+		ARSystem.giveBuff(player, new PowerUp(player), 200, 1);
+		player.closeInventory();
+		Rule.c.get(player).skillmult += 0.25f;
+		ARSystem.potion(player, 1, 200, 2);
+		ARSystem.giveBuff(player, new TimeStop(player), 1);
+	}
+	
 	
 	void end(){
 		player.closeInventory();

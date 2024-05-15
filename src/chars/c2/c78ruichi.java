@@ -149,8 +149,23 @@ public class c78ruichi extends c00main{
 			} else {
 				player.performCommand("tm anitext all SUBTITLE true 40 "+Main.GetText("c78:t2")+"/["+ player.getName()+"["+Main.GetText("c78:o3")+"]");
 			}
+			if(Rule.c.get(target).getCode() == 143) {
+				delay(()->{
+					player.performCommand("tm sound all 0tc");
+					player.performCommand("tm anitext all SUBTITLE true 10 "+Main.GetText("c78:t2-143_1")+"/["+Main.GetText("c78:o1")+"]");
+					delay(()->{
+						player.performCommand("tm sound all 0tc");
+						player.performCommand("tm anitext all SUBTITLE true 10 "+Main.GetText("c78:t2-143_2")+"/["+Main.GetText("c78:o3")+"]");
+						delay(()->{ 
+							player.performCommand("tm sound all no");
+							ARSystem.playSoundAll("c78end");
+							delay(()->{ chat = null; },20);
+						},70);
+					},20);
+				},50);
+			}
 		},80);
-		if(Rule.c.get(target).getCode() != 1118) {
+		if(Rule.c.get(target).getCode() != 1118 && Rule.c.get(target).getCode() != 143) {
 			delay(()->{ 
 				player.performCommand("tm sound all 0tc");
 				player.performCommand("tm anitext all SUBTITLE true 30 "+Main.GetText("c78:t3")+"/["+Main.GetText("c78:o1")+"]");

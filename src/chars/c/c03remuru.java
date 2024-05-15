@@ -84,6 +84,9 @@ public class c03remuru extends c00main{
 	
 	public boolean skill0(EntityDamageByEntityEvent e) {
 		if(skillCooldown(0)) {
+			spskillon();
+			spskillen();
+			
 			skill("c"+number+"_sps1");
 			Rule.buffmanager.selectBuffValue(player, "plushp",0);
 			Bgm.setBgm("c3");
@@ -167,10 +170,11 @@ public class c03remuru extends c00main{
 				
 	
 				if(!hs) {
-					player.sendTitle("","HP: "+Rule.buffmanager.GetBuffValue(player, "plushp")+"(+"+(target).getMaxHealth()/2.5+")",0,40,20);
-					Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) (target.getMaxHealth()/2.5));
-					Skill.remove(target, player);
-					ARSystem.playSound((Entity)player, "c3s2");
+					if(ARSystem.fixedDamage(target, player, target.getHealth()).isDeath) {
+						player.sendTitle("","HP: "+Rule.buffmanager.GetBuffValue(player, "plushp")+"(+"+(target).getMaxHealth()/2.5+")",0,40,20);
+						Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) (target.getMaxHealth()/2.5));
+						ARSystem.playSound((Entity)player, "c3s2");
+					}
 				}
 			} else {
 				target.setNoDamageTicks(0);
@@ -182,8 +186,6 @@ public class c03remuru extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(Rule.buffmanager.GetBuffValue(player, "plushp") >= 500) {
-			spskillon();
-			spskillen();
 			skill0(e);
 		}
 		

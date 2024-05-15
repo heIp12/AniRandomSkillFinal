@@ -25,6 +25,7 @@ import com.nisovin.magicspells.MagicSpells;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Ice;
 import buff.Nodamage;
 import buff.Stun;
 import event.Skill;
@@ -82,7 +83,7 @@ public class c48yoshino extends c00main{
 		if(tick%160==0 && damage < 1) {
 			damage+=0.05;
 		}
-		if(tick%40==0 && isps) {
+		if(tick%90==0 && isps) {
 			skill("c48_s3");
 			hit = new HashMap<LivingEntity, Integer>();
 		}
@@ -95,6 +96,7 @@ public class c48yoshino extends c00main{
 		if(n.equals("1")) {
 			target.setNoDamageTicks(0);
 			target.damage(target.getMaxHealth()/10,player);
+			ARSystem.giveBuff(target, new Ice(target,player), 40);
 		}
 		if(n.equals("2")) {
 			target.setNoDamageTicks(0);
@@ -105,9 +107,17 @@ public class c48yoshino extends c00main{
 			} else {
 				hit.put(target, 1 + hit.get(target));
 				if(hit.get(target) == 3) {
-					ARSystem.spellCast(player, target, "c48_s3_i5");
-					ARSystem.giveBuff(target, new Stun(target), 40);
+					ARSystem.giveBuff(target, new Ice(target,player), 40);
 				}
+			}
+		}
+		if(n.equals("3")) {
+			if(target.getPotionEffect(PotionEffectType.SLOW) != null) {
+				ARSystem.giveBuff(target, new Ice(target,player), 40);
+				target.setNoDamageTicks(0);
+				target.damage(2,player);
+			} else {
+				ARSystem.potion(target, 2, 60, 2);
 			}
 		}
 	}
@@ -115,14 +125,15 @@ public class c48yoshino extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			ARSystem.potion((LivingEntity) e.getEntity(), 2, 100, 2);
+			ARSystem.potion((LivingEntity) e.getEntity(), 2, 60, 2);
 		} else {
+			ARSystem.potion((LivingEntity) e.getDamager(), 2, 60, 2);
 			tropy++;
 			if(tropy >= 50) {
 				Rule.playerinfo.get(player).tropy(48,1);
 			}
 			e.setDamage(e.getDamage()*damage);
-			if(!isps && AMath.random(33)==3) {
+			if(!isps && AMath.random(100)==1) {
 				ARSystem.playSound((Entity)player, "c48sp",(float) 1);
 				setcooldown[1] *= 0.5;
 				setcooldown[2] *= 0.5;

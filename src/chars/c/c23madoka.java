@@ -32,6 +32,7 @@ public class c23madoka extends c00main{
 	int ticks = 0;
 	int stack = 0;
 	int s2size = 0;
+	double ch = 0.33;
 	double damage = 1.0;
 	boolean start = false;
 	Location loc;
@@ -77,7 +78,7 @@ public class c23madoka extends c00main{
 				ArrayList<Player> pls = new ArrayList<Player>();
 				for(Player p : Rule.c.keySet() ) {
 					double hp = p.getHealth() / p.getMaxHealth();
-					if(hp < 0.33*damage) {
+					if(hp < ch*damage) {
 						ARSystem.giveBuff(p, new TimeStop(p), 200);
 						pls.add(p);
 					}
@@ -89,7 +90,7 @@ public class c23madoka extends c00main{
 					sp();
 				} else {
 					for(Player p : pls) {
-						Skill.death(p,player);
+						Skill.remove(p,player);
 					}
 				}
 			}
@@ -164,6 +165,15 @@ public class c23madoka extends c00main{
 		if(s2size == 0) {
 			s2size = Rule.c.size()/2;
 			if(s2size < 2) s2size = 2;
+			if(Rule.c.size() >= 25) {
+				ch = 0.11;
+			} else if(Rule.c.size() >= 20) {
+				ch = 0.17;
+			} else if(Rule.c.size() >= 15) {
+				ch = 0.22;
+			} else if(Rule.c.size() >= 10) {
+				ch = 0.26;
+			}
 		}
 		if(ticks > 0) {
 			player.teleport(loc);
@@ -172,14 +182,37 @@ public class c23madoka extends c00main{
 		if(!start) start = true;
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c23:ps")+ "]&f : "+ Math.round((damage-1)*100)+"%");
-			scoreBoardText.add("&c ["+Main.GetText("c23:sk2")+ "]&f : "+ Math.round((0.33*damage)*100)+"%");
+			scoreBoardText.add("&c ["+Main.GetText("c23:sk2")+ "]&f : "+ Math.round((ch*damage)*100)+"%");
 			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c23:sk0")+ "]&f : "+ s2size);
-			if(Math.round((0.33*damage)*100) >= 100) {
+			if(Math.round((ch*damage)*100) >= 100) {
 				Rule.playerinfo.get(player).tropy(23,1);
 			}
 		}
 		return true;
 	}
+	
+	
+	@Override
+	public void PlayerSpCast(Player p) {
+		if(Rule.c.get(p).number == 50) {
+			int id = Map.mapid;
+			ARSystem.giveBuff(p, new Nodamage(player), 200);
+			delay(()->{
+			ARSystem.playSoundAll("c1023p3");
+				delay(()->{
+					Map.getMapinfo(id);
+					for(Player pl : Rule.c.keySet()) {
+						pl.teleport(Map.randomLoc(pl));
+					}
+					Skill.remove(p, player);
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m killall");
+				},160);
+			},80);
+		}
+	}
+	
+	
+	
 	boolean majo = true;
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {

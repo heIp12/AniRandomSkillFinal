@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
+import ars.ARSystem;
 import ars.Rule;
 import event.Skill;
 import types.BuffType;
@@ -33,7 +34,7 @@ public class PlusHp extends Buff{
 			double hps = target.getMaxHealth()- target.getHealth();
 			if(value > hps) {
 				value-=hps;
-				target.setHealth(target.getMaxHealth());
+				ARSystem.heal(target, hps);
 			} else {
 				value = 0;
 				target.setHealth(target.getHealth()+hps);

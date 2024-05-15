@@ -1,6 +1,7 @@
 package chars.c;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -30,6 +31,8 @@ import buff.Stun;
 import buff.TimeStop;
 import chars.c2.c62shinon;
 import chars.c2.c63micoto;
+import chars.ca.c2500Accelerator;
+import chars.ca.c2501Systers;
 import event.Skill;
 import manager.AdvManager;
 import types.BuffType;
@@ -47,6 +50,15 @@ public class c25Accelerator extends c00main{
 	boolean white = false;
 	
 	boolean touma = false;
+	
+	int rp = 0;
+	
+	float stack = 200;
+	
+	@Override
+	public void setStack(float f) {
+		stack = (int)f;
+	}
 	
 	public c25Accelerator(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -105,21 +117,27 @@ public class c25Accelerator extends c00main{
 		if(white) {
 			Reflect rep = new Reflect(player);
 			rep.SetEffect("c25_s2p");
-			rep.setValue(3);
+			rep.setValue(10);
 			rep.SetNoDamage(true);
 			rep.SetTargetEffect("c25_s2_e");
 			rep.setDelay(0);
 			ARSystem.giveBuff(player, rep, 100);
 			ARSystem.playSound((Entity)player, "c1025db");
+			cooldown[2] *= 15;
 		} else {
-			Reflect rep = new Reflect(player);
-			rep.SetEffect("c25_s2p");
-			rep.setValue(1);
-			rep.SetNoDamage(true);
-			rep.SetTargetEffect("c25_s2_e");
-			rep.setDelay(2);
-			ARSystem.giveBuff(player, rep, 100);
-			ARSystem.playSound((Entity)player, "c25s2");
+			if(Rule.buffmanager.GetBuffTime(player, "reflect") <= 0 && stack >= 60) {
+				Reflect rep = new Reflect(player);
+				rep.SetEffect("c25_s2p");
+				rep.setValue(1);
+				rep.SetNoDamage(true);
+				rep.SetTargetEffect("c25_s2_e");
+				rep.setDelay(2);
+				ARSystem.giveBuff(player, rep, (int)stack);
+				stack = 0;
+				ARSystem.playSound((Entity)player, "c25s2");
+			} else {
+				cooldown[2] = 0;
+			}
 		}
 		return true;
 	}
@@ -142,6 +160,22 @@ public class c25Accelerator extends c00main{
 
 	@Override
 	public boolean tick() {
+		if(!white) {
+			if(Rule.buffmanager.GetBuffTime(player, "reflect") > 0) {
+				if(player.isSneaking()) {
+					stack += (Rule.buffmanager.GetBuffTime(player, "reflect")-10)*0.7;
+					Rule.buffmanager.selectBuffTime(player, "reflect", 0);
+					if(stack > 200) {
+						stack = 200;
+					}
+					cooldown[2] = setcooldown[2];
+				}
+			}
+			else if(stack < 200) {
+				stack += (skillmult+sskillmult)*0.5f;
+				if(stack > 200) stack = 200;
+			}
+		}
 		if(player.isOnGround()) {
 			if(fly < 400) fly++;
 		} else {
@@ -150,7 +184,10 @@ public class c25Accelerator extends c00main{
 		if(!white && isps && tk%2==0) {
 			skill("c25_ps");
 		}
-		if(tk%20 == 0) scoreBoardText.add("&c ["+Main.GetText("c25:sk3")+ "]&f : "+ AMath.round(fly*0.05, 2));
+		if(tk%20 == 0) {
+			if(!white) scoreBoardText.add("&c ["+Main.GetText("c25:sk2")+ "]&f : "+ AMath.round(stack*0.05, 2));
+			scoreBoardText.add("&c ["+Main.GetText("c25:sk3")+ "]&f : "+ AMath.round(fly*0.05, 2));
+		}
 		if(tk%20 == 0) {
 			boolean iscc = false;
 			int tcc = 0;
@@ -183,7 +220,7 @@ public class c25Accelerator extends c00main{
 							buff.setTime(0);
 						}
 					}
-					if(Rule.team.getTeamName(player) != null && Rule.team.isTeamSize(Rule.team.getTeamName(player), true) >= 2) {
+					if(Rule.team.getTeamName(player) != null && Rule.team.isTeamSize(Rule.team.getTeamName(player), true) >= 2 && !ARSystem.isGameMode("lobotomy")) {
 						skill("c25_ssp1");
 						Rule.buffmanager.selectBuffValue(player, "barrier",500);
 						player.setMaxHealth(100);
@@ -194,20 +231,7 @@ public class c25Accelerator extends c00main{
 						setcooldown[1] *= 0.3;
 						ARSystem.playSoundAll("c1025select");
 						spskillon();
-						for(Player p: Rule.c.keySet()) {
-							Rule.c.get(p).PlayerSpCast(player);
-						}
-						String n = Main.GetText("c"+number+":name1") + " ";
-						if(n.equals("-")) {
-							n = "";
-						}
-						n +=Main.GetText("c"+number+":name2");
-						
-						for(Player p : Bukkit.getOnlinePlayers()) {
-							AdvManager.set(p, 399, 0 , "§f§l"+player.getName() +"§a("+ n +") §f§l" + Main.GetText("c"+number+":ssk"));
-						}
-						String na = "c"+number+":ssk"+"/&c!!!";
-						player.performCommand("tm anitext "+player.getName()+" SUBTITLE true 40 "+na);
+						spskillen("백익");
 						white = true;
 					} else {
 						spskillon();
@@ -223,11 +247,43 @@ public class c25Accelerator extends c00main{
 			}
 		}
 		
-		if(tk% 10 == 0) {
+		if(tk%10 == 0) {
 			for(Entity e : ARSystem.box(player, new Vector(5, 5, 5), box.TARGET)) {
 				touma(e);
 			}
+			if(tk%20 == 0 && !ARSystem.isGameMode("lobotomy")) {
+				HashMap<Integer,Integer> chars = new HashMap<>();
+				for(Player p : Rule.c.keySet()) {
+					int number = Rule.c.get(p).number%1000;
+					if(chars.containsKey(number)) {
+						chars.put(number, chars.get(number) + 1);
+					} else {
+						chars.put(number, 1);
+					}
+				}
+				int code = 0;
+				for(int n : chars.keySet()) {
+					if(player.getName().equals("heIp12")) System.out.println(n + " : " +chars.get(n));
+					if(chars.get(n) >= 3) {
+						code = n;
+					}
+				}
+				
+				if(code != 0) {
+					List<Player> players = new ArrayList<>();
+					for(Player p : Rule.c.keySet()) {
+						if(p != player && Rule.c.get(p).number%1000 == code) {
+							players.add(p);
+						}
+					}
+					for(Player p : players) {
+						Rule.c.put(p, new c2501Systers(p, plugin, null));
+					}
+					Rule.c.put(player, new c2500Accelerator(player, plugin, c));
+				}
+			}
 		}
+		
 		return true;
 	}
 	

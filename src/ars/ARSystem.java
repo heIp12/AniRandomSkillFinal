@@ -32,6 +32,10 @@ import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import Main.Main;
 import aliveblock.ABlock;
 import buff.Buff;
+import event.FixedDealEvent;
+import event.Skill;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import manager.Bgm;
 import manager.BuffManager;
 import manager.EntityBuffManager;
@@ -48,6 +52,7 @@ import util.GetChar;
 import util.Holo;
 import util.MSUtil;
 import util.Map;
+import util.ULocal;
 
 public class ARSystem {
 	public static ARSinfo AniRandomSkill;
@@ -117,7 +122,7 @@ public class ARSystem {
 		}
 		
 		Map.playerTpall();
-		
+		Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "minecraft:kill @e[type=armor_stand]");
 		if(score != 0) {
 			score /= AniRandomSkill.player;
 			AniRandomSkill.gamescore = score;
@@ -239,6 +244,7 @@ public class ARSystem {
 		p.setHealth(40);
 		p.performCommand("c removemyall");
 		p.setWalkSpeed(0.2f);
+		p.getInventory().clear();
 		for(PotionEffect potion :p.getActivePotionEffects()) {
 			p.removePotionEffect(potion.getType());
 		}
@@ -305,7 +311,7 @@ public class ARSystem {
 	}
 	
 	static public void Stop() {
-		if(Rule.c.size() == 1 && AniRandomSkill != null) {
+		if(Rule.c.size() == 1 && AniRandomSkill != null && !isGameMode("lobotomy")) {
 			for(Player p : Rule.c.keySet()) {
 				if(Rule.buffmanager.selectBuffType(p, BuffType.HEADCC) != null) {
 					for(Buff buff : Rule.buffmanager.getHashMap().get(p).getBuff()) {
@@ -452,13 +458,49 @@ public class ARSystem {
 			e.setHealth(e.getMaxHealth());
 		}
 	}
+	static public void damageText(Location e,String s,double damage) {
+		int val = (int) AMath.round(damage,0);
+		if(val > 20) val = 20;
+		if(val <= 0) val = 1;
+		
+		double vector1 = (0.01*(21-val)) - AMath.random(21-val)*0.02;
+		double vector3 =(0.01*(21-val)) -  AMath.random(21-val)*0.02;
+		if(val > 10) vector1 = vector3 = 0;
+		double vector2 = 0.55 - (val*0.05);
+		if(vector2 <= 0.01) vector2 = 0.01;
+		e = e.add(new Vector(0.5-AMath.random(100)*0.01,0.2-AMath.random(40)*0.01,0.5-AMath.random(100)*0.01));
+		Holo.create(e,s+" "+ AMath.round(damage,2),2+((int)damage*4),new Vector(vector1,vector2,vector3));
+	}
 	
-	static public void damage(Player e,double i) {
-		if(e.getHealth() > 0) {
-			e.setHealth(e.getHealth()-i);
-		} else {
-			e.damage(2,e);
+	static public FixedDealEvent fixedDamage(LivingEntity target,Player caster, double damage) {
+		if(Rule.c.get(caster) != null) damage *= Rule.c.get(caster).frist_damage;
+		
+		FixedDealEvent e = new FixedDealEvent(caster, target, (float)damage);
+		if(Rule.c.get(caster) != null) {
+			Rule.c.get(caster).fixeddamage(e);
 		}
+		if(Rule.c.get(target) != null) Rule.c.get(target).fixeddamage(e);
+		if(!e.isCancelled()) {
+			if(target.getHealth() - damage >= 1) {
+				target.setHealth(target.getHealth() - damage);
+				damageText(target.getLocation(),"§2§l☣ ",e.getDamage());
+				if(Rule.c.get(caster) != null) {
+					if(target instanceof Player) {
+						Rule.c.get(caster).s_damage += damage;
+					} else {
+						Rule.c.get(caster).s_damage += damage*0.2f;
+					}
+				}
+			} else {
+				e.isDeath = true;
+				if(Rule.c.get(caster) != null) Rule.c.get(caster).fixeddamage(e);
+				if(Rule.c.get(target) != null) Rule.c.get(target).fixeddamage(e);
+				if(!e.isCancelled()) {
+					Skill.remove(target, caster);
+				}
+			}
+		}
+		return e;
 	}
 	
 	static public void playSound(Entity entity,String s) {
@@ -753,7 +795,7 @@ public class ARSystem {
 	public static Player RandomPlayer(Player player) {
 		Player p = (Player) Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1];
 		for(int i = 0; i <1000; i++) {
-			if(p == player && isTarget(p, player)) {
+			if(p == player || isTarget(p, player)) {
 				p = (Player) Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1];
 			} else {
 				break;
@@ -761,6 +803,22 @@ public class ARSystem {
 		}
 		return p;
 	}
+	static public List<Entity> PlayerBeamV(Player player,float rangeblock, float size, types.box box){
+		List<Entity> entity = new ArrayList<Entity>();
+		Location loc = player.getLocation().clone();
+		for(float i=0;i<rangeblock;i++) {
+			loc.add(loc.getDirection());
+			for (LivingEntity e : player.getWorld().getLivingEntities()) {
+				if(e.getLocation().distance(loc) <= size && e != player) {
+					if(isTarget(e, player ,box) && !entity.contains(e)) {
+						entity.add(e);
+					}
+				}
+			}
+		}
+		return entity;
+	}
+	
 	static public List<Entity> PlayerBeamBox(Player player,float rangeblock, float size, types.box box){
 		List<Entity> entity = new ArrayList<Entity>();
 		Location loc = player.getLocation().clone();
@@ -924,18 +982,13 @@ public class ARSystem {
 
 	
 	static public List<Entity> boxS(Entity et, Vector vt,types.box box) {
-		List<Entity> entity = et.getNearbyEntities(vt.getX(),vt.getY(),vt.getZ());
+		List<Entity> entity = box(et,vt,box);
 		Entity[] p = new Entity[entity.size()];
-		int count = 0;
+		for(int i =0; i < p.length; i++) p[i] = entity.get(i);
 		
-		for(Entity e : entity) {
-			if(isTarget(e, et,box)) {
-				p[count++] = e;
-			}
-		} 
-		if(p.length == 0) return null;
-		if(p[0] == null) return null;
-		if(count == 1) return entity;
+		if(p.length == 0) return new ArrayList<Entity>();
+		if(p[0] == null) return new ArrayList<Entity>();
+		if(entity.size() == 1) return entity;
 		
 		for(int i = 0; i < entity.size(); i++) {
 			for(int j = 0; j < i; j++) {
@@ -947,6 +1000,7 @@ public class ARSystem {
 				}
 			}
 		}
+		
 		entity.clear();
 		for(Entity e : p) entity.add(e);
 		return entity;
@@ -1007,4 +1061,39 @@ public class ARSystem {
 	     }
 	}
 
+	public static String getloc(Location loc,Location ploc) {
+		Location local = ULocal.lookAt(ploc, loc);
+		float yaw = local.getYaw() - ploc.getYaw();
+		if (yaw > 180) {
+			yaw -= 360;
+		} else if (yaw < -180) {
+			yaw += 360;
+		}
+		String locstr = "";
+		if(yaw > -22.5 && yaw < 22.5) {
+			locstr = "↑";
+		}
+		else if(yaw >= 22.5 && yaw < 67.5) {
+			locstr = "↗";
+		}
+		else if(yaw >= 67.5 && yaw < 112.5) {
+			locstr = "→";
+		}
+		else if(yaw >= 112.5 && yaw > 157.5) {
+			locstr = "↘";
+		}
+		else if(yaw <= -22.5 && yaw > -67.5) {
+			locstr = "↖";
+		}
+		else if(yaw <= -67.5 && yaw > -112.5) {
+			locstr = "←";
+		}
+		else if(yaw <= -112.5 && yaw > -157.5) {
+			locstr = "↙";
+		} else {
+			locstr = "↓";
+		}
+		
+		return locstr;
+	}
 }

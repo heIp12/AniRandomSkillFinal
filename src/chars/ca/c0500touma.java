@@ -62,7 +62,8 @@ public class c0500touma extends c00main{
 			},20);
 			for(Entity e : entity) {
 				if(Rule.c.get(e) != null) {
-					if(Rule.c.get(e).number > 1000) {
+					int nb = Rule.c.get(e).number%10000;
+					if(nb > 1000 && nb%1000 != 139 && nb%1000 != 21 && nb%1000 != 24) {
 						spskillon();
 						spskillen();
 						ARSystem.playSound((Entity)player, "c5sp");
@@ -76,10 +77,10 @@ public class c0500touma extends c00main{
 					} else {
 						delay(()->{
 							for(int i =0; i<10; i++) {
-									if(Rule.c.get(e).cooldown[i] > 0) {
-										((LivingEntity)e).damage(3,player);
-									}
-									Rule.c.get(e).cooldown[i] = 10;
+								if(Rule.c.get(e).cooldown[i] > 0) {
+									((LivingEntity)e).damage(3,player);
+								}
+								Rule.c.get(e).cooldown[i] = 10;
 							}
 						},20);
 					}

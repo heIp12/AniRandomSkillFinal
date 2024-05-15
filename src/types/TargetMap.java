@@ -23,6 +23,15 @@ public class TargetMap<K,V extends Double> {
 		target.put(k, target.get(k)+ v);
 	}
 	
+	public void addAll(double v) {
+		for(K k : target.keySet()) {
+			target.put(k, target.get(k)+ v);
+			if(target.get(k) <= 0 && v < 0) {
+				removeAdd(k);
+			}
+		}
+	}
+	
 	public void set(K k,double v) {
 		target.put(k, v);
 	}

@@ -23,4 +23,16 @@ public class Inventory {
 		}
 		s.setInventory(inv);
 	}
+	public static void getlistC(InvSkill s,Player owner, Set<Player> set) {
+		int size = set.size()+9;
+		org.bukkit.inventory.Inventory inv = new CraftInventoryCustom(null, size, owner.getName()+" : Skill");
+		int i = 0;
+		for(Player p : set) {
+			ItemStack item =  Rule.playerinfo.get(p).getHead().clone();
+			inv.setItem(i,ItemCreate.Lore(item, p.getCustomName(),new String[] {Text.get("c"+Rule.c.get(p).number +":name1") + " " + Text.get("c"+Rule.c.get(p).number+":name2")} ));
+			
+			i++;
+		}
+		s.setInventory(inv);
+	}
 }

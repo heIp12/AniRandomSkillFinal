@@ -53,6 +53,7 @@ import chars.c.c00main;
 import chars.c.c09youmu;
 import chars.c.c10bell;
 import chars.c.c30siro;
+import chars.c.c45momo;
 import chars.c2.c60gil;
 import event.Skill;
 import event.WinEvent;
@@ -261,6 +262,7 @@ public class c131saito extends c00main{
 			scoreBoardText.add("&c ["+Main.GetText("c131:ps")+ "] : "+ p);
 		}
 		if(!isps && (score-200) >= 500) {
+			if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time <= 30) Rule.playerinfo.get(player).tropy(131, 1);
 			spskillon();
 			spskillen();
 			ARSystem.playSound((Entity)player, "c131sp");
@@ -390,7 +392,7 @@ public class c131saito extends c00main{
 				target.damage(1,player);
 				delay(()->{
 					target.setNoDamageTicks(0);
-					target.damage(0.2,player);
+					target.damage(0.35,player);
 				},10);
 				return;
 			}
@@ -399,7 +401,7 @@ public class c131saito extends c00main{
 				target.damage(4,player);
 				delay(()->{
 					target.setNoDamageTicks(0);
-					target.damage(0.8,player);
+					target.damage(1.4,player);
 				},10);
 				return;
 			}
@@ -408,7 +410,7 @@ public class c131saito extends c00main{
 				target.damage(0.8);
 				delay(()->{
 					target.setNoDamageTicks(0);
-					target.damage(0.16,player);
+					target.damage(0.28,player);
 				},10);
 				return;
 			}
@@ -421,8 +423,8 @@ public class c131saito extends c00main{
 		if(isAttack) {
 			if(type == 3) for(int i=0;i<10;i++) if(cooldown[i] > 0) cooldown[i] -=0.05;
 			if(type == 2) {
-				Rule.buffmanager.selectBuffAddValue(player, "barrier", (float) (e.getDamage()*0.3));
-				ARSystem.heal(player, e.getDamage()*0.2);
+				Rule.buffmanager.selectBuffAddValue(player, "barrier", (float) (e.getDamage()*0.15));
+				ARSystem.heal(player, e.getDamage()*0.1);
 			}
 			if(p) e.setDamage(e.getDamage()*1.25f);
 			
@@ -433,7 +435,7 @@ public class c131saito extends c00main{
 				e.setCancelled(true);
 				ARSystem.playSound((Entity)player, "c131p4");
 				ARSystem.giveBuff(player, new Nodamage(player), 60);
-				return true;
+				return false;
 			}
 			if(p && e.getDamage() > 10) {
 				ARSystem.playSound((Entity)player, "c131p2");
@@ -441,5 +443,25 @@ public class c131saito extends c00main{
 		}
 		return true;
 	}
+	@Override
+	protected boolean skill9() {
+		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
+		String is = "";
+		for(Entity e : el) {
+			if(Rule.c.get(e) != null) {
+				if(Rule.c.get(e) instanceof c128roise) {
+					is = "r";
+					break;
+				}
 
+			}
+		}
+
+		if(is.equals("r")) {
+			ARSystem.playSound((Entity)player, "c131roisu");
+		} else {
+			ARSystem.playSound((Entity)player, "c131db");
+		}
+		return true;
+	}
 }

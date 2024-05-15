@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Ice;
 import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
@@ -74,7 +75,7 @@ public class c0300remuru extends c00main{
 	@Override
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
-			ARSystem.addBuff(target, new Stun(target), 4);
+			ARSystem.addBuff(target, new Ice(target,player), 10);
 			target.setNoDamageTicks(0);
 			target.damage(1,player);
 		}
@@ -84,11 +85,7 @@ public class c0300remuru extends c00main{
 			double hp = target.getMaxHealth()*0.25;
 			player.sendTitle("","HP: "+Rule.buffmanager.GetBuffValue(player, "plushp")+"(+"+hp+")",0,40,20);
 			Rule.buffmanager.selectBuffAddValue(player, "plushp",(float) hp);
-			if(target.getHealth() - hp <= 1) {
-				Skill.remove(target, player);
-			} else {
-				target.setHealth(target.getHealth()-hp);
-			}
+			ARSystem.fixedDamage(target, player, hp);
 		}
 	}
 	

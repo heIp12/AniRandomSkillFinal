@@ -21,6 +21,7 @@ import buff.Noattack;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
+import chars.ca.c0001nb;
 import util.AMath;
 import util.GetChar;
 import util.MSUtil;
@@ -31,14 +32,19 @@ public class c001nb extends c00main{
 	
 	public c001nb(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
-		number = -1;
-		load();
-		text();
-		ARSystem.giveBuff(player, new TimeStop(player), 0);
-		ARSystem.giveBuff(player, new Silence(player), 0);
-		ARSystem.giveBuff(player, new Noattack(player), 400000);
-		ARSystem.giveBuff(player, new Stun(player), 400000);
-		Rule.buffmanager.selectBuffValue(player, "barrier",500000);
+		if(AMath.random(100) <= 10) {
+			delay(()->{Rule.c.put(player, new c0001nb(player,pl,null));},0);
+		} else {
+			number = -1;
+			load();
+			text();
+			ARSystem.giveBuff(player, new TimeStop(player), 0);
+			ARSystem.giveBuff(player, new Silence(player), 0);
+			ARSystem.giveBuff(player, new Noattack(player), 400000);
+			ARSystem.giveBuff(player, new Stun(player), 400000);
+			Rule.buffmanager.selectBuffValue(player, "barrier",500000);
+		}
+		
 	}
 	
 	@Override

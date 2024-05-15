@@ -166,11 +166,11 @@ public class c65cohina extends c00main{
 		Entity e = ARSystem.boxSOne(player, new Vector(8,8,8), box.TARGET);
 		if(e != null) {
 			double range = AMath.round(e.getLocation().distance(player.getLocation()),2);
-			float rangep = 1;
+			float rangep = 0.5f;
 			if(sk4 > 0 || isps) {
-				rangep = 2;
+				rangep = 1.5f;
 			}
-			if(range <= 4+rangep && range >= 4-rangep) {
+			if(range <= 4.5+rangep && range >= 4.5-rangep) {
 				player.sendTitle("§4<§c "+e.getName()+" §4>", "§c"+Text.get("c65:p1") +" : " + range,0,10,0);
 			} else {
 				player.sendTitle("< "+e.getName()+" >", Text.get("c65:p1") +" : " + range,0,10,0);
@@ -189,12 +189,12 @@ public class c65cohina extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			double range = e.getEntity().getLocation().distance(player.getLocation());
-			float rangep = 1;
+			float rangep = 0.5f;
 			if(sk4 > 0 || isps) {
-				rangep = 2;
+				rangep = 1.5f;
 				e.setDamage(e.getDamage() * 0.75f);
 			}
-			if(range <= 4+rangep && range >= 4-rangep) {
+			if(range <= 4.5+rangep && range >= 4.5-rangep) {
 				cr++;
 				e.setDamage(e.getDamage() * crit);
 				cooldown[3]-=6;
@@ -218,6 +218,12 @@ public class c65cohina extends c00main{
 				}
 				player.sendTitle("§4Critical!!", "§c<"+AMath.round(e.getDamage(),1)+">");
 			} else {
+				if(range <= 4.5+rangep+1 && range >= 4.5-rangep-1) {
+					e.setDamage(e.getDamage() * (1+((1-crit)*0.5)));
+					player.sendTitle("§cCritical!", "§c<"+AMath.round(e.getDamage(),1)+">");
+				} else {
+					for(int i =0; i<10; i++) if(cooldown[i] > 0) cooldown[i] *= 1.3f;
+				}
 				cr = 0;
 			}
 		} else {

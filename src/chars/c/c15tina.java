@@ -1,5 +1,7 @@
 package chars.c;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -15,12 +17,22 @@ import org.bukkit.util.Vector;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
-
+import types.box;
+import util.Holo;
 import util.MSUtil;
+import util.ULocal;
 
 public class c15tina extends c00main{
 	int ticks = 0;
 	int count = 0;
+	
+	int stack = 0;
+	
+	
+	@Override
+	public void setStack(float f) {
+		stack = (int)f;
+	}
 	
 	public c15tina(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -31,7 +43,24 @@ public class c15tina extends c00main{
 	
 	@Override
 	public boolean skill1() {
-		skill("c"+number+"_s1");
+		if(stack == 52) {
+			List<Player> tg = ARSystem.PlayerOnlyBeamBox(player, 150, 10, box.TARGET);
+			Location lc = player.getLocation();
+			if(tg.size() > 0) {
+				lc = ULocal.lookAt(lc.clone(), tg.get(0).getLocation());
+			}
+			player.teleport(lc);
+			ARSystem.playSound((Entity)player, "c15a",1, 2);
+			delay(()->{skill("c15_s1_2");},1);
+			Holo.create(player.getLocation(), "§a매크로 사용중", 80,new Vector(0,0.1,0));
+			for(int i =0; i< 5; i++) {
+				delay(()->{
+					skill("c15_s1_3");
+				},2+i*1);
+			}
+		} else {
+			skill("c"+number+"_s1");
+		}
 		if(night()) {
 			cooldown[1]*=0.7;
 		}
@@ -98,7 +127,7 @@ public class c15tina extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(night()) {
-				e.setDamage(e.getDamage()*2);
+				e.setDamage(e.getDamage()*1.5f);
 			}
 		} else {
 

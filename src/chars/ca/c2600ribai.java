@@ -1,28 +1,18 @@
 package chars.ca;
 
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-
 import Main.Main;
 import ars.ARSystem;
-import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
 import chars.c.c00main;
 import ars.Rule;
 import event.Skill;
-
-import util.MSUtil;
 
 public class c2600ribai extends c00main{
 	int ticks = 0;
@@ -53,7 +43,8 @@ public class c2600ribai extends c00main{
 	@Override
 	public boolean skill1() {
 		if(gas >= 20) {
-			skill("c26_s1");
+			ARSystem.playSound((Entity)player, "c26a", 1, 2);
+			skill("c1026_s1");
 			gas-=20;
 		}
 		return true;
@@ -62,6 +53,7 @@ public class c2600ribai extends c00main{
 	@Override
 	public boolean skill2() {
 		if(gas >= 50) {
+			ARSystem.playSound((Entity)player, "c26s2", 1, 2);
 			if(isps) {
 				skill("c1026_s2p");
 			} else {
@@ -75,6 +67,7 @@ public class c2600ribai extends c00main{
 	@Override
 	public boolean skill3() {
 		if(gas >= 10) {
+			ARSystem.playSound((Entity)player, "c26s3", 1.1f, 1);
 			if(isps) {
 				skill("c26_s3p");
 			} else {
@@ -130,18 +123,13 @@ public class c2600ribai extends c00main{
 		if(isAttack) {
 			double hp = ((LivingEntity)e.getEntity()).getMaxHealth();
 			if(ARSystem.isGameMode("lobotomy")) e.setDamage(e.getDamage() * 2);
-			e.setDamage(e.getDamage()+ e.getDamage()*0.05);
-			if(hp>30) e.setDamage(e.getDamage()*2);
+			e.setDamage(e.getDamage()+ e.getDamage()*0.03);
+			if(hp>30) e.setDamage(e.getDamage()*1.5);
 			
 			if(hp>40) ARSystem.heal(player, e.getDamage());
 			
 			if(hp>50) {
-				s_damage += e.getDamage();
-				if(((LivingEntity)e.getEntity()).getHealth() - e.getDamage() > 1) {
-					((LivingEntity)e.getEntity()).setHealth(((LivingEntity)e.getEntity()).getHealth() - e.getDamage());
-				} else {
-					Skill.remove(e.getEntity(), player);
-				}
+				ARSystem.fixedDamage((LivingEntity)e.getEntity(), player, e.getDamage());
 				e.setDamage(0);
 			}
 		} else {

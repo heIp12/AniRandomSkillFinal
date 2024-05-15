@@ -27,6 +27,7 @@ import com.nisovin.magicspells.util.BlockUtils;
 
 import Main.Main;
 import aliveblock.ABlock;
+import ars.ARSinfo;
 import ars.ARSystem;
 import ars.Rule;
 import buff.Noattack;
@@ -200,10 +201,12 @@ public class c54patel extends c00main{
 		return true;
 	}
 	
+	ARSinfo game;
 	public void death(Player p){
 		spskillen();
 		spskillon();
 		info();
+		game = ARSystem.AniRandomSkill;
 		ARSystem.playSound((Entity)player, "c54sp");
 		player.teleport(p);
 		if(Rule.c.get(p) != null && Rule.c.get(p) instanceof e002rain) {
@@ -232,13 +235,13 @@ public class c54patel extends c00main{
 			player.setHealth(hp);
 			ARSystem.giveBuff(player, new Nodamage(player), 60);
 			tpsdelay(()->{
-				if(Rule.c.get(player) != null) {
+				if(Rule.c.get(player) != null && ARSystem.AniRandomSkill == game) {
 					if(Rule.c.size() <= 1) ARSystem.Stop();
 					tpsdelay(()->{
-						if(Rule.c.get(player) != null) {
+						if(Rule.c.get(player) != null && ARSystem.AniRandomSkill == game) {
 							if(Rule.c.size() <= 1) ARSystem.Stop();
 							tpsdelay(()->{
-								if(Rule.c.get(player) != null) {
+								if(Rule.c.get(player) != null&& ARSystem.AniRandomSkill == game) {
 									if(Rule.c.size() > 1) {
 										HashMap<Player, c00main> ss = (HashMap<Player, c00main>) Rule.c.clone();
 										Rule.c.put(p,ss.get(player));

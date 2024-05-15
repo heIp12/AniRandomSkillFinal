@@ -50,6 +50,7 @@ import chars.c.c24sinobu;
 import chars.c.c30siro;
 import chars.c2.c60gil;
 import chars.ca.c2400sinobu;
+import event.FixedDealEvent;
 import event.Skill;
 import event.WinEvent;
 import manager.AdvManager;
@@ -138,6 +139,8 @@ public class c112hanekawa extends c00main{
 	@Override
 	public boolean skill4() {
 		if(sk4 >= 40 && skillCooldown(0)) {
+			if(setcooldown[0] < 30) setcooldown[0] = 30;
+			cooldown[0] = (float) (setcooldown[0]*(skillmult+sskillmult));
 			tr++;
 			if(tr >= 2) Rule.playerinfo.get(player).tropy(112, 1);
 			spskillen();
@@ -167,7 +170,7 @@ public class c112hanekawa extends c00main{
 	@Override
 	public boolean tick() {
 		if(tk%20 == 0 && psopen) scoreBoardText.add("&c ["+Main.GetText("c112:sk0")+ "] : &f" + sk4 +" / 40");
-		if(tk%2 == 0) {
+		if(tk%2 == 0 && Rule.buffmanager.GetBuffTime(player, "noheal") <= 0) {
 			Player s = null;
 			for(Player p : Rule.c.keySet()) if(Rule.c.get(p).getCode() == 24) s = p;
 			
@@ -176,17 +179,15 @@ public class c112hanekawa extends c00main{
 				float size = 0.1f;
 				if(sk2 > 0) size = 0.5f;
 				if(s != null && ((c24sinobu)Rule.c.get(s)).target == e) ((c24sinobu)Rule.c.get(s)).event(player);
-				if(entity.getHealth() - size > 1) {
+
+				FixedDealEvent ev = ARSystem.fixedDamage(entity, player, size);
+				if(!ev.isCancelled()) {
 					if(size > 0.3) {
 						ARSystem.spellCast(player, e, "c112p2");
 					} else {
 						ARSystem.spellCast(player, e, "c112p");	
 					}
-					entity.setHealth(entity.getHealth() -size);
-					ARSystem.overheal(player, size);
-					s_damage+=size;
-				} else {
-					Skill.remove(entity, player);
+					ARSystem.overheal(player, ev.getDamage()*0.5);
 				}
 			}
 		}

@@ -16,6 +16,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -45,10 +47,12 @@ import chars.c.c00main;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
+import net.minecraft.server.v1_12_R1.Village;
 import types.BuffType;
 import types.box;
 
 import util.AMath;
+import util.BlockUtil;
 import util.GetChar;
 import util.Holo;
 import util.InvSkill;
@@ -149,20 +153,20 @@ public class c8603iriya extends c00main{
 					if(range < 3) {
 						delay = 10;
 						player.setVelocity(loc.clone().add(0.5-0.1*AMath.random(10),0.5-0.1*AMath.random(10),0.5-0.1*AMath.random(10)).getDirection().multiply(3).setY(1.5));
-						if(!player.isOnGround()) player.setVelocity(loc.getDirection().multiply(-4).setY(-0.5));
+						if(BlockUtil.isAirbone(player.getLocation(), 2)) player.setVelocity(loc.getDirection().multiply(-4).setY(-0.5));
 						ARSystem.giveBuff(player, new Nodamage(player), 8);
 					} else {
 						delay = 3;
 						player.teleport(loc);
 						player.setVelocity(loc.getDirection().multiply(-1).setY(0.2));
-						if(!player.isOnGround()) player.setVelocity(loc.getDirection().multiply(-1).setY(-0.5));
+						if(BlockUtil.isAirbone(player.getLocation(), 2)) player.setVelocity(loc.getDirection().multiply(-1).setY(-0.5));
 						ARSystem.giveBuff(player, new Nodamage(player), 2);
 					}
 				}
 				else if(range > 8) {
 					delay = 2;
 					player.setVelocity(loc.clone().add(0.5-0.1*AMath.random(10),0.5-0.1*AMath.random(10),0.5-0.1*AMath.random(10)).getDirection().multiply(0.6).setY(0));
-					if(!player.isOnGround()) player.setVelocity(loc.getDirection().multiply(0.6).setY(-0.5));
+					if(BlockUtil.isAirbone(player.getLocation(), 2)) player.setVelocity(loc.getDirection().multiply(0.6).setY(-0.5));
 					ARSystem.giveBuff(player, new Nodamage(player), 1);
 				} else {
 					delay = 10;
@@ -187,7 +191,7 @@ public class c8603iriya extends c00main{
 				double range = target.getLocation().distance(player.getLocation());
 				if(range < 15) {
 					delay = 20;
-					if(player.isOnGround()) {
+					if(!BlockUtil.isAirbone(player.getLocation(), 3)) {
 						player.setVelocity(loc.getDirection().multiply(-1).setY(1.5));
 						ARSystem.giveBuff(player, new Nodamage(player), 10);
 						delay(()->{
@@ -209,7 +213,7 @@ public class c8603iriya extends c00main{
 						skill("c3086_s1-"+(1+AMath.random(3)));
 					}
 				}
-				else if(range > 15 && player.isOnGround()) {
+				else if(range > 15 && !BlockUtil.isAirbone(player.getLocation(), 2)) {
 					if(AMath.random(5) == 3) {
 						delay = 20;
 						ARSystem.giveBuff(player, new Stun(player), 20);
@@ -265,15 +269,70 @@ public class c8603iriya extends c00main{
 				}
 				ARSystem.giveBuff(player, new Nodamage(player), 5);
 			}
+			if(!BlockUtil.isPathable(player.getLocation().clone().add(player.getLocation().getDirection()).getBlock())) {
+				int i = 0;
+				while(!BlockUtil.isPathable(player.getLocation().clone().add(player.getLocation().getDirection()).add(new Vector(0,i,0)).getBlock())) {
+					i++;
+					if(i > 10) {
+						break;
+					}
+				}
+				if(i < 10) {
+					Location loc = player.getLocation();
+					loc.setYaw(player.getLocation().getYaw()+180);
+					loc.setPitch(-AMath.random(0,90));
+					player.teleport(loc);
+					player.setVelocity(loc.getDirection().multiply(1));
+				} else if(i > 0) {
+					Location loc = player.getLocation();
+					loc.setPitch(-AMath.random(75,90));
+					player.teleport(loc);
+					player.setVelocity(loc.getDirection().multiply(1));
+				}
+			}
 		}
 		delay--;
 	}
-		
+	public void pattan5(LivingEntity target) {
+		if(delay <= 0) {
+			Location lc = Map.getCenter();
+			lc = ULocal.lookAt(player.getLocation().clone(), lc);
+
+			if(AMath.random(20) <= 1) {
+				delay = 10;
+				lc.setYaw(target.getLocation().getYaw());
+				lc.setPitch(target.getLocation().getPitch()*-1);
+				player.setVelocity(lc.getDirection().multiply(2.5));
+			} if(AMath.random(10) <= 2) {
+				delay = 10;
+				lc.setYaw(lc.getYaw() + 90 + AMath.random(180));
+				lc.setPitch(AMath.random(120)-61);
+				player.setVelocity(lc.getDirection().multiply(2));
+			} else if(AMath.random(3) == 2) {
+				delay = 5;
+				lc.setYaw(lc.getYaw() + 50 - AMath.random(100));
+				while(!BlockUtil.isPathable(player.getLocation().clone().add(lc.getDirection().multiply(1.5)).getBlock()) && lc.getPitch() > -90) lc.setPitch(lc.getPitch()-2);
+				player.setVelocity(lc.getDirection().multiply(3));
+			} else {
+				delay = 5+AMath.random(5);
+				if(AMath.random(10) <= 3) lc.setPitch(30);
+				player.setVelocity(lc.getDirection().multiply(2.5));
+			}
+			
+			if(!BlockUtil.isPathable(player.getLocation().getBlock())) delay = 2;
+			player.teleport(lc);
+		}
+		delay--;
+	}
+	
 	int rpt = 0;
 	int attackT = 0;
 	@Override
 	public boolean tick() {
 		if(isps) {
+			if(tk%20 == 0) {
+				scoreBoardText.add("&c [Pattern] : " + pattan);
+			}
 			if(oon == false) {
 				oon = true;
 				hp*=3;
@@ -281,19 +340,32 @@ public class c8603iriya extends c00main{
 				player.setHealth(hp);
 			}
 			cooldown[1] = cooldown[2] = cooldown[3] = cooldown[5] = cooldown[6] = cooldown[9] = 300;
-			LivingEntity target = (LivingEntity) ARSystem.boxSOne(player, new Vector(100,100,100), box.TARGET);
+			LivingEntity target = null;
+			for(Entity e : ARSystem.boxS(player, new Vector(100,100,100), box.TARGET)) {
+				if(e instanceof Village) {
+					continue;
+				}
+				if(target == null) target = (LivingEntity)e;
+			}
 			double range = -1;
 			if(target != null) player.getLocation().distance(target.getLocation());
 			if(attackT > 100 && 100 <= AMath.random(attackT/5) && range >= 14) {
 				pattan = 4;
 				if(pattantime > 20) pattantime = 20;
 			}
+			String b = player.getLocation().getBlock().getType().toString();
+			if((!Map.inMap(player.getLocation())) && AMath.random(10) <= 1) {
+				pattan = 5;
+				pattantime = 10;
+			}
+			if(pattan == 5 && Map.inMap(player.getLocation())) pattan = AMath.random(4);
 			if(pattantime > 0) {
 				pattantime--;
 				if(pattan == 1) pattan1(target);
 				if(pattan == 2) pattan2(target);
 				if(pattan == 3) pattan3(target);
 				if(pattan == 4) pattan4(target);
+				if(pattan == 5) pattan5(target);
 			} else {
 				pattantime = AMath.random(20)*10;
 				if(range <= 14) pattan = 1+AMath.random(2);
@@ -307,6 +379,9 @@ public class c8603iriya extends c00main{
 				}
 				rpt = pattan;
 			}
+			if(b.contains("WATER") ||  b.contains("LAVA")) {
+				player.setVelocity(player.getVelocity().add(new Vector(0,0.3f,0)));
+			}
 		} else {
 			if(tk%20 == 0) {
 				if(b == null) b = (Install)Rule.buffmanager.selectBuff(player, "Install");
@@ -317,6 +392,14 @@ public class c8603iriya extends c00main{
 		}
 		attackT++;
 		return true;
+	}
+	
+	@Override
+	public boolean damage(EntityDamageEvent e) {
+		if(isps && e.getCause() != DamageCause.ENTITY_ATTACK){
+			pattan = 5;
+		}
+		return super.damage(e);
 	}
 	
 	@Override

@@ -91,7 +91,7 @@ public class c4300yuno extends c00main{
 				Wound w = new Wound(en);
 				w.setEffect("bload");
 				w.setDelay(player, 20, 0);
-				ARSystem.giveBuff(en, w, 200,1);
+				ARSystem.giveBuff(en, w, 140,1);
 				tick = 0;
 			}
 		}

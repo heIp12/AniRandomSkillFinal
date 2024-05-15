@@ -128,9 +128,12 @@ public class c119kayaba extends c00main{
 		}
 		return true;
 	}
+	int cd = 0;
 	
 	@Override
 	public boolean skill3() {
+		cd++;
+		if(cd > 49)Rule.playerinfo.get(player).tropy(119, 1);
 		if(card >= 10) {
 			card -= 10;
 		} else {
@@ -140,10 +143,12 @@ public class c119kayaba extends c00main{
 		sk3 = 14;
 		return true;
 	}
-	
+	int ccd = 0;
 	@Override
 	public boolean skill4() {
 		if(card < 10) card++;
+		ccd++;
+		if(ccd >= 50) Rule.playerinfo.get(player).tropy(119, 1);
 		ARSystem.playSound((Entity)player, "c119s4");
 		return true;
 	}
