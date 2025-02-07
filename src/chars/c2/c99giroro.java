@@ -154,7 +154,7 @@ public class c99giroro extends c00main{
 	
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
-		if(target == p && e != player && !isps) {
+		if(target == p && e != player && !isps && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			ARSystem.playSound(player, "c99sp");

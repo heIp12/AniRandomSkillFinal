@@ -117,7 +117,7 @@ public class c36kaneki extends c00main{
 			if(setcooldown[2] <= 0.5) setcooldown[2] = 0.5f;
 			if(setcooldown[3] <= 0.5) setcooldown[3] = 0.5f;
 			
-			if(count >= cc && !isps) {
+			if(count >= cc && !isps && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				setcooldown[1]-=1.5;

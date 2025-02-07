@@ -141,7 +141,7 @@ public class c4400izuna extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "c44select");
 		return true;
 	}

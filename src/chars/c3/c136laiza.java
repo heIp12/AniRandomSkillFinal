@@ -103,7 +103,7 @@ public class c136laiza extends c00main{
 
 	@Override
 	public void setStack(float f) {
-		if(stack > 1000) {
+		if(f > 1000) {
 			potion.put("i"+((int)f)/1000, ((int)f)%1000);
 		} else {
 			stack = (int)f;
@@ -141,7 +141,7 @@ public class c136laiza extends c00main{
 		if(stack >= 2) {
 			List<Entity> e = ARSystem.box(player, new Vector(15,15,15), box.TARGET);
 			for(Entity en : e) {
-				if(Rule.c.get(en) != null) {
+				if(ARSystem.E_sterEgg && Rule.c.get(en) != null) {
 					int nb = Rule.c.get(en).number;
 					if(nb == 122 || nb == 45) {
 						Location loc = player.getLocation();
@@ -292,13 +292,15 @@ public class c136laiza extends c00main{
 					}
 				} else if(item == 5) {
 					ARSystem.playSound((Entity)player, "0heal",1.6f);
-					ARSystem.giveBuff(player, new PowerUp(player), 200, 1);
 					player.damage(2);
 					if(ARSystem.isGameMode("lobotomy")) {
+						ARSystem.giveBuff(player, new PowerUp(player), 200, 0.4);
 						for(Entity e : ARSystem.box(player, new Vector(8,5,8), box.TEAM)) {
 							LivingEntity en = (LivingEntity)e;
-							ARSystem.giveBuff(en, new PowerUp(en), 200, 1);
+							ARSystem.giveBuff(en, new PowerUp(en), 200, 0.4);
 						}
+					} else {
+						ARSystem.giveBuff(player, new PowerUp(player), 200, 1);
 					}
 				} else if(item == 6) {
 					ARSystem.playSound((Entity)player, "0win",1.6f);

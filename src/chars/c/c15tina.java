@@ -102,7 +102,7 @@ public class c15tina extends c00main{
 		skill("c"+number+"_s3");
 		count++;
 
-		if(count > 3 ) {
+		if(count > 3&& skillCooldown(0)) {
 			count = 0;
 			spskillen();
 			spskillon();

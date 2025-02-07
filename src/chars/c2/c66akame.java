@@ -72,7 +72,7 @@ public class c66akame extends c00main{
 			ARSystem.giveBuff(e, cs,200,0.3);
 		}
 		count++;
-		if(count >= 10 && !isps) {
+		if(count >= 10 && !isps && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			ARSystem.playSound((Entity)player, "c66sp");

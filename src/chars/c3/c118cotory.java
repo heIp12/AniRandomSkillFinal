@@ -154,9 +154,9 @@ public class c118cotory extends c00main{
 		if(n.equals("1") && target.getHealth() != target.getMaxHealth()) {
 			double p = 1.2 - (target.getHealth() / target.getMaxHealth());
 			if(p > 1) p = 1;
-			ARSystem.heal(target, p*10);
-			if(target != player) this.p += p*10;
-			s_damage += p*5;
+			ARSystem.heal(target, p*15);
+			if(target != player) this.p += p*15;
+			s_damage += p*7.5;
 			skill("c118_s1e");
 		}
 		if(n.equals("2")) {

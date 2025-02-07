@@ -240,7 +240,6 @@ public class c150tenshi extends c00main{
 				skill("c150_p");
 				e.setDamage(e.getDamage() + 3);
 				ARSystem.giveBuff(player, new Nodamage(player), 10);
-				ARSystem.spellLocCast(player,lc,"c150_move");
 				for(int i =0;i<10;i++) {
 					if(cooldown[i] > 0) {
 						cooldown[i] *= 0.8f;

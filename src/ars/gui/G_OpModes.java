@@ -57,6 +57,10 @@ public class G_OpModes extends GUIBase{
 			if(GameModes.getGameModes(mode.getModeName()).IsOnlyOne()) {
 				lores.add("§c["+Text.get("main:modeinfo2")+"]");
 			}
+			if(Text.get("mode:"+mode.getModeName()+"_1") != null) {
+				lores.add("§d§l["+Text.get("main:modeinfo3")+"]");
+				
+			}
 			is = ItemCreate.Lore(is,name,lores);
 			ItemRep(i, is);
 			i++;
@@ -70,6 +74,10 @@ public class G_OpModes extends GUIBase{
 		if(modeNames.size()-1 < clickLocal) return false;
 		
 		String modename = modeNames.get(clickLocal);
+		if(shift) {
+			new G_ModeSeting(player, modename);
+			return false;
+		}
 		ARSystem.redyMode(modename);
 		
 		String mode = "";

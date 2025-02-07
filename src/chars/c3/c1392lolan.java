@@ -278,7 +278,7 @@ public class c1392lolan extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		if(Rule.buffmanager.GetBuffTime(player,"panic") > 0) ARSystem.playSound((Entity)player, "c139db"+(AMath.random(5)+9));
 		else ARSystem.playSound((Entity)player, "c139db6");
 		return true;

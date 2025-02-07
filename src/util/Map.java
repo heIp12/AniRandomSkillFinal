@@ -18,10 +18,21 @@ import buff.Silence;
 import event.Skill;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
+import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MobManager;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import types.MapType;
 import manager.AdvManager;
+import mob.M_Armor;
+import mob.M_Barrar;
+import mob.M_BarrarDrain;
+import mob.M_Heal;
+import mob.M_IIZEN;
+import mob.M_NODEI;
+import mob.M_ROCKREE;
+import mob.M_Sile;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
@@ -35,7 +46,7 @@ public class Map {
 	
 	public static int maphuman = 10;
 	
-	public static String Version = "1.9";
+	public static String Version = "1.99";
 	public static MapType mapType = MapType.NORMAL;
 	public static World world = Bukkit.getWorld("world");
 	public static int lastplay = 0;
@@ -334,6 +345,7 @@ public class Map {
 		Holo.create(new Location(world,-3.2,32.1,-95.5),"heIp12");
 		Holo.create(new Location(world,-3.2,31.4,-95.5),Main.GetText("main:loby10"));
 		Holo.create(new Location(world,-3.2,31.1,-95.5),"Teddy_Dear , nocksa , LARS0131");
+		Holo.create(new Location(world,-3.2,30.8,-95.5),"Rqbb2t");
 		
 		Holo.create(new Location(world,-16.8,31.5,-57.2), "§41");
 		Holo.create(new Location(world,-16.8,31,-57.2), "§c2");
@@ -417,16 +429,27 @@ public class Map {
 	}
 	
 	static public Entity spawnMMOwner(String name,Location loc,UUID uuid) {
-		ActiveMob m = mm.spawnMob(name, loc);
-		m.setOwner(uuid);
-		return m.getEntity().getBukkitEntity();
+		if (mm.getMythicMob(name) != null) {
+			MythicMob mm = Map.mm.getMythicMob(name);
+			ActiveMob m = mm.spawn(BukkitAdapter.adapt(loc), 1);
+			MythicMobs.inst().getEntityManager().registerMob(m.getEntity().getWorld(), m.getEntity());
+			
+			m.setOwner(uuid);
+			return m.getEntity().getBukkitEntity();
+		} else {
+			System.out.println("Serch Error : Mythicmob : "+name);
+			return null;
+		}
 	}
 	
 	static public LivingEntity spawnMM(String name,Location loc) {
 		LivingEntity e = null;
 		if (mm.getMythicMob(name) != null) {
-			ActiveMob l = mm.spawnMob(name, loc);
-			e = l.getLivingEntity();
+			MythicMob mm = Map.mm.getMythicMob(name);
+			ActiveMob m = mm.spawn(BukkitAdapter.adapt(loc), 1);
+			MythicMobs.inst().getEntityManager().registerMob(m.getEntity().getWorld(), m.getEntity());
+			e = m.getLivingEntity();
+			
 		} else {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(),"mm m spawn "+name+" 1 "+loc.getWorld().getName()+","+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ());
 		}

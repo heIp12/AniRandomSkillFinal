@@ -309,7 +309,7 @@ public class c137mlim extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player,"c137db"+AMath.random(3));
 		return true;
 	}

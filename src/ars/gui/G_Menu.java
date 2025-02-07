@@ -15,6 +15,7 @@ import ars.PlayerInfo;
 import ars.Rule;
 import ars.gui.solo.G_SoloMenu;
 import chars.c2.c58nao;
+import chars.c2.c97sorao;
 import util.AMath;
 import util.BlockUtil;
 import util.GUIBase;
@@ -37,9 +38,9 @@ public class G_Menu extends GUIBase{
 			page = new int[]
 					{
 							   0,50, 0, 0, 0, 0, 0, 0, 0,
-							   0, 1,51, 2, 3, 6, 5, 4, 0,
+							  15, 1,51, 2, 3, 6, 5, 4, 0,
 							   0, 0, 0, 0, 0, 0, 0, 0, 0,
-							   0, 13, 0, 7, 8, 0, 0,11,12,
+							   0, 13, 14, 7, 8, 0, 0,11,12,
 							   0, 0, 0, 0, 0, 0, 0, 0, 0
 					};
 		}
@@ -47,7 +48,7 @@ public class G_Menu extends GUIBase{
 			page = new int[]
 					{
 							   0,50, 0, 0, 0, 0, 0, 0, 0,
-							   0, 1,51, 2, 3, 6, 5, 4, 0,
+							  15, 1,51, 2, 3, 6, 5, 4, 0,
 							   0, 0, 7, 0, 0, 0, 0, 0, 0
 					};
 			line = 3;
@@ -55,7 +56,7 @@ public class G_Menu extends GUIBase{
 			page = new int[]
 				{
 						   0,50, 0, 0, 0, 0, 0, 0, 0,
-						   0, 1,51, 2, 3, 6, 5, 4, 0,
+						  15, 1,51, 2, 3, 6, 5, 4, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0
 				};
 			line = 3;
@@ -125,11 +126,20 @@ public class G_Menu extends GUIBase{
 				player.showPlayer(p);
 			}
 			for(int i=0;i<300;i++) {
-				if(!BlockUtil.isPathable(player.getLocation().getBlock().getType()))
+				if(!BlockUtil.isPathable(player.getLocation().getBlock().getType())) {
 					player.teleport(player.getLocation().add(0,1,0));
+					if(Rule.c.get(player).number == 97) {
+						((c97sorao)Rule.c.get(player)).skillmult -= 0.5;
+						((c97sorao)Rule.c.get(player)).tp--;
+					}
+				}
 			}
 			if(!BlockUtil.isPathable(player.getLocation().clone().add(0,1,0).getBlock().getType())) {
 				player.teleport(Map.randomLoc(player));
+				if(Rule.c.get(player).number == 97) {
+					((c97sorao)Rule.c.get(player)).skillmult -= 0.5;
+					((c97sorao)Rule.c.get(player)).tp--;
+				}
 			}
 		}
 	}
@@ -178,6 +188,13 @@ public class G_Menu extends GUIBase{
 		item = ItemCreate.Name(item,"§fSupply Selct");
 		return item;
 	}
+
+	public ItemStack gui14(){
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return gui0();
+		ItemStack item = ItemCreate.Item(260, 0);
+		item = ItemCreate.Name(item,"§fitem Selct");
+		return item;
+	}
 	
 	public ItemStack gui50(){
 		ItemStack item = ItemCreate.Item(293, 1400 + AMath.random(42));
@@ -190,6 +207,23 @@ public class G_Menu extends GUIBase{
 		item = ItemCreate.Name(item,"§f"+Text.get("main:info0"));
 		return item;
 	}
+	
+	public ItemStack gui15(){
+		if(ARSystem.playerItem.get(player) == null || ARSystem.playerItem.get(player).items.size() <= 0) return gui0();
+		ItemStack item = ARSystem.playerItem.get(player).items.get(0).getItem().clone();
+		item = ItemCreate.Name(item,"§f"+Text.get("main:info54"));
+		return item;
+	}
+	public void click15(boolean right,boolean shift) {
+		if(Rule.ishelp(player) || Rule.oplist.contains(player.getName())) {
+			if(shift) {
+				new G_UserItem(player);
+				return;
+			}
+		}
+		new G_UMenu(player, player);
+	}
+	
 	
 	public void click0(boolean right,boolean shift) {}
 	public void click1(boolean right,boolean shift) {
@@ -219,7 +253,12 @@ public class G_Menu extends GUIBase{
 				String s = Main.GetText("tropy:c"+info.playerTrophy+"_"+k);
 				if(s != null) {
 					if(s.contains("[Effect]")) {
-						if(info.playerTrophy.equals("16-4")) {
+						if(info.playerTrophy.equals("0-42")) {
+							String msgs = (String)Rule.Var.Load(player.getName()+".info.loboC");
+							for(Player p : Bukkit.getOnlinePlayers()) 
+								p.spigot().sendMessage(Text.hover(p,"§a§l[Lobotomy Clear!!]", msgs));
+						}
+						else if(info.playerTrophy.equals("16-4")) {
 							String ty = (String)Rule.Var.Load(player.getName()+".info.himeP");
 							String msgs = (String)Rule.Var.Load(player.getName()+".info.himeD");
 							System.out.println("§e§l★자랑하기】§a§n"+player.getName()+ "§e§l]>§f §c§f"+k+"§c§f" + ty);
@@ -287,6 +326,12 @@ public class G_Menu extends GUIBase{
 	public void click13(boolean right,boolean shift) {
 		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return;
 		new G_Supply(Rule.playerinfo.get(player).target);
+	}
+	
+	public void click14(boolean right,boolean shift) {
+		if(!(player.isOp() || Rule.ishelp(player) || Rule.oplist.contains(player.getName()))) return;
+		if(Rule.c.get(player) == null) return;
+		new G_Item(Rule.playerinfo.get(player).target,3,1000,3000);
 	}
 	
 	public void click50(boolean right,boolean shift) {

@@ -58,7 +58,7 @@ import util.MSUtil;
 import util.Map;
 
 public class c94yukari extends c00main{
-	float p = 20;
+	float p = 150;
 	int s2_sound = 0;
 	Location own_loc;
 	Location tow_loc;

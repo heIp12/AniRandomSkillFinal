@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="org/apache/commons/net/bsd/|org/apache/commons/net/|org/apache/commons/|org/apache/|org/apache/commons/net/bsd/" kind="src" path="src"/>
+	<classpathentry excluding="org/apache/commons/net/bsd/|org/apache/commons/net/|org/apache/commons/|org/apache/|org/apache/commons/net/bsd/|mode/lobotomy/|mode/lobotomy/|mode/lobotomy/" kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/bukkitspawner/Spigot1122.jar"/>
 	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/TextManager.jar"/>
 	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/ProtocolLib.jar"/>
@@ -14,5 +14,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/HeIpApi.jar"/>
 	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/MythicMobs-4.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/Citizens.jar"/>
+	<classpathentry kind="lib" path="C:/KimuSoft/KuBukkit/server/ARSF/plugins/ArmorStandPlus.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

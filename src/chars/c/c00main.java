@@ -16,9 +16,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -43,6 +45,7 @@ import event.Skill;
 import event.WinEvent;
 import manager.AdvManager;
 import manager.BuffManager;
+import manager.ItemManager;
 import manager.ScoreBoard;
 import mode.MLoboTomy;
 import util.Text;
@@ -72,6 +75,7 @@ public class c00main implements Listener {
 	public float setcooldown[] = new float[10];
 	public float cooldown[] = new float[10];
 	public List<Buff> buffTexts = new ArrayList<Buff>();
+	public List<String> scoreText = new ArrayList<>();
 	
 	public double skillmult = 1;
 	
@@ -123,6 +127,8 @@ public class c00main implements Listener {
 			Rule.buffmanager.getBuffs(p).clear();
 		}
 		if(p != null) {
+			if(ARSystem.playerItem.get(p) == null) ARSystem.playerItem.put(p, new ItemManager(p));
+			
 			ARSystem.giveBuff(p, new PlusHp(p), 0);
 			ARSystem.giveBuff(p, new Barrier(p), 0);
 			ARSystem.giveBuff(p, new BuffAC(p), 0);
@@ -195,7 +201,9 @@ public class c00main implements Listener {
 			if(Rule.playerinfo.get(player).spopen.length > number%1000) {
 				Rule.playerinfo.get(player).spopen[number%1000] = (boolean)Rule.Var.Load(player.getName()+".Sp.c"+(number%1000));
 			}
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			Bukkit.broadcastMessage("char Load Error");
+		}
 		Rule.playerinfo.get(player).save();
 		Rule.savePoint(player.getName(), (int) Rule.playerinfo.get(player).getcradit(), 0);
 		Rule.savePoint(player.getName(), (int) Rule.playerinfo.get(player).getScore(), 1);
@@ -303,7 +311,7 @@ public class c00main implements Listener {
 		}
 	}
 	
-	protected void load() {
+	public void load() {
 		for(int i = 0; i < setcooldown.length; i++) {
 			if(Main.GetText("c"+number+":sk"+i+"_cooldown") != null) {
 				setcooldown[i] = (float) (Integer.parseInt(Main.GetText("c"+number+":sk"+i+"_cooldown"))/10.0);
@@ -329,7 +337,7 @@ public class c00main implements Listener {
 		isps = true;
 		return true;
 	}
-	protected void spskillen() {
+	public void spskillen() {
 		spskillen(Main.GetText("c"+number+":sk0"));
 	}
 	
@@ -387,7 +395,7 @@ public class c00main implements Listener {
 		return false;
 	}
 	
-	protected boolean skill9(){
+	public boolean skill9(){
 		player.getWorld().playSound(player.getLocation(), "c"+number+"db", 1, 1);
 		return false;
 	}
@@ -416,7 +424,7 @@ public class c00main implements Listener {
 					}
 				}
 			} catch(ConcurrentModificationException ev) {
-		
+				
 			}
 		}
 		if(!e.isCancelled()) {
@@ -457,12 +465,25 @@ public class c00main implements Listener {
 		scoreBoardText.clear();
 		scoreBoardText.add("&m&l=========================");
 		scoreBoardText.add("§e§l [No."+(number%1000)+"] §b"+Main.GetText("c"+number+":name1")+" "+Main.GetText("c"+number+":name2"));
-		scoreBoardText.add("&c&l ["+Main.GetText("main:s7")+"] : "+ (score-200)%100000);
-		if(s_kill > 0) {
-			scoreBoardText.add("&6 ["+Main.GetText("main:s5")+"] : &f"+ s_kill);
+		if(ARSystem.isGameMode("lobotomy")) {
+			scoreBoardText.add("&c&l ["+Main.GetText("lobo:scbd1")+"] : "+ MLoboTomy.mobs.size());
+			scoreBoardText.add("&6&l ["+Main.GetText("lobo:scbd2")+"] : "+ MLoboTomy.etcmobs.size());
+			scoreBoardText.add("&9&l ["+Main.GetText("lobo:scbd3")+"] : "+ MLoboTomy.vilager.size() +" / " + MLoboTomy.humanMax);
+			
+		} else {
+			scoreBoardText.add("&c&l ["+Main.GetText("main:s7")+"] : "+ (score-200)%100000);
+			if(s_kill > 0) scoreBoardText.add("&6 ["+Main.GetText("main:s5")+"] : &f"+ s_kill);
+			if(Rule.playerinfo.get(player).gold != 0) scoreBoardText.add("&e&l [Gold] : &f"+ Rule.playerinfo.get(player).gold);
+			scoreBoardText.add("&6 ["+Main.GetText("main:s6")+"] : &f"+ (Math.round(s_damage*10.0)/10.0));	
 		}
-		scoreBoardText.add("&6 ["+Main.GetText("main:s6")+"] : &f"+ (Math.round(s_damage*10.0)/10.0));
 		scoreBoardText.add("&m&l=--=--=--=--=--=--=--=--=");
+		if(scoreText.size() > 0) {
+			for(String s : scoreText) {
+				scoreBoardText.add(s);
+			}
+			scoreText.clear();
+			scoreBoardText.add("&m&l==-=-==--==-=-==--==-=-==");
+		}
 		if(buffTexts.size() > 0) {
 			for(Buff s : buffTexts) {
 				scoreBoardText.add(s.getText());
@@ -560,7 +581,7 @@ public class c00main implements Listener {
 				if(skillmult != 1 || sskillmult != 0) {
 					scoreBoardText.add("&9&l ["+Main.GetText("main:s4")+"] : &b"+ (Math.round((skillmult+sskillmult-1)*100))+"%");
 				}
-				if(Rule.buffmanager.GetBuffValue(player, "buffac") > 0) {
+				if(Rule.buffmanager.GetBuffValue(player, "buffac") != 0) {
 					scoreBoardText.add("&9&l ["+Main.GetText("main:s8")+"] : &b"+ (Math.round((Rule.buffmanager.GetBuffValue(player, "buffac"))*100))+"%");
 				}
 			}
@@ -589,6 +610,8 @@ public class c00main implements Listener {
 		}
 	}
 	public boolean entitydamage(EntityDamageByEntityEvent e,boolean isAttack) { return true; }
+	public boolean entitylastdamage(EntityDamageByEntityEvent e) {return false;}
+	public boolean teleportevent(PlayerTeleportEvent e) {return false;}
 	public void TargetSpell(SpellTargetEvent e,boolean mycaster) {
 		if (mycaster && e.getTarget() instanceof ArmorStand) {
 			e.setCancelled(true);
@@ -599,6 +622,7 @@ public class c00main implements Listener {
 	public void PlayerDeath(Player p,Entity e) { return; }
 	public void SpellCastEvent(SpellCastEvent e) {}
 	public void WinEvent(WinEvent e) {}
+	public void kill(LivingEntity death, LivingEntity killer) {}
 	
 	public boolean firsttick() { return false; }
 	public boolean tick() { return false; }
@@ -639,6 +663,9 @@ public class c00main implements Listener {
 	public void makerSkill(LivingEntity target, String n) {
 		
 	}
+	public void LocmakerSkill(Location loc, String name) {
+		
+	}
 	
 	public void select(String i) {
 		
@@ -670,6 +697,9 @@ public class c00main implements Listener {
 	}
 	public String getBgm() {
 		return "c" + (number%1000);
+	}
+	public boolean key_f() {
+		return false;
 	}
 
 }

@@ -105,15 +105,14 @@ public class c96iki extends c00main{
 	
 	@Override
 	public boolean skill6() {
-		if(player.isSneaking() && !isps && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time >= 30) {
+		if(player.isSneaking() && !isps && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time >= 30 && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			ARSystem.playSound((Entity)player, "c96sp");
 			skill("c96_sp");
 			skillmult = 11;
 			Rule.buffmanager.selectBuffValue(player, "buffac",10f);
-			ARSystem.giveBuff(player, new Nodie(player), 1000);
-			sp = 300;
+			sp = 200;
 			count = s_kill;
 		} else {
 			super.skill6();
@@ -148,7 +147,10 @@ public class c96iki extends c00main{
 			}
 		}
 		if(tk%20 == 0) {
-			scoreBoardText.add("&c ["+Main.GetText("c96:sp")+ "]&f : " + AMath.round(sp*0.05,2));
+			if(isps) {
+				scoreBoardText.add("&c ["+Main.GetText("c96:sk0")+ "]&f : " + AMath.round(sp*0.05,2));
+				scoreBoardText.add("&c ["+Main.GetText("main:damage")+ "]&f : " + (int)(frist_damage*100)+"%");
+			}
 		}
 		return true;
 	}
@@ -162,10 +164,16 @@ public class c96iki extends c00main{
 		} else {
 			if(s3 > 0) {
 				d3 += e.getDamage();
-				e.setDamage(0);
+				if(!isps) e.setDamage(0);
 			}
-			if(e.getDamager().getLocation().distance(player.getLocation()) <= 2) {
+			if(isps) {
+				frist_damage += e.getDamage()*0.01;
+				e.setCancelled(true);
 				e.setDamage(0);
+			} else {
+				if(e.getDamager().getLocation().distance(player.getLocation()) <= 2) {
+					e.setDamage(0);
+				}	
 			}
 		}
 		return true;

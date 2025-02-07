@@ -210,7 +210,7 @@ public class c65cohina extends c00main{
 					cooldown[3]-=1;
 					cooldown[4]-=1;
 				}
-				if(cr >= 5 && !isps) {
+				if(cr >= 5 && !isps && skillCooldown(0)) {
 					spskillon();
 					spskillen();
 					ARSystem.playSound((Entity)player, "c65sp");
@@ -227,7 +227,7 @@ public class c65cohina extends c00main{
 				cr = 0;
 			}
 		} else {
-			if(Rule.c.get(e.getDamager()) != null && Rule.c.get(e.getDamager()) instanceof c56enju && !enjua) {
+			if(ARSystem.E_sterEgg && Rule.c.get(e.getDamager()) != null && Rule.c.get(e.getDamager()) instanceof c56enju && !enjua) {
 				enjua = true;
 				e.setDamage(0);
 				ARSystem.giveBuff(player, new Nodamage(player), 60);
@@ -264,7 +264,7 @@ public class c65cohina extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

@@ -125,7 +125,7 @@ public class c57riri extends c00main{
 
 	@Override
 	public boolean tick() {
-		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 80 && s_damage >= 40 && !isps) {
+		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 80 && s_damage >= 40 && !isps && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			hp = 30;
@@ -157,7 +157,7 @@ public class c57riri extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

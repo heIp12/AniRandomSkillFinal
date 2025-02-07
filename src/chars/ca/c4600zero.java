@@ -175,7 +175,7 @@ public class c4600zero extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player,"c1046db"+AMath.random(2));
 		return true;
 	}

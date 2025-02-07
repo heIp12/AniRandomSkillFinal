@@ -42,6 +42,16 @@ public class EntityBuffManager {
 		buff.clear();
 	}
 	
+	public void buffClear() {
+		entity = null;
+		for(Buff buff : buff) {
+			if(buff != null && !(buff.getAllTime() && buff.OnlyOne())) {
+				buff.stop();
+			}
+		}
+		buff.clear();
+	}
+	
 	public void bufforder() {
 		if(buff != null && lc != null) {
 			List<Buff> buffa = buff;

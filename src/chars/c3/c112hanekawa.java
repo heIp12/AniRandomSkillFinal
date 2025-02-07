@@ -178,7 +178,7 @@ public class c112hanekawa extends c00main{
 				LivingEntity entity = (LivingEntity)e;
 				float size = 0.1f;
 				if(sk2 > 0) size = 0.5f;
-				if(s != null && ((c24sinobu)Rule.c.get(s)).target == e) ((c24sinobu)Rule.c.get(s)).event(player);
+				if(s != null && ARSystem.E_sterEgg && ((c24sinobu)Rule.c.get(s)).target == e) ((c24sinobu)Rule.c.get(s)).event(player);
 
 				FixedDealEvent ev = ARSystem.fixedDamage(entity, player, size);
 				if(!ev.isCancelled()) {

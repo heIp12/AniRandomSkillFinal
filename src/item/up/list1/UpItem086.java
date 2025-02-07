@@ -1,0 +1,52 @@
+package item.up.list1;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+
+import ars.ARSystem;
+import ars.Rule;
+import ars.gui.G_Item;
+import buff.Buff;
+import buff.Dancing;
+import buff.Nodamage;
+import buff.Panic;
+import buff.Rampage;
+import buff.Silence;
+import buff.TimeStop;
+import event.Skill;
+import manager.Bgm;
+import types.BuffType;
+import types.box;
+import util.AMath;
+import util.ItemCreate;
+import util.Map;
+import util.Text;
+import util.ULocal;
+
+public class UpItem086 extends upitemBase{
+	public UpItem086(Player p){
+		super(p);
+		itemCode = 86;
+		setcooldown = 30;
+	}
+
+	@Override
+	public boolean skillCast(){
+		ARSystem.playSound((Entity)player, "item86");
+		Map.spawnMM("c50_1", player.getLocation());
+		Bgm.setBgm("c50");
+		delay(()->{ARSystem.playerItem.get(player).removes.add(this);},0);
+		return false;
+	}
+}

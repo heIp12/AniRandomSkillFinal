@@ -207,7 +207,7 @@ public class c37subaru extends c00main{
 						}
 					}
 				}
-				if(ok && !isps) {
+				if(ok && !isps && skillCooldown(0)) {
 					sp();
 				}
 			}
@@ -248,7 +248,7 @@ public class c37subaru extends c00main{
 	
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

@@ -33,6 +33,7 @@ import aliveblock.ABlock;
 import ars.ARSystem;
 import ars.Rule;
 import ars.gui.G_Saito;
+import buff.ArmorUp;
 import buff.Barrier;
 import buff.Buff;
 import buff.Cindaella;
@@ -78,10 +79,13 @@ public class c131saito extends c00main{
 	int type = 0;
 	int t2s2= 0;
 	int t2s2t = 0;
+	int t3s2 = 0;
+	Location t3s2l = null;
 	
 	int t2s4 = 0;
 	int t2s42 = 0;
 	int t3s4 = 0;
+	int t3s1 = 0;
 	Location t3s4loc;
 	
 	@Override
@@ -109,12 +113,8 @@ public class c131saito extends c00main{
 			return true;
 		}
 		if(type == 1) {
-			player.setVelocity(player.getLocation().getDirection().multiply(1).setY(0.2));
-			delay(()->{
-
-				ARSystem.playSound((Entity)player, "0katana3",1.4f);
-				skill("c131_1s1");
-			},10);
+			ARSystem.playSound((Entity)player, "0katana3",1.4f);
+			skill("c131_1s1");
 			return true;
 		}
 		if(type == 2) {
@@ -128,13 +128,18 @@ public class c131saito extends c00main{
 			return true;
 		}
 		if(type == 3) {
-			ARSystem.giveBuff(player, new Stun(player), 20);
-			ARSystem.giveBuff(player, new Silence(player), 20);
-			for(int i=0;i<5;i++) {
+			ARSystem.potion(player, 2, 40, 1);
+			t3s1 = 40;
+			for(int i=0;i<40;i++) {
+				int j = i;
 				delay(()->{
-					skill("c131_3s1");
-					ARSystem.playSound((Entity)player, "0sword",1.2f);
-				},4*i);
+					Location loc = player.getLocation().clone();
+					ARSystem.playerRotate(player, loc.getYaw(), loc.getPitch());
+					if(j%2 == 0) {
+						skill("c131_3s1");
+						ARSystem.playSound((Entity)player, "0sword",1.2f);
+					}
+				},i);
 			}
 			return true;
 		}
@@ -150,22 +155,17 @@ public class c131saito extends c00main{
 		}
 		if(type == 1) {
 			if(t2s2 <= 0) t2s2 = 3;
-			LivingEntity en = (LivingEntity)ARSystem.boxSOne(player, new Vector(9,3,9), box.TARGET);
-			if(en == null) {
-				t2s2 = 0;
-				cooldown[2] = 0;
-				t2s2t = 40;
-				return false;
-			}
-			ARSystem.giveBuff(player, new Nodamage(player), 10);
-			player.setVelocity(ULocal.lookAt(player.getLocation(), en.getLocation()).getDirection().multiply(new Vector(2,0,2)));
+			player.setVelocity(player.getLocation().getDirection().multiply(0.85));
 			delay(()->{
-				player.teleport(ULocal.lookAt(player.getLocation(), en.getLocation()));
-				player.setVelocity(new Vector(0,0,0));
-			},4);
-			delay(()->{
-				skill("c131_s2");
-				ARSystem.playSound((Entity)player, "0katana",1.4f);
+				LivingEntity en = (LivingEntity)ARSystem.boxSOne(player, new Vector(9,3,9), box.TARGET);
+				if(en != null) {
+					player.teleport(ULocal.lookAt(player.getLocation(), en.getLocation()));
+					player.setVelocity(new Vector(0,0,0));
+					delay(()->{
+						skill("c131_s2");
+						ARSystem.playSound((Entity)player, "0katana",1.4f);
+					},1);
+				}
 			},6);
 			return true;
 		}
@@ -179,18 +179,9 @@ public class c131saito extends c00main{
 			return true;
 		}
 		if(type == 3) {
-			LivingEntity en = (LivingEntity)ARSystem.boxSOne(player, new Vector(9,3,9), box.TARGET);
-			if(en != null) {
-				player.teleport(ULocal.lookAt(player.getLocation(), en.getLocation()));
-				player.setVelocity(ULocal.lookAt(player.getLocation(), en.getLocation()).getDirection().multiply(new Vector(2,0,2)));
-				delay(()->{
-					skill("c131_s2");
-					ARSystem.playSound((Entity)player, "0slash2",1.5f);
-				},5);
-				return true;
-			} else {
-				cooldown[2] = 0;
-			}
+			t3s2 = 16;
+			t3s2l = player.getLocation();
+			return true;
 		}
 		skill("c131_s2");
 		return true;
@@ -201,7 +192,7 @@ public class c131saito extends c00main{
 			cooldown[3] = 0;
 			return true;
 		}
-		if(type == 1) ARSystem.giveBuff(player, new Nodamage(player), 10 , 2);
+		if(type == 1) ARSystem.giveBuff(player, new ArmorUp(player), 20, 0.85);
 		player.setVelocity(player.getLocation().getDirection().multiply(1.5f).setY(0.2));
 		if(type == 2) delay(()->{
 			ARSystem.playSound((Entity)player, "0slash5",1.2f);
@@ -222,12 +213,32 @@ public class c131saito extends c00main{
 			},40);
 		}
 		if(type == 1) {
-			ARSystem.giveBuff(player, new Silence(player), 60);
-			ARSystem.giveBuff(player, new Stun(player), 10);
-			ARSystem.playSound((Entity)player, "c131s1");
-			skill("c131_s4c");
-			t3s4loc = player.getLocation();
-			delay(()->{t3s4 = 10;},10);
+			List<Entity> ens = ARSystem.box(player, new Vector(20,20,20), box.TARGET);
+			Location lc = player.getLocation();
+			if(ens.size() <= 0) {
+				cooldown[4] = 0;
+			} else {
+				ARSystem.giveBuff(player, new Stun(player), 20);
+				ARSystem.giveBuff(player, new Silence(player), 20);
+				ARSystem.playSound((Entity)player, "c131s1");
+				delay(()->{
+					int i = 0;
+					for(Entity e : ens) {
+						i++;
+						delay(()->{
+							ARSystem.giveBuff(player, new Silence(player), 20);
+							ARSystem.giveBuff(player, new Stun(player), 20);
+							ARSystem.giveBuff(player, new Nodamage(player), 20);
+							player.teleport(ULocal.lookAt(ULocal.offset(e.getLocation().clone(), new Vector(2,0,0)), e.getLocation()));
+							ARSystem.playSound((Entity)player, "0katana4",2f);
+							skill("c131_1s4");
+						},i*10);
+					}
+					delay(()->{
+						player.teleport(lc);
+					},i*10+10);
+				},20);
+			}
 		}
 		if(type == 2) {
 			ARSystem.giveBuff(player, new Silence(player), 0);
@@ -249,10 +260,13 @@ public class c131saito extends c00main{
 		if(type == 3) {
 			t3s4loc = player.getLocation();
 			skill("c131_s4c");
+			ARSystem.giveBuff(player, new Stun(player), 20);
+			ARSystem.giveBuff(player, new Silence(player), 20);
+			t3s1 = 20;
 			delay(()->{
 				t3s4 = 30;
 				ARSystem.playSound((Entity)player, "c131s1");
-			},40);
+			},20);
 		}
 		return true;
 	}
@@ -261,7 +275,7 @@ public class c131saito extends c00main{
 		if(tk%20 == 0) {
 			scoreBoardText.add("&c ["+Main.GetText("c131:ps")+ "] : "+ p);
 		}
-		if(!isps && (score-200) >= 500) {
+		if(!isps && (score-200) >= 500 && skillCooldown(0)) {
 			if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time <= 30) Rule.playerinfo.get(player).tropy(131, 1);
 			spskillon();
 			spskillen();
@@ -270,31 +284,12 @@ public class c131saito extends c00main{
 			new G_Saito(player);
 		}
 		if(isps && type == 0 && tk%20 == 0) new G_Saito(player);
-		
+		if(t3s1 > 0) t3s1--;
 		if(t2s2t > 0) {
 			t2s2t--;
 			if(t2s2t <= 0) {
 				t2s2 = 0;
 				cooldown[2] = setcooldown[2];
-			}
-		}
-		if(type== 1) {
-			if(t3s4 > 0) {
-				t3s4--;
-				player.setVelocity(t3s4loc.getDirection().multiply(3f));
-				LivingEntity en = (LivingEntity)ARSystem.boxSOne(player, new Vector(3,3,3), box.TARGET);
-				if(en != null || t3s4 == 0) {
-					t3s4 = 0;
-					ARSystem.giveBuff(player, new Silence(player), 40);
-					ARSystem.giveBuff(player, new Stun(player), 40);
-					ARSystem.giveBuff(player, new Nodamage(player), 40);
-					
-					if(en != null) ARSystem.giveBuff(en, new Stun(en), 10);
-					for(int i=0;i<12;i++) delay(()->{
-						ARSystem.playSound((Entity)player, "0katana4",2f);
-						skill("c131_1s4");
-					},i*2);
-				}
 			}
 		}
 		if(type == 2) {
@@ -306,6 +301,14 @@ public class c131saito extends c00main{
 			}
 		}
 		if(type == 3) {
+			if(t3s2> 0) {
+				player.setVelocity(t3s2l.getDirection().multiply(1));
+				if(t3s2%2 == 0) {
+					skill("c131_3s2");
+					ARSystem.playSound((Entity)player, "0slash2",1.5f);
+				}
+				t3s2--;
+			}
 			if(t3s4 > 0) {
 				t3s4--;
 				player.setVelocity(t3s4loc.getDirection().multiply(2.2f));
@@ -350,21 +353,35 @@ public class c131saito extends c00main{
 			}
 		}
 		if(type == 1) {
-			Rule.buffmanager.selectBuffTime(target, "nodamage", 0);
+			List<Buff> b = Rule.buffmanager.selectBuffType(target, BuffType.BUFF);
+			if(b.size() > 0) {
+				b.get(AMath.random(b.size())-1).setTime(0);
+			}
 			if(n.equals("1")) {
 				target.setNoDamageTicks(0);
-				target.damage(4,player);
-				ARSystem.giveBuff(target, new Stun(target), 20);
-				ARSystem.giveBuff(target, new Silence(target), 20);
+				target.damage(3,player);
+				if(Rule.c.get(target) != null) {
+					int i = AMath.random(6)-1;
+					for(int j = 0; j<100;j++) {
+						if(Rule.c.get(target).setcooldown[j] <= 0) {
+							i = AMath.random(10)-1;
+						} else {
+							break;
+						}
+					}
+					Rule.c.get(target).cooldown[i] = 0;
+				}
 				return;
 			}
 			if(n.equals("2")) {
 				target.setNoDamageTicks(0);
+				target.damage(3,player);
+				cooldown[2] *= 0.2;
+				return;
+			}
+			if(n.equals("3")) {
+				target.setNoDamageTicks(0);
 				target.damage(4,player);
-				if(t2s2 > 0) {
-					t2s2--;
-					if(t2s2 != 0) cooldown[2] = 0;
-				}
 				return;
 			}
 		}
@@ -389,29 +406,21 @@ public class c131saito extends c00main{
 		if(type == 3) {
 			if(n.equals("1")) {
 				target.setNoDamageTicks(0);
-				target.damage(1,player);
-				delay(()->{
-					target.setNoDamageTicks(0);
-					target.damage(0.35,player);
-				},10);
+				target.damage(0.5,player);
 				return;
 			}
 			if(n.equals("2")) {
 				target.setNoDamageTicks(0);
-				target.damage(4,player);
-				delay(()->{
-					target.setNoDamageTicks(0);
-					target.damage(1.4,player);
-				},10);
+				target.damage(1,player);
 				return;
 			}
 			if(n.equals("3")) {
 				target.setNoDamageTicks(0);
-				target.damage(0.8);
+				target.damage(0.5,player);
 				delay(()->{
 					target.setNoDamageTicks(0);
-					target.damage(0.28,player);
-				},10);
+					target.damage(0.5,player);
+				},1);
 				return;
 			}
 		}
@@ -421,7 +430,6 @@ public class c131saito extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(type == 3) for(int i=0;i<10;i++) if(cooldown[i] > 0) cooldown[i] -=0.05;
 			if(type == 2) {
 				Rule.buffmanager.selectBuffAddValue(player, "barrier", (float) (e.getDamage()*0.15));
 				ARSystem.heal(player, e.getDamage()*0.1);
@@ -440,11 +448,18 @@ public class c131saito extends c00main{
 			if(p && e.getDamage() > 10) {
 				ARSystem.playSound((Entity)player, "c131p2");
 			}
+			if(type == 3) {
+				if(t3s2 > 0 || t3s1 > 0) {
+					e.setDamage(e.getDamage()* 0.7);
+					((LivingEntity)e.getDamager()).damage(1,player);
+					ARSystem.playSound((Entity)player, "c2g", 1.4f);
+				}
+			}
 		}
 		return true;
 	}
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

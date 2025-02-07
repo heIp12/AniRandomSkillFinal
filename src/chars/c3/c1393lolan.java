@@ -847,7 +847,7 @@ public class c1393lolan extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "c139sp5");
 		return true;
 	}

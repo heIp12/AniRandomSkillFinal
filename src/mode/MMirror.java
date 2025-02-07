@@ -23,15 +23,23 @@ public class MMirror extends ModeBase{
 	
 	@Override
 	public void option() {
-		int i = AMath.random(GetChar.getCount());
-		while(!GetChar.isBan(i)) {
-			i = AMath.random(GetChar.getCount());
-		}
-		if(ARSystem.serverOne > 0) i = ARSystem.serverOne;
+		String code = get("1");
 		
-		for(Player p : ARSystem.getReadyPlayer()) {
-			Rule.c.put(p,GetChar.get(p, Rule.gamerule, ""+i));
+		if(code.equals("0")) {
+			int i = AMath.random(GetChar.getCount());
+			while(!GetChar.isBan(i)) {
+				i = AMath.random(GetChar.getCount());
+			}
+			code = ""+i;
+			for(Player p : ARSystem.getReadyPlayer()) {
+				Rule.c.put(p,GetChar.get(p, Rule.gamerule, ""+code));
+			}
+		} else {
+			for(Player p : ARSystem.getReadyPlayer()) {
+				Rule.c.put(p,GetChar.get(p, Rule.gamerule, ""+code));
+			}
 		}
+		
 	}
 	@Override
 	public void firstTick() {

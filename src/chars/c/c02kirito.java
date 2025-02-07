@@ -262,7 +262,7 @@ public class c02kirito extends c00main{
 				}
 			}
 		}
-		else if((System.currentTimeMillis()-millitime)/1000.0 <= 0.15 && !pson) {
+		else if((System.currentTimeMillis()-millitime)/1000.0 <= 0.15 && !pson && skillCooldown(0)) {
 			ARSystem.playSound((Entity)player, "c2f");
 			setcooldown[1] -= 1;
 			setcooldown[2] -= 1;
@@ -279,7 +279,7 @@ public class c02kirito extends c00main{
 	
 	@Override
 	public boolean tick() {
-		if(battleTime < 120) {
+		if(battleTime < 80) {
 			if(tk%10 == 0) ARSystem.heal(player, 0.6 + 0.2*s_kill);
 		}
 		if(tk%20==0 && isps) {
@@ -341,7 +341,7 @@ public class c02kirito extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

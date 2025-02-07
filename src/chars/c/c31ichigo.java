@@ -117,7 +117,7 @@ public class c31ichigo extends c00main{
 	
 	void sp(Double d){
 		damage+=d;
-		if(damage >= 30 && !isps) {
+		if(damage >= 30 && !isps && skillCooldown(0)) {
 			ARSystem.playSound((Entity)player,"c31sp");
 			spskillen();
 			spskillon();

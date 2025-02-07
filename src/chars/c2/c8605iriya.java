@@ -102,7 +102,7 @@ public class c8605iriya extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "c86db");
 		return true;
 	}

@@ -201,6 +201,7 @@ public class c83sora extends c00main{
 				e.setCancelled(true);
 				spskillon();
 				spskillen();
+				if(Rule.c.get(e.getPlayer()).number == 2) tpsdelay(()->{ARSystem.playSoundAll("c2spfin");},60);
 				((c84siro)Rule.c.get(pl)).sp(player,e.getPlayer());
 				return;
 			}
@@ -208,6 +209,7 @@ public class c83sora extends c00main{
 		if(e.getPlayer() != player && skillCooldown(0)) {
 			spskillon();
 			spskillen();
+			if(Rule.c.get(e.getPlayer()).number == 2) tpsdelay(()->{ARSystem.playSoundAll("c2spfin");},60);
 			for(TeamInfo t : Rule.team.getTeams()) t.Remove();
 			
 			for(Player pl: Bukkit.getOnlinePlayers()) {
@@ -247,6 +249,9 @@ public class c83sora extends c00main{
 		}
 		if(n.equals("3")) {
 			Rule.buffmanager.selectBuffTime(target, "nodamage", 0);
+		}
+		if(n.equals("4")) {
+			target.damage(3,player);
 		}
 	}
 	

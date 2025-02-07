@@ -177,7 +177,7 @@ public class c123rin extends c00main{
 				p++;
 				player.setMaxHealth(player.getMaxHealth()+5);
 				ARSystem.heal(player, 5);
-				if(p >= 7 && !isps) {
+				if(p >= 7 && !isps && skillCooldown(0)) {
 					spskillon();
 					spskillen();
 					ARSystem.playSound((Entity)player, "c123sp");

@@ -10,6 +10,7 @@ import ars.Rule;
 import types.BuffType;
 import util.AMath;
 import util.Holo;
+import util.NpcPlayer;
 
 public class Reflect extends Buff{
 	String effect = "barrier";
@@ -57,9 +58,7 @@ public class Reflect extends Buff{
 		if(delay <= 0) {
 			delay = maxdelay;
 			 if(value > 0) {
-				if(target instanceof Player) {
-					((Player)target).performCommand("c "+effect);
-				}
+				 ARSystem.spellCast(NpcPlayer.npc(target.getLocation()), target, "effect");
 				Holo.create(target.getLocation(),"§f§l☇ "+ AMath.round(e.getDamage()*value,1),20,new Vector(AMath.random(5)*0.02,0.1,AMath.random(5)*0.02));
 				((LivingEntity)e.getDamager()).setNoDamageTicks(0);
 				((LivingEntity)e.getDamager()).damage(e.getDamage()*value,target);

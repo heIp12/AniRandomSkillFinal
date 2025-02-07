@@ -3,6 +3,7 @@ package chars.ca;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -20,6 +21,7 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Airborne;
 import buff.Fascination;
 import buff.Noattack;
 import buff.Nodamage;
@@ -28,7 +30,9 @@ import buff.PowerUp;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
+import chars.c.c000humen;
 import chars.c.c00main;
+import event.Skill;
 import manager.Bgm;
 import types.box;
 
@@ -37,9 +41,12 @@ import util.ULocal;
 import util.MSUtil;
 import util.MagicSpellVar;
 import util.Map;
+import util.NpcPlayer;
+import util.Text;
 
 public class c1000gay extends c00main{
 	double cooldowns = skillmult;
+	public Player frist = null;
 	
 	public c1000gay(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -68,10 +75,105 @@ public class c1000gay extends c00main{
 		return true;
 	}
 	
+	public void sp() {
+		spskillon();
+		spskillen();
+		Map.getMapinfo(1011);
+		Location center = Map.getCenter();
+		center.setY(4);
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			if(p != player && Rule.c.get(p) != null) Rule.c.put(p,new c000humen(p, plugin, null));
+			ARSystem.giveBuff(p, new Airborne(p), 400);
+			ARSystem.giveBuff(p, new TimeStop(p), 400);
+			for(Player pl : Bukkit.getOnlinePlayers()) {
+				p.hidePlayer(pl);
+			}
+		}
+		ARSystem.spellLocCast(player, center.clone(), "gay");
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			p.teleport(ULocal.lookAt(ULocal.offset(center.clone(), new Vector(5,0,0)),center.clone()));
+			delay(()->{
+				ARSystem.spellLocCast(p, center, "ratio40");
+			},60);
+		}
+		for(int i = 0; i<39; i++) {
+			delay(()->{
+				ARSystem.spellLocCast(player, center, "gayheart");
+			},60+i);
+		}
+		delay(()->{
+			ARSystem.playSoundAll("c1000sp");
+		},40);
+		delay(()->{
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				ARSystem.potion(player, 15, 20, 1);
+				ARSystem.potion(player, 16, 20, 1);
+			}
+		},98);
+		delay(()->{
+			Map.getMapinfo(1014);
+			NpcPlayer.npc(startLoc).performCommand("as gdespawn gay");
+			NpcPlayer.npc(startLoc).performCommand("as gspawn gay");
+			String txt = Text.get("c1000:move");
+			int t = 0;
+			for(String s : txt.split(";")) {
+				String[] l = s.split(",");
+				Location lc = player.getLocation().clone();
+				lc.setX(Double.parseDouble(l[0]));
+				lc.setY(Double.parseDouble(l[1]));
+				lc.setZ(Double.parseDouble(l[2]));
+				lc.setYaw(Float.parseFloat(l[3]));
+				lc.setPitch(Float.parseFloat(l[4]));
+				Location tloc = lc.clone();
+				for(int i = 0; i < Integer.parseInt(l[5]);i++) {
+					delay(()->{
+						for(Player p : ARSystem.getPlayers()) {
+							p.teleport(tloc);
+						}
+					},t++);
+				}
+			}
+			delay(()->{
+				ARSystem.playSoundAll("c1000sp");
+				delay(()->{
+					ARSystem.playSoundAll("c1000ang");
+				},15);
+				delay(()->{
+					ARSystem.playSoundAll("c1000ang");
+				},25);
+				delay(()->{
+					ARSystem.playSoundAll("c1000ang");
+				},35);
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					ARSystem.potion(player, 15, 100, 1);
+					ARSystem.potion(player, 16, 100, 1);
+				}
+			},160);
+			delay(()->{
+				Skill.win(player);
+				tpsdelay(()->{
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						p.sendTitle("§c§l《§e§lGay Over§c§l》", "",20,60,60);
+					}
+					ARSystem.playSoundAll("c1000db");
+				},40);
+			},200);
+		},99);
+	}
+	
+	
 	
 	@Override
 	public boolean tick() {
-		
+		if(tk%20 == 0 && frist == player) {
+			boolean sp = true;
+			for(Player p : Rule.c.keySet()) {
+				if(Rule.c.get(p).number != 1000) sp = false;
+			}
+			if(sp) {
+				sp();
+			}
+		}
 		return true;
 	}
 	
@@ -102,7 +204,9 @@ public class c1000gay extends c00main{
 								delay(()->{ARSystem.playSound((Entity)e.getEntity(), "c1000ang");},10*i);
 							}
 							delay(()->{
+								if(frist == null) frist = player;
 								Rule.c.put(((Player)e.getEntity()), new c1000gay(((Player)e.getEntity()), plugin, null));
+								((c1000gay)Rule.c.get(e.getEntity())).frist = frist;
 							},100);
 						} else {
 							ARSystem.addBuff(en, new Stun(en), 2);

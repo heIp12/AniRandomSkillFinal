@@ -19,11 +19,13 @@ public class MagicSpellDamage extends InstantSpell implements TargetedEntitySpel
 	double damage;
 	boolean remove;
     boolean fixed;
+    boolean quit;
 
 	public MagicSpellDamage(MagicConfig config, String spellName) {
 		super(config, spellName);
 		this.damage = getConfigDouble("damage", 1.0);
 		this.remove = getConfigBoolean("remove", false);
+		this.quit = getConfigBoolean("quit", false);
 		this.fixed = getConfigBoolean("fixed", false);
 	}
 
@@ -34,6 +36,9 @@ public class MagicSpellDamage extends InstantSpell implements TargetedEntitySpel
 
 	@Override
 	public boolean castAtEntity(Player arg0, LivingEntity arg1, float arg2) {
+		if(quit) {
+			Skill.quit(arg1);
+		}
 		if(fixed) {
 			ARSystem.fixedDamage(arg1, arg0, damage);
 		} else {

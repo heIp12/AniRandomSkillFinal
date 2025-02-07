@@ -1,5 +1,6 @@
 package buff;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,7 +21,6 @@ public class Medusa extends Buff{
 	Location loc;
 	
 	int timer = 0;
-	int lv = 0;
 	public Medusa(LivingEntity target) {
 		super(target);
 		bufftype.add(BuffType.DEBUFF);
@@ -32,12 +32,19 @@ public class Medusa extends Buff{
 	}
 
 	public boolean onTicks() {
+		if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
+		if(timer%2 == 0 && target instanceof Player) {
+			ARSystem.spellCast((Player)target, "medusa");
+		}
 		timer++;
 		if(timer > 20) {
 			timer = 0;
-			lv++;
+			value++;
+			if(value > 20) {
+				value = 20;
+			}
 		}
-		if(lv > 5) {
+		if(value > 5) {
 			if(!(target instanceof Player)) {
 				if(loc != null) {
 					Location l1 = loc.clone();
@@ -53,21 +60,21 @@ public class Medusa extends Buff{
 				loc = target.getLocation();
 			}
 		} else {
-			ARSystem.potion(target, 2, 10, lv);
-			if(tick% Math.max(6-lv,1) == 0)target.setVelocity(new Vector(0,-lv*0.4,0));
+			ARSystem.potion(target, 2, 10, (int)value);
+			if(tick% Math.max(6-value,1) == 0)target.setVelocity(new Vector(0,-value*0.4,0));
 		}
 		return false;
 	}
 	
 	@Override
 	public boolean onHit(EntityDamageByEntityEvent e) {
-		e.setDamage(e.getDamage() * Math.max(1-(0.1*lv),0));
+		e.setDamage(e.getDamage() * Math.max(1-(0.05*value),0));
 		return super.onHit(e);
 	}
 	
 	@Override
 	public boolean onSkill(PlayerItemHeldEvent e) {
-		if(lv > 7) {
+		if(value > 7) {
 			e.setCancelled(true);
 			return false;
 		}
@@ -77,7 +84,7 @@ public class Medusa extends Buff{
 	
 	@Override
 	public boolean onMove(PlayerMoveEvent e) {
-		if(lv > 5) {
+		if(value > 5) {
 			loc = e.getFrom();
 			Location l1 = loc.clone();
 			Location l2 = e.getTo().clone();

@@ -45,6 +45,7 @@ public class ARSinfo {
 	public int player = 0;
 	public float gamescore = 0;
 	public boolean mob = false;
+	int allTeam = 0;
 	
 	public HashSet<Player> chageplayer = new HashSet<Player>();
 	public HashMap<Player,Integer> startplayer = new HashMap<Player,Integer>();
@@ -54,13 +55,21 @@ public class ARSinfo {
 	public List<ModeBase> modes;
 	List<Player> skip;
 
+	int gamecode = 0;
+
+	public int getGamecode() { return gamecode; }
+	
 	ARSinfo(int timer,List<ModeBase> modes){
 		time-= timer;
 		this.modes = modes;
+		gamecode = 100000+AMath.random(899999);
 	}
 
 	public void addMode(ModeBase mode) {
 		modes.add(mode);
+	}
+	public void PlayerDeath(Player p,Entity killer) {
+		for(ModeBase md : modes) md.PlayerDeathEvent(p,killer);
 	}
 	public void skip(Player p) {
 		if(!skip.contains(p)) {
@@ -104,13 +113,26 @@ public class ARSinfo {
 	}
 	
 	public void Time() {
+		List<Player> players = new ArrayList<>();
+		for(Player p : Rule.c.keySet()) {
+			players.add(p);
+		}
+		if(ARSystem.winstop <= 0 && Rule.c.size() > 1 && Rule.team.allTeam(players) && Map.mapid != 1011) {
+			allTeam++;
+			if(allTeam>=10) {
+				allTeam = 0;
+				Rule.team.reload();
+				ARSystem.playSoundAll("0click2",0.2f);
+				Bukkit.broadcastMessage("§a§l[ARSystem] : §c§lTeam Remove");
+			}
+		}
 		if(time >= 0) {	
 			if(!isstart) {
 				isstart = true;
 				first();
 			}
 			for(ModeBase mb : modes) {
-				mb.tick(time);
+				if(Map.mapid != 1011) mb.tick(time);
 			}
 		}
 		time++;

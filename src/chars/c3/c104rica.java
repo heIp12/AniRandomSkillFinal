@@ -141,7 +141,7 @@ public class c104rica extends c00main{
 				ARSystem.giveBuff(en, new Silence(en), 40);
 			}
 		}
-		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() == 50 && !isps && Rule.c.size() == (int)(count/2)) {
+		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() == 50 && !isps && Rule.c.size() == (int)(count/2) && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			Rule.playerinfo.get(player).tropy(104, 1);

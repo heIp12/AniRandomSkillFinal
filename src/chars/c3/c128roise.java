@@ -204,7 +204,7 @@ public class c128roise extends c00main{
 			},40);
 		}
 		if(spell == 2) {
-			if(spc == 12) {
+			if(spc == 12 && !ARSystem.isGameMode("kagerou")) {
 				ARSystem.heal(player, 99999);
 				ARSystem.playSoundAll("0lightning2", 0.2f);
 				Rule.team.reload();
@@ -342,7 +342,7 @@ public class c128roise extends c00main{
 		return true;
 	}
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

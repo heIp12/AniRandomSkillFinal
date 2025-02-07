@@ -92,7 +92,7 @@ public class c56enju extends c00main{
 				ARSystem.playSound((Entity)player, "c56p"+AMath.random(4));
 				skill("c56_p");
 				count++;
-				if(count >= 14 && !isps) {
+				if(count >= 14 && !isps && skillCooldown(0)) {
 					spskillen();
 					spskillon();
 					ARSystem.playSound((Entity)player, "c56sp");
@@ -137,7 +137,7 @@ public class c56enju extends c00main{
 		return true;
 	}
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

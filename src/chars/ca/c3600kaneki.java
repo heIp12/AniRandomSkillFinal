@@ -165,7 +165,7 @@ public class c3600kaneki extends c00main{
 			for(int i =0; i < 10; i++) {
 				delay(()->{
 					target.setNoDamageTicks(0);
-					ARSystem.heal(player, 1.5f);
+					ARSystem.heal(player, 3f);
 					target.damage(1f,player);
 				},i*2);
 			}
@@ -180,12 +180,12 @@ public class c3600kaneki extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(isps) e.setDamage(e.getDamage() * 0.75f);
+			if(isps) e.setDamage(e.getDamage() * 0.8f);
 			ARSystem.spellCast(player, e.getEntity(), "bload2");
-			ARSystem.heal(player,e.getDamage()/3);
+			ARSystem.heal(player,e.getDamage()/2);
 		} else {
 			if(Rule.buffmanager.selectBuffType(player, BuffType.SILENCE).size() > 0) {
-				e.setDamage(e.getDamage()*0.4f);
+				e.setDamage(e.getDamage()*0.2f);
 			}
 		}
 		return true;

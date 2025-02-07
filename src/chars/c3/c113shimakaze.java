@@ -127,7 +127,7 @@ public class c113shimakaze extends c00main{
 			sk3 = 1;
 		}
 		
-		if(Bgm.bgmcode.equals("bc113") && !isps) {
+		if(Bgm.bgmcode.equals("bc113") && !isps && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			ARSystem.playSoundAll("c113sp");

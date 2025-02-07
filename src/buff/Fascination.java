@@ -1,5 +1,6 @@
 package buff;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -28,17 +29,24 @@ public class Fascination extends Buff{
 	}
 	
 	public boolean onTicks() {
+		if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 		if(tick > 0 && target != null) {
 			Location loc = target.getLocation();
 			loc = ULocal.lookAt(loc, owner.getLocation());
+
+			if(value < 0) {
+				loc.setYaw((loc.getYaw()+180)%360);
+				loc.setPitch(loc.getPitch()*-1);
+			}
+			
 			float yaw = loc.getYaw() - target.getLocation().getYaw();
 			float pitch = loc.getPitch() - target.getLocation().getPitch();
 			
 			if(target instanceof Player) {
 				ARSystem.playerAddRotate((Player) target, yaw*0.2f, pitch*0.2f);
 			}
-			if(target.getLocation().distance(owner.getLocation()) > 2) {
-				target.setVelocity(loc.getDirection().multiply(value));
+			if(target.getLocation().distance(owner.getLocation()) > 2 || value < 0) {
+				target.setVelocity(loc.getDirection().multiply(Math.abs(value)));
 			}
 		}
 		return false;

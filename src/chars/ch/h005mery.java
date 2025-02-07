@@ -219,7 +219,7 @@ public class h005mery extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "marrydb");
 		cooldown[9] = 2;
 		if(ARSystem.boxSOne(player, new Vector(12,6,12), box.TARGET) == null) {

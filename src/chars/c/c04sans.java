@@ -51,7 +51,7 @@ public class c04sans extends c00main{
 		if(skillcount == 7) {
 			spskillon();
 		}
-		if(skillcount > 7) {
+		if(skillcount > 7 && skillCooldown(0)) {
 			skill("c"+number+"_sp");
 			spskillen();
 			skillcount = 0;

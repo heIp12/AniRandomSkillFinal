@@ -116,7 +116,7 @@ public class c1900sinjjan extends c00main{
 	}
 
 	@Override
-	protected boolean skill9(){
+	public boolean skill9(){
 		String s = ""+AMath.random(3);
 		if(s.equals("1")) s= "";
 		player.getWorld().playSound(player.getLocation(), "c19db"+s, 1, 1);

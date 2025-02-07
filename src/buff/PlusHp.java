@@ -36,8 +36,8 @@ public class PlusHp extends Buff{
 				value-=hps;
 				ARSystem.heal(target, hps);
 			} else {
+				target.setHealth(target.getHealth()+value);
 				value = 0;
-				target.setHealth(target.getHealth()+hps);
 			}
 		}
 		return false;

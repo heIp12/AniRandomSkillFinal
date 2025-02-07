@@ -340,7 +340,7 @@ public class h004alice extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		if(music) {
 			music = false;
 			musicc = false;

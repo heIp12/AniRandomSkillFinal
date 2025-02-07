@@ -188,7 +188,7 @@ public class c114prenda extends c00main{
 	}
 
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "c114db"+(AMath.random(3)+1));
 		return true;
 	}

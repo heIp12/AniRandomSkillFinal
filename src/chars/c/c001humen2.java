@@ -20,6 +20,7 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
+import ars.TeamInfo;
 import chars.c2.c62shinon;
 import types.box;
 import util.AMath;
@@ -30,8 +31,8 @@ import util.Text;
 
 public class c001humen2 extends c00main{
 	boolean bt = false;
-	Player p1;
-	Player p2;
+	TeamInfo p1;
+	TeamInfo p2;
 	public int i = 0;
 	float p1p = 0;
 	float p2p = 0;
@@ -43,6 +44,7 @@ public class c001humen2 extends c00main{
 		text();
 		ARSystem.playSound(player, "humendb1");
 		Rule.buffmanager.selectBuffTime(p, "silence", 0);
+		Rule.playerinfo.get(player).itemcount = 0;
 	}
 	
 	@Override
@@ -87,11 +89,18 @@ public class c001humen2 extends c00main{
 			player.sendMessage("§a§l[ARSystem] §a§l수수료 10% 차감");
 
 			if(this.i > 0) {
-				Rule.playerinfo.get(p1).addcradit((int)(m2*0.9),Text.get("main:mode11"));
-				p1.sendMessage("§a§l[ARSystem] §a§lPoint +"+ (int)(m2*0.9) + " §e["+player+"]");
+				int coin = (int)((m2*0.9)/p1.getPlayer().size());
+				for(Player pl : p1.getPlayer()) {
+					Rule.playerinfo.get(pl).addcradit(coin,Text.get("main:mode11"));
+					pl.sendMessage("§a§l[ARSystem] §a§lPoint +"+ coin + " §e["+player+"]");
+				}
 			} else {
-				Rule.playerinfo.get(p2).addcradit((int)(m2*0.9),Text.get("main:mode11"));
-				p1.sendMessage("§a§l[ARSystem] §a§lPoint +"+ (int)(m2*0.9) + " §e["+player+"]");
+				int coin = (int)((m2*0.9)/p2.getPlayer().size());
+				for(Player pl : p2.getPlayer()) {
+					Rule.playerinfo.get(pl).addcradit(coin,Text.get("main:mode11"));
+					pl.sendMessage("§a§l[ARSystem] §a§lPoint +"+ coin + " §e["+player+"]");
+				}
+				
 			}
 			Rule.playerinfo.get(player).addcradit((int)(money),Text.get("main:mode11"));
 			i = 0;
@@ -111,23 +120,35 @@ public class c001humen2 extends c00main{
 		return 0;
 	}
 	
-	public void players(Player p1,Player p2) {
-		this.p1 = p1;
-		this.p2 = p2;
+	public void players(TeamInfo p12,TeamInfo p22) {
+		this.p1 = p12;
+		this.p2 = p22;
 	}
 	
 	@Override
 	public boolean tick() {
 		if(tk%20 == 0 && p1 != null && p2 != null) {
-			String name = p1.getName();
-			if(i < 0) name = p2.getName();
+			String name = p1.getTeamName();
+			if(i < 0) name = p2.getTeamName();
 			scoreBoardText.add("&c ["+Main.GetText("c10001:p1")+ "] : &f"+ name +"&c[&a"+ Math.abs(i*100)+"&c]");
 			if(!bt) {
-				scoreBoardText.add("&f&l["+p1.getName() +"]&e : "+p1p*100+" &c("+(int)AMath.round(p(p1p,p2p)*100, 0)+"%)");
-				scoreBoardText.add("&f&l["+p2.getName() +"]&e : "+p2p*100+" &c("+(int)AMath.round(p(p2p,p1p)*100, 0)+"%)");
+				scoreBoardText.add("&f&l["+p1.getTeamName() +"]&e : "+p1p*100+" &c("+(int)AMath.round(p(p1p,p2p)*100, 0)+"%)");
+				scoreBoardText.add("&f&l["+p2.getTeamName() +"]&e : "+p2p*100+" &c("+(int)AMath.round(p(p2p,p1p)*100, 0)+"%)");
 			}
-			scoreBoardText.add("&f&l["+p1.getName() +"]&4 Hp: &c" +p1.getHealth() + " / " +p1.getMaxHealth());
-			scoreBoardText.add("&f&l["+p2.getName() +"]&4 Hp: &c" +p2.getHealth() + " / " +p2.getMaxHealth());
+			float maxhp = 0;
+			float hp = 0;
+			for(Player p : p1.getPlayer()) {
+				maxhp += p.getMaxHealth();
+				hp += p.getHealth();
+			}
+			scoreBoardText.add("&f&l["+p1.getTeamName() +"]&4 Hp: &c" + hp + " / " + maxhp + " &e&l("+(int)(hp/maxhp*100)+"%)");
+			maxhp = hp = 0;
+
+			for(Player p : p2.getPlayer()) {
+				maxhp += p.getMaxHealth();
+				hp += p.getHealth();
+			}
+			scoreBoardText.add("&f&l["+p2.getTeamName() +"]&4 Hp: &c" + hp + " / " + maxhp + " &e&l("+(int)(hp/maxhp*100)+"%)");
 		}
 		
 		return super.tick();
@@ -148,7 +169,7 @@ public class c001humen2 extends c00main{
 
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "humendb"+(AMath.random(5)+1));
 		return true;
 	}

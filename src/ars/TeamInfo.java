@@ -48,12 +48,13 @@ public class TeamInfo {
 	}
 	
 	public void Join(Player p){
-		p.setCustomName(null);
-		p.setDisplayName(null);
 		if(!teamPlayer.contains(p)) {
 			teamPlayer.add(p);
-			team.addPlayer(p);
+			p.setCustomName(null);
+			p.setDisplayName(null);
 		}
+		if(!team.hasPlayer(p)) team.addPlayer(p);
+		
 	}
 	public void Quit(Player p){
 		if(teamPlayer.contains(p)) {
@@ -68,7 +69,15 @@ public class TeamInfo {
 		}
 		return false;
 	}
-	
+	public boolean isTeam(Player p ) {
+		return teamPlayer.contains(p);
+	}
+	public boolean isTeamAlive() {
+		for(Player p : teamPlayer) {
+			if(Rule.c.get(p) != null) return true;
+		}
+		return false;
+	}
 	public boolean isTeamWin() {return teamWin;}
 	public boolean isTeamAttack() {return teamAttack;}
 	public String getTeamColor() {return teamColor;}
@@ -85,6 +94,9 @@ public class TeamInfo {
 		team.setColor(ChatColor.getByChar(teamColor));
 		team.setPrefix(ChatColor.getByChar(teamColor)+"["+teamName+"] ");
 	}
-	public void setTeamName(String teamName) {this.teamName =  teamName;}
+	public void setTeamName(String teamName) {
+		this.teamName =  teamName;
+		team.setPrefix(ChatColor.getByChar(teamColor)+"["+teamName+"] ");
+	}
 	public void setTeamSpawn(Location teamSpawn) {this.teamSpawn = teamSpawn;}
 }

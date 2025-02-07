@@ -1,7 +1,5 @@
 package ars;
 
-import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -12,7 +10,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFromToEvent;
@@ -25,39 +22,30 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.event.server.TabCompleteEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
 import com.nisovin.magicspells.events.MagicSpellsLoadingEvent;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
@@ -66,11 +54,14 @@ import Main.Main;
 import ars.gui.G_Menu;
 import buff.Buff;
 import buff.Silence;
-import chars.c.c00main;
 import event.Skill;
 import event.WinEvent;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMechanicLoadEvent;
+import mode.MLoboTomy;
+import mode.ModeBase;
 import types.box;
 import util.AMath;
+import util.ARSMobAdd;
 import util.Holo;
 import util.MSUtil;
 import util.Map;
@@ -94,6 +85,30 @@ public class Event
 	public void moth(ServerListPingEvent e) {
 		e.setMotd("§6ARSF Version : §a§l"+ Map.Version);
 	}
+
+	
+	@EventHandler
+	public void noFarmlanddestroy(PlayerInteractEvent event){
+	    if ((event.getAction() == Action.PHYSICAL) && (event.getClickedBlock().getType() == Material.SOIL)) {
+	      event.setCancelled(true);
+	    }
+	}
+	
+	@EventHandler
+	public void click(PlayerInteractEntityEvent e) {
+		if(e.getHand() == EquipmentSlot.HAND && ARSystem.AniRandomSkill != null) {
+			for(ModeBase md : ARSystem.AniRandomSkill.modes) {
+				md.Interact(e);
+			}
+		}
+	}
+
+	@EventHandler
+	public void playerDrop(PlayerDropItemEvent e) {
+		if(ARSystem.AniRandomSkill != null && Rule.c.get(e.getPlayer()) != null && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+			e.setCancelled(true);
+		}
+	}
 	
 	@EventHandler
 	public void join(PlayerJoinEvent e) {
@@ -101,7 +116,7 @@ public class Event
 		
 		if(Bukkit.getOnlinePlayers().size() == 1) {
 			Map.loby();
-		} else if(Bukkit.getOnlinePlayers().size() == 2) {
+		} else if(Bukkit.getOnlinePlayers().size() == 2 && (ARSystem.AniRandomSkill == null || ARSystem.winstop > 0)) {
 			Map.loby();
 			for(Player p : Bukkit.getOnlinePlayers()) {
 				p.teleport(Map.randomLoc());
@@ -111,6 +126,11 @@ public class Event
 		if(Rule.playerinfo.get(e.getPlayer()) == null) {
 			Rule.playerinfo.put(e.getPlayer(), new PlayerInfo(e.getPlayer()));
 		}
+		
+		e.getPlayer().setCustomName(e.getPlayer().getName());
+		e.getPlayer().setPlayerListName(e.getPlayer().getName());
+		e.getPlayer().setDisplayName(e.getPlayer().getName());
+		
 		if(ARSystem.AniRandomSkill != null) {
 			e.getPlayer().setGameMode(GameMode.SPECTATOR);
 			e.getPlayer().getInventory().clear();
@@ -125,27 +145,52 @@ public class Event
 		Rule.isEvent(e.getPlayer());
 		
 	}
+	
 
+	@EventHandler
+	public void Chunk(ChunkUnloadEvent e) {
+		for(Entity en : e.getChunk().getEntities()) {
+			if(en instanceof ArmorStand) {
+				en.remove();
+			}
+		}
+	}
+	
+	@EventHandler
+	public void Chunk(ChunkLoadEvent e) {
+		for(Entity en : e.getChunk().getEntities()) {
+			if(en instanceof ArmorStand) {
+				en.remove();
+			}
+		}
+	}
+	
 	@EventHandler
 	public void quit(PlayerQuitEvent e) {
 		if(Rule.c.get(e.getPlayer()) != null) {
 			Rule.c.remove(e.getPlayer());
 			if(ARSystem.AniRandomSkill != null && Rule.c.size() >= 2) {
 				ARSystem.Stop();
-				
-				if(Rule.Var.Load(e.getPlayer().getName()+".info.quit2") == null || !(Rule.Var.Load(e.getPlayer().getName()+".info.quit2") instanceof Long)) {
-					Rule.Var.Save(e.getPlayer().getName()+".info.quit2",System.currentTimeMillis());
+				if(Text.getB("general:quit_penalty")) {
+					if(Rule.Var.Load(e.getPlayer().getName()+".info.quit2") == null || !(Rule.Var.Load(e.getPlayer().getName()+".info.quit2") instanceof Long)) {
+						Rule.Var.Save(e.getPlayer().getName()+".info.quit2",System.currentTimeMillis());
+					}
+					if(Rule.Var.Load(e.getPlayer().getName()+".info.quit2") != null && (long)Rule.Var.Load(e.getPlayer().getName()+".info.quit2") - System.currentTimeMillis() > 0) {
+						Rule.Var.Save(e.getPlayer().getName()+".info.quit",System.currentTimeMillis()+1000 * Text.getI("general:quit_time2"));
+						Rule.Var.Save(e.getPlayer().getName()+".info.quit2",System.currentTimeMillis()+1000 * Text.getI("general:quit_time3"));
+					} else {
+						Rule.Var.Save(e.getPlayer().getName()+".info.quit",System.currentTimeMillis()+1000 * Text.getI("general:quit_time1"));
+						Rule.Var.Save(e.getPlayer().getName()+".info.quit2",System.currentTimeMillis()+1000 * Text.getI("general:quit_time3"));
+					}
+					
+					Rule.playerinfo.get(e.getPlayer()).gamejoin = false;
+					Rule.Var.Save(e.getPlayer().getName()+".gamejoin", Rule.playerinfo.get(e.getPlayer()).gamejoin);
 				}
-				if(Rule.Var.Load(e.getPlayer().getName()+".info.quit2") != null && (long)Rule.Var.Load(e.getPlayer().getName()+".info.quit2") - System.currentTimeMillis() > 0) {
-					Rule.Var.Save(e.getPlayer().getName()+".info.quit",System.currentTimeMillis()+600000);
-					Rule.Var.Save(e.getPlayer().getName()+".info.quit2",System.currentTimeMillis()+1800000);
-				} else {
-					Rule.Var.Save(e.getPlayer().getName()+".info.quit",System.currentTimeMillis()+120000);
-					Rule.Var.Save(e.getPlayer().getName()+".info.quit2",System.currentTimeMillis()+1800000);
-				}
-				
-				Rule.playerinfo.get(e.getPlayer()).gamejoin = false;
-				Rule.Var.Save(e.getPlayer().getName()+".gamejoin", Rule.playerinfo.get(e.getPlayer()).gamejoin);
+			}
+		}
+		if(ARSystem.isGameMode("lobotomy")) {
+			if(e.getPlayer() == MLoboTomy.bast) {
+				MLoboTomy.bast = null;
 			}
 		}
 	}
@@ -169,14 +214,6 @@ public class Event
 		if (e.getEntity().getType() == EntityType.ITEM_FRAME) {
 			e.setCancelled(true);
 		}
-	}
-	
-	
-	@EventHandler
-	public void noFarmlanddestroy(PlayerInteractEvent event){
-	    if ((event.getAction() == Action.PHYSICAL) && (event.getClickedBlock().getType() == Material.SOIL)) {
-	      event.setCancelled(true);
-	    }
 	}
 	
 	@EventHandler
@@ -235,6 +272,12 @@ public class Event
 
 	@EventHandler
 	public void chat(PlayerChatEvent e) {
+		if(ARSystem.modeChat != null && e.getPlayer() == ARSystem.modeChatPlayer) {
+			ARSystem.modeChat.chatOption(e.getMessage());
+			ARSystem.modeChat = null;
+			e.setCancelled(true);
+			return;
+		}
 		if(Rule.playerinfo.get(e.getPlayer()) != null) {
 			e.setCancelled(true);
 			String msg = e.getMessage();
@@ -309,7 +352,11 @@ public class Event
 					}
 					
 				}
-				Bukkit.broadcastMessage(Rule.playerinfo.get(e.getPlayer()).name + " "+e.getPlayer().getName() +"§f :§"+s+" " +msg);
+				String name = e.getPlayer().getName();
+				if(e.getPlayer().getCustomName() != null) {
+					name = e.getPlayer().getCustomName();
+				}
+				Bukkit.broadcastMessage(Rule.playerinfo.get(e.getPlayer()).name + " "+name +"§f :§"+s+" " +msg);
 			}
 		}
 		if(Main.GetText("general:skip").contentEquals(e.getMessage()) && ARSystem.AniRandomSkill != null) {
@@ -325,8 +372,11 @@ public class Event
 					buff.onMove(e);
 				}
 			}
+			if(!e.isCancelled() && Rule.c.get(e.getPlayer()) != null) {
+				ARSystem.playerItem.get(e.getPlayer()).onMove(e);
+			}
 		} catch(Exception ev) {
-			
+			Bukkit.broadcastMessage("MoveEvent Error");
 		}
 	}
 
@@ -335,7 +385,12 @@ public class Event
 		if(e.getCause() == TeleportCause.SPECTATE && Rule.c.get(e.getPlayer()) != null) {
 			e.setCancelled(true);
 		}
+		
+		for(Player p : Rule.c.keySet()) {
+			Rule.c.get(p).teleportevent(e);
+		}
 	}
+	
 	
 	@EventHandler
 	private void block(BlockFromToEvent e) {
@@ -356,6 +411,7 @@ public class Event
 	@EventHandler
 	private boolean key(PlayerItemHeldEvent e) {
 		if(Rule.c.get(e.getPlayer()) != null) {
+			ARSystem.playerItem.get(e.getPlayer()).onSkill(e);
 			if(Rule.c.get(e.getPlayer()).key(e)) {
 				
 			}
@@ -363,6 +419,16 @@ public class Event
 		return true;
 	}
 	
+	@EventHandler
+	private void block(PlayerSwapHandItemsEvent e) {
+		if(Rule.c.get(e.getPlayer()) != null) {
+			ARSystem.playerItem.get(e.getPlayer()).onKey_F(e);
+			if(Rule.c.get(e.getPlayer()).key_f()) {
+				
+			}
+			e.setCancelled(true);
+		}
+	}
 	
 	@EventHandler
 	private boolean onEntityDamage(EntityDamageEvent e){
@@ -400,6 +466,11 @@ public class Event
 
 			}
 		}
+		
+		if(!e.isCancelled() && e.getDamage() > 0.01) {
+			if(ARSystem.playerItem.get(e.getEntity()) != null) ARSystem.playerItem.get(e.getEntity()).onDamageEvent(e);
+		}
+		
 		if(!e.isCancelled() && e.getFinalDamage() > 0&& e.getCause() != DamageCause.ENTITY_ATTACK && e.getCause() != DamageCause.CUSTOM) {
 			ARSystem.damageText(e.getEntity().getLocation(),"§d§l⚕ ",e.getDamage());
 			if(Rule.c.get(e.getEntity()) != null && !e.isCancelled()) {
@@ -455,12 +526,16 @@ public class Event
 		if(Rule.c.get(e.getEntity()) != null) {
 			Rule.c.get(e.getEntity()).death(e);
 		}
-		
 		return false;
 	}
 
 	@EventHandler 
 	private boolean EntityDamageEvent(EntityDamageByEntityEvent e){
+		if(e instanceof ArmorStand) {
+			e.setCancelled(true);
+			return false;
+		}
+		if(e.getEntity().isDead() || e.getEntity() == null) return false;
 		if(e.getEntity() instanceof Player && e.getDamager() instanceof Player && Rule.team.isTeamAttack((Player)e.getDamager(), (Player) e.getEntity())) {
 			e.setCancelled(true);
 			return true;
@@ -472,12 +547,13 @@ public class Event
 		if(e.getEntity() instanceof Player) {
 			if(!(e.getDamager() instanceof Player)) ((LivingEntity)e.getEntity()).setNoDamageTicks(0);
 		}
+		if(Rule.mobmanager.contains(e.getEntity()) || Rule.mobmanager.contains(e.getDamager())) Rule.mobmanager.onAttack(e);
 		if(ARSystem.isTarget(e.getEntity(), e.getDamager(), box.TARGET)) {
 			if(Rule.c.get(e.getDamager()) != null) {
 				Rule.c.get(e.getDamager()).setFrist_Damage(e, true);
 			}
 			
-			if(!e.isCancelled() &&  Rule.buffmanager.getBuffs((LivingEntity) e.getDamager()) != null) {
+			if(!e.isCancelled() && e.getDamager() instanceof LivingEntity &&  Rule.buffmanager.getBuffs((LivingEntity) e.getDamager()) != null) {
 				for(Buff buff : Rule.buffmanager.getBuffs((LivingEntity) e.getDamager()).getBuff()) {
 					if(e.getDamage() > 0 && buff != null) {
 						buff.onAttack(e);
@@ -485,7 +561,7 @@ public class Event
 				}
 			}
 			
-			if(!e.isCancelled() &&  Rule.buffmanager.getBuffs((LivingEntity) e.getEntity()) != null) {
+			if(!e.isCancelled() && e.getEntity() instanceof LivingEntity  &&Rule.buffmanager.getBuffs((LivingEntity) e.getEntity()) != null) {
 				for(Buff buff : Rule.buffmanager.getBuffs((LivingEntity) e.getEntity()).getBuff()) {
 					if(e.getDamage() > 0 && buff != null) {
 						buff.onHit(e);
@@ -508,6 +584,18 @@ public class Event
 				Rule.c.get(e.getEntity()).setFrist_Damage(e, false);
 			}
 		}
+
+		if(!e.isCancelled() && e.getDamage() > 0.01 && !(e.getEntity() instanceof ArmorStand) && !(e.getDamager() instanceof ArmorStand)) {
+			if(ARSystem.playerItem.get(e.getEntity()) != null) ARSystem.playerItem.get(e.getEntity()).onHit(e);
+			if(ARSystem.playerItem.get(e.getDamager()) != null&& ARSystem.isTarget(e.getDamager(), e.getEntity(), box.TARGET)) ARSystem.playerItem.get(e.getDamager()).onAttack(e);
+		}
+
+		if(!e.isCancelled() && e.getEntity().getType() == EntityType.PLAYER &&Rule.c.get(e.getEntity()) != null) {
+			if(!Rule.c.get(e.getEntity()).entitylastdamage(e)) {
+
+			}
+		}
+		if(Rule.mobmanager.contains(e.getEntity()) || Rule.mobmanager.contains(e.getDamager())) Rule.mobmanager.onHit(e);
 		
 		if(e.getDamage() <= 0.01 || e.isCancelled()) {
 			e.setCancelled(true);
@@ -556,5 +644,12 @@ public class Event
 	@EventHandler
 	public void loading(MagicSpellsLoadingEvent e) {
 		MSUtil.loading(e);
+	}
+	
+	@EventHandler
+	public void onMythicMechanicLoad(MythicMechanicLoadEvent event)	{
+		if (event.getMechanicName().equalsIgnoreCase("arsai")) {
+			event.register(new ARSMobAdd("arsai", event.getConfig()));
+		}
 	}
 }

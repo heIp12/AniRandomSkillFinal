@@ -1,16 +1,20 @@
 package chars.c;
 
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import Main.Main;
 import ars.ARSystem;
@@ -19,6 +23,7 @@ import buff.Sleep;
 import buff.TimeStop;
 import chars.c2.c70raito;
 import event.Skill;
+import types.box;
 import util.AMath;
 import util.MSUtil;
 
@@ -26,6 +31,7 @@ public class c12conan extends c00main{
 	int ticks = 0;
 	int damage = 2;
 	int count = 0;
+	LivingEntity en;
 	
 	public c12conan(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -133,6 +139,7 @@ public class c12conan extends c00main{
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
 			ARSystem.giveBuff(target, new Sleep(target), 160, 2);
+			en = target;
 		}
 	}
 	
@@ -145,4 +152,44 @@ public class c12conan extends c00main{
 		}
 		return true;
 	}
+	
+	String ch = "";
+	@Override
+	public boolean chat(PlayerChatEvent e) {
+		if(e.getPlayer() == player) {
+			Entity p = ARSystem.boxSPlayerOne(player, new Vector(3,3,3), box.ALL);
+			if(p != null) {
+				Player pl = (Player)p;
+				if(Rule.buffmanager.isBuff(pl, "sleep") && isback(pl.getLocation(), player.getLocation(), 0.5f)) {
+					System.out.print("["+player.getName() +"] : Chat control -> " + pl.getName() +"  ");
+					pl.chat(e.getMessage());
+					ch = e.getMessage();
+					e.setCancelled(true);
+					return false;
+				}
+			}
+		}
+		
+		if(e.getPlayer() == en && Rule.buffmanager.isBuff(e.getPlayer(), "sleep") && !e.getMessage().equals(ch)) {
+			e.setCancelled(true);
+			return false;
+		}
+		return super.chat(e);
+	}
+	
+	
+	boolean isback(Location target, Location attaker,float size) {
+		Location lc = target.clone();
+		Location plc = attaker.clone();
+		lc.setPitch(0);
+		plc.setPitch(0);
+		float targetFaceAngle = lc.clone().getDirection().angle(new Vector(1, 1, 1));
+		float diffAngle = lc.toVector().subtract(plc.toVector()).angle(new Vector(1, 1, 1));
+		float diff = Math.abs(targetFaceAngle - diffAngle);
+		if(diff <= size) {
+			return true;
+		}
+		return false;
+	}
+	
 }

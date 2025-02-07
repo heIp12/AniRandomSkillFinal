@@ -141,7 +141,7 @@ public class c0900youmu extends c00main{
 	
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		player.getWorld().playSound(player.getLocation(), "c9db", 1, 1);
 		return false;
 	}

@@ -148,7 +148,7 @@ public class c106ryel extends c00main{
 			scoreBoardText.add("&c ["+Main.GetText("c106:sk3")+ "] : &f" + stack );
 			if(target != null) scoreBoardText.add("&c ["+Main.GetText("c106:sk2")+ "] : &f" + target.getName() );
 			
-			if(ARSystem.box(player, new Vector(6,4,6), box.TARGET).size() >= 3 && !isps) {
+			if(ARSystem.box(player, new Vector(6,4,6), box.TARGET).size() >= 3 && !isps && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				Rule.playerinfo.get(player).tropy(106, 1);

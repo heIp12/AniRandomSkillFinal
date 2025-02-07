@@ -127,7 +127,7 @@ public class c149lanser extends c00main{
 				for(Entity e : ARSystem.PlayerBeamBox(player, 6, 3, box.TARGET)) {
 					LivingEntity en = (LivingEntity)e;
 					en.setNoDamageTicks(0);
-					en.damage(0.8,player);
+					en.damage(0.6,player);
 					delay(()->{
 						en.setVelocity(new Vector(0,0,0));
 					},0);
@@ -141,7 +141,7 @@ public class c149lanser extends c00main{
 			for(Entity e : ARSystem.PlayerBeamBox(player, 7, 4, box.TARGET)) {
 				LivingEntity en = (LivingEntity)e;
 				en.setNoDamageTicks(0);
-				en.damage((en.getMaxHealth()-en.getHealth())*0.35f,player);
+				en.damage((en.getMaxHealth()-en.getHealth())*0.25f,player);
 				delay(()->{
 					en.setVelocity(player.getLocation().getDirection().multiply(2));
 				},0);
@@ -167,7 +167,7 @@ public class c149lanser extends c00main{
 	@Override
 	public boolean skill4() {
 		for(Entity e : ARSystem.box(player, new Vector(6,6,6), box.TARGET)) {
-			if(e.getLocation().distance(player.getLocation()) >= 2 && e.getLocation().distance(player.getLocation()) <= 4) {
+			if(e.getLocation().distance(player.getLocation()) <= 2) {
 				if(skillCooldown(0)) {
 					spc++;
 					if(spc >= 3) Rule.playerinfo.get(player).tropy(149, 1);
@@ -177,7 +177,12 @@ public class c149lanser extends c00main{
 					damage += 0.3f;
 					if(Rule.c.get(e) != null) {
 						int n = Rule.c.get(e).number%1000;
-						if(n == 16 || n == 4 || n == 75 || n ==89 || n ==146 || n == 150) {
+						if(n == 16 || n == 4 || n == 75 || n ==89 || n ==146 || n == 150 || (n== 153 && Rule.c.get(player).cooldown[0] <= 0)) {
+							if(n == 153) {
+								Rule.c.get(player).cooldown[0] = Rule.c.get(player).setcooldown[0];
+								ARSystem.playSound(player, "c153sp");
+								Rule.c.get(player).spskillen();
+							}
 							skill("c149_sp2");		
 						} else {
 							skill("c149_sp");

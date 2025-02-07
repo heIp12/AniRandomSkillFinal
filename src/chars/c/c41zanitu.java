@@ -163,7 +163,7 @@ public class c41zanitu extends c00main{
 				}
 			}
 			Rule.buffmanager.selectBuffTime(player, "sleep", 0);
-			ptick = 0;
+			ptick = -30;
 			ARSystem.giveBuff(target, new Stun(target), 20);
 			ARSystem.giveBuff(player, new Stun(player), 14);
 			Location loc = ULocal.lookAt(player.getLocation(),target.getLocation());
@@ -217,13 +217,13 @@ public class c41zanitu extends c00main{
 	@Override
 	public boolean tick() {
 		if(loc == null) loc = player.getLocation();
-		if(player.isSneaking() && loc.distance(player.getLocation()) <= 0.1 && cooldown[1] <= 0) {
+		if(player.isSneaking() && loc.distance(player.getLocation()) <= 0.1) {
 			ptick++;
 			if(ptick > 10 && Rule.buffmanager.GetBuffTime(player, "sleep") < 3) {
 				ARSystem.giveBuff(player, new Sleep(player), 10 , 1);
 			}
 		} else {
-			ptick = 0;
+			if(ptick > 0) ptick = 0;
 		}
 		
 		if(Rule.buffmanager.GetBuffTime(player, "sleep") > 0) {

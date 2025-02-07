@@ -232,7 +232,7 @@ public class c1130shimakaze extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound(player, "c113db",1f);
 		return true;
 	}

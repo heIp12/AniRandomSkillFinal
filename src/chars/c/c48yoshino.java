@@ -133,7 +133,7 @@ public class c48yoshino extends c00main{
 				Rule.playerinfo.get(player).tropy(48,1);
 			}
 			e.setDamage(e.getDamage()*damage);
-			if(!isps && AMath.random(100)==1) {
+			if(!isps && AMath.random(100)==1 && skillCooldown(0) ) {
 				ARSystem.playSound((Entity)player, "c48sp",(float) 1);
 				setcooldown[1] *= 0.5;
 				setcooldown[2] *= 0.5;

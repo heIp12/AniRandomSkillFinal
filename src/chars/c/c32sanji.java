@@ -160,7 +160,7 @@ public class c32sanji extends c00main{
 		if(sp > 0) {
 			skill("c32_sp");
 		}
-		if(!isps && ARSystem.AniRandomSkill !=null && ARSystem.AniRandomSkill.time <= 20 && count > 30) {
+		if(!isps && ARSystem.AniRandomSkill !=null && ARSystem.AniRandomSkill.time <= 20 && count > 30 && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			skill("c32_e");

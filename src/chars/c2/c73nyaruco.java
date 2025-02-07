@@ -122,7 +122,7 @@ public class c73nyaruco extends c00main{
 	
 	@Override
 	public boolean tick() {
-		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 60 && !isps) {
+		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.getTime() >= 60 && !isps && skillCooldown(0)) {
 			spskillen();
 			spskillon();
 			ARSystem.playSound((Entity)player, "c73sp");

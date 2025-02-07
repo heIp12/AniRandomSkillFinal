@@ -151,6 +151,7 @@ public class c142miyaco extends c00main{
 				delay(()->{
 					en.setNoDamageTicks(0);	
 					en.damage(6,player);
+					pDamage(en);
 					en.setVelocity(new Vector(0,2.4f,0));
 					cooldown[1] = 0.1f;
 					delay(()->{
@@ -174,6 +175,7 @@ public class c142miyaco extends c00main{
 					ARSystem.giveBuff(en, new Silence(en), 20);
 					en.setVelocity(new Vector(0,1.45f,0));
 					cooldown[1] = 0.1f;
+					pDamage(en);
 					delay(()->{
 						en.setNoDamageTicks(0);
 					},0);
@@ -340,6 +342,8 @@ public class c142miyaco extends c00main{
 					en.damage(3,player);
 					en.setVelocity(player.getLocation().getDirection().multiply(2.2f));
 					cooldown[1] = 0.1f;
+
+					pDamage(en);
 					delay(()->{
 						en.setNoDamageTicks(0);
 					},0);
@@ -357,6 +361,8 @@ public class c142miyaco extends c00main{
 					LivingEntity en = (LivingEntity)e;
 					en.damage(2,player);
 					en.setVelocity(player.getLocation().getDirection().multiply(0.8f));
+
+					pDamage(en);
 					delay(()->{
 						en.setNoDamageTicks(0);
 					},0);
@@ -396,6 +402,17 @@ public class c142miyaco extends c00main{
 		}
 	}
 	
+	void pDamage(LivingEntity en) {
+		if(bh > 0) {
+			delay(()->{
+				en.setNoDamageTicks(0);	
+				en.damage(1.2,player);
+				ARSystem.playSound((Entity)player, "0attack2" , AMath.random(10)*0.1f+0.7f, 0.5f);
+				ARSystem.spellCast(player,en, "c142_pb");
+			},4);
+		}
+	}
+	
 	@Override
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
@@ -403,6 +420,7 @@ public class c142miyaco extends c00main{
 			target.damage(2,player);
 			target.setVelocity(new Vector(0,0.65f,0));
 			cooldown[1] = 0.1f;
+			pDamage(target);
 			delay(()->{
 				target.setNoDamageTicks(0);
 			},0);
@@ -412,10 +430,11 @@ public class c142miyaco extends c00main{
 			target.damage(3,player);
 			target.setVelocity(player.getLocation().getDirection().multiply(1.45f).setY(-3));
 			cooldown[1] = 0.1f;
+
+			pDamage(target);
 			delay(()->{
 				target.setNoDamageTicks(0);
 			},0);
 		}
-	}
-	
+	}	
 }

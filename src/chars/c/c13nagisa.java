@@ -156,7 +156,7 @@ public class c13nagisa extends c00main{
 						break;
 					}
 				}
-				if(ps) {
+				if(ps && skillCooldown(0)) {
 					spskillen();
 					spskillon();
 					attack_time = 40;
@@ -173,7 +173,7 @@ public class c13nagisa extends c00main{
 		if(player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 			player.removePotionEffect(PotionEffectType.INVISIBILITY);
 			player.removePotionEffect(PotionEffectType.SPEED);
-			ps = 10;
+			ps = 20;
 		}
 		if(isps) {
 			attack_time = 100;
@@ -185,7 +185,7 @@ public class c13nagisa extends c00main{
 		if(isAttack) {
 			inv();
 			if(ps > 0) {
-				e.setDamage(e.getDamage()*2);
+				e.setDamage(e.getDamage()*1.8);
 			}
 			if(e.getEntityType() != EntityType.ARMOR_STAND) {
 

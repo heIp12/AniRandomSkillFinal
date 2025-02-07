@@ -31,7 +31,7 @@ import util.ULocal;
 
 public class c133yukina extends c00main{
 	int s2 = 0;
-	int s3 = 0;
+	int s3 = 5;
 	int s3t = 0;
 	
 	int s1 = 0;
@@ -167,7 +167,7 @@ public class c133yukina extends c00main{
 	
 	@Override
 	public boolean firsttick() {
-		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time > 1 && tk%10 == 0 && !isps) {
+		if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time > 10 && tk%10 == 0 && !isps) {
 			boolean pp = true;
 			if(Rule.c.size() < 2) pp = false;
 			if(pp) {
@@ -178,19 +178,25 @@ public class c133yukina extends c00main{
 				}
 			}
 			if(pp) {
-				ARSystem.playSoundAll("c133sp");
-				spskillon();
-				spskillen();
-				skill("c133_sp");
-				player.setMaxHealth(60);
-				player.setHealth(60);
-				ARSystem.giveBuff(player, new TimeStop(player), 140);
-				for(int i=0; i<3; i++) {
-					if(setcooldown[i] > 1.5f) setcooldown[i] -= 1.5f;
-				}
+				onSp();
 			}
 		}
 		return super.firsttick();
+	}
+	
+	public void onSp() {
+		if(!isps&& skillCooldown(0)) {
+			ARSystem.playSoundAll("c133sp");
+			spskillon();
+			spskillen();
+			skill("c133_sp");
+			player.setMaxHealth(60);
+			player.setHealth(60);
+			ARSystem.giveBuff(player, new TimeStop(player), 140);
+			for(int i=0; i<3; i++) {
+				if(setcooldown[i] > 1.5f) setcooldown[i] -= 1.5f;
+			}
+		}
 	}
 	
 	public boolean tick() {
@@ -201,8 +207,8 @@ public class c133yukina extends c00main{
 			scoreBoardText.add("&c ["+Main.GetText("c133:sk3")+ "] : "+ s3);
 			if(tg != null) scoreBoardText.add("&c ["+Main.GetText("c133:sk1")+ "] : "+ tg.getName() +" " + s1 + " / 6");
 		}
-		if(s3 < 5) {
-			if(s3t%100 == 0) {
+		if(s3 < 7) {
+			if(s3t%60 == 0) {
 				s3t = 0;
 				s3++;
 			}
@@ -219,10 +225,10 @@ public class c133yukina extends c00main{
 				Rule.buffmanager.selectBuffTime(target, "nodamage", 0);
 				ARSystem.spellCast(player, target, "c133_p2");
 				target.setNoDamageTicks(0);
-				ARSystem.fixedDamage(target, player, 15);
+				ARSystem.fixedDamage(target, player, 25);
 			} else {
 				target.setNoDamageTicks(0);
-				target.damage(3,player);
+				target.damage(5,player);
 			}
 		}
 		if(n.equals("2")) {
@@ -232,7 +238,7 @@ public class c133yukina extends c00main{
 				if(tg == target) {
 					s1++;
 					if(s1 >= 6) {
-						s1 = 0;
+						s1 -= 6;
 						skill("c133_s1");
 					}
 				}
@@ -270,7 +276,7 @@ public class c133yukina extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

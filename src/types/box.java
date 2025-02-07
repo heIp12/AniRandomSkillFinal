@@ -4,5 +4,6 @@ public enum box {
 	TEAM,
 	TARGET,
 	ALL,
-	MYALL
+	MYALL,
+	PLAYER
 }

@@ -240,7 +240,7 @@ public class c17shou extends c00main{
 
 		if(ticks%10==0) {
 			if(abcount > 3) {
-				if(!isps) {
+				if(!isps && skillCooldown(0)) {
 					spskillen();
 					spskillon();
 					for(int i=1; i<ab.length;i++) {
@@ -283,7 +283,7 @@ public class c17shou extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player,"c17db"+AMath.random(4));
 		return true;
 	}

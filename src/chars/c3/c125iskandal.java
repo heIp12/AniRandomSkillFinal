@@ -118,7 +118,7 @@ public class c125iskandal extends c00main{
 		}
 		
 		for(Entity e : ARSystem.box(player, new Vector(12,8,12), box.ALL)) {
-			if(Rule.c.get(e) instanceof c88week) {
+			if(ARSystem.E_sterEgg && Rule.c.get(e) instanceof c88week) {
 				uma = (Player)e;
 				uma.addPassenger(player);
 				((c88week)Rule.c.get(e)).addspeed += 5;
@@ -129,7 +129,7 @@ public class c125iskandal extends c00main{
 			if(horse != null) horse.remove();
 			
 			horse = (Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
-			horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.12f + (AMath.random((int)(40*(skillmult+sskillmult)))*0.005f));
+			horse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.06f + (AMath.random((int)(40+(20*(skillmult+sskillmult))))*0.005f));
 			horse.setAge(30000);
 			horse.setStyle(Style.BLACK_DOTS);
 			horse.setBreed(false);
@@ -256,7 +256,7 @@ public class c125iskandal extends c00main{
 		if(tk%20 == 0) scoreBoardText.add("&c ["+Main.GetText("c125:p1")+ "] : &f"+ AMath.round(speed, 2));
 		if(s2 > 0) {
 			s2--;
-			if(uma == null) horse.addPotionEffect(PotionEffectType.SPEED.createEffect(20,(int)(speed/3.5)));
+			if(uma == null) horse.addPotionEffect(PotionEffectType.SPEED.createEffect(20,(int)(speed/7)));
 			if(s2 == 0 || (uma == null && horse.getPassenger() == null)) {
 				s2 = 0;
 				if(horse != null) horse.remove();
@@ -327,7 +327,7 @@ public class c125iskandal extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

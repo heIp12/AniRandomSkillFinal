@@ -64,7 +64,7 @@ public class c0700shana extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		player.getWorld().playSound(player.getLocation(), "c7db", 1, 1);
 		return false;
 	}

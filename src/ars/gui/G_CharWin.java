@@ -48,12 +48,15 @@ public class G_CharWin extends GUIBase{
 			int win = Rule.Var.Loadint(player.getName()+".c"+(j%1000)+"Win");
 
 			ItemStack is = null;
-			if(play > 0) {
-				is =  GetChar.getColor(j);
+			if(!GetChar.isBan(j-1)) {
+				is = ItemCreate.Item(166);	
 			} else {
-				is =  GetChar.getNoColor(j);
+				if(play > 0) {
+					is =  GetChar.getColor(j);
+				} else {
+					is =  GetChar.getNoColor(j);
+				}
 			}
-			
 			ItemMeta meta = is.getItemMeta();
 			if(Main.GetText("c"+(j)+":name2") != null) {
 				meta.setDisplayName("§f§l["+j+"]"+Main.GetText("c"+j+":name1").replace("-", "") +" "+ Main.GetText("c"+j+":name2"));
@@ -93,8 +96,13 @@ public class G_CharWin extends GUIBase{
 		if(shift) {
 			info.playerc = click;
 			Rule.Var.setInt(player.getName()+".info.c", click);
-			player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:info22"));
-			ARSystem.playSound(player,"0click2");
+			if(!GetChar.isBan(click-1)) {
+				player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:info22-2"));
+				ARSystem.playSound(player,"0butten2");
+			} else {
+				player.sendMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:info22"));
+				ARSystem.playSound(player,"0click2");
+			}
 		} else {
 			ARSystem.playSound(player,"0click");
 		}

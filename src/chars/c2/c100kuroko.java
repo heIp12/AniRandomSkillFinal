@@ -16,6 +16,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -28,6 +30,7 @@ import Main.Main;
 import aliveblock.ABlock;
 import ars.ARSystem;
 import ars.Rule;
+import buff.Airborne;
 import buff.Buff;
 import buff.Cindaella;
 import buff.Curse;
@@ -49,6 +52,7 @@ import types.BuffType;
 import types.box;
 
 import util.AMath;
+import util.BlockUtil;
 import util.GetChar;
 import util.Holo;
 import util.InvSkill;
@@ -56,66 +60,107 @@ import util.Inventory;
 import util.ULocal;
 import util.MSUtil;
 import util.Map;
+import util.Pair;
+import util.Text;
 
 public class c100kuroko extends c00main{
-	int ps = 0;
+	int s1 = 0;
+	int ps = 20;
 	int ps2 = 0;
 	int count = 0;
-	Entity killer = null;
+	
+	LivingEntity killer = null;
+	boolean iskill = false;
+	List<Pair<Integer, Integer>> p = new ArrayList<>();
+	int p2 = 0;
+	
+	int time = 0;
+	int air = 0;
+	
 	public c100kuroko(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 100;
 		load();
 		text();
 		c = this;
+		time = Text.getI("c100:time");
 	}
 
 	@Override
 	public boolean skill1() {
 		ARSystem.playSound((Entity)player, "c100s1");
-		skill("c100_s1");
+		List<Entity> en = ARSystem.PlayerBeamBox(player, 10, 2, box.TARGET);
+		if(en.size() > 0) {
+			if(s1 > 0) {
+				for(int i = 0; i< s1; i++) {
+					delay(()->{ARSystem.spellCast(player, en.get(0), "c100_s12");},i*2);
+				}
+				s1 = 0;
+			} else {
+				ARSystem.spellCast(player, en.get(0), "c100_s12");
+				p.add(new Pair<>(time,4));
+			}
+			cooldown[1] *= 1+p2*0.02;
+		} else {
+			cooldown[1] = 0;
+		}
 		return true;
 	}
 	
 	@Override
 	public boolean skill2() {
-		ARSystem.playSound((Entity)player, "c100s1");
-		List<Entity> target = ARSystem.box(player, new Vector(2,2,2), box.ALL);
-		if(target.size() <= 0) {
-			cooldown[2] = 0;
-			return true;
-		}
-		for(Entity e : target) {
-			if(player.isSneaking()) {
-				e.teleport(e.getLocation().add(player.getLocation().getDirection().multiply(-15)).add(0,0.5,0));
-			} else {
-				e.teleport(e.getLocation().add(player.getLocation().getDirection().multiply(15)).add(0,0.5,0));
-			}
-			e.setVelocity(new Vector(0,0,0));
+		if(killer != null && ps2 >= 0 && Map.inMap(killer.getLocation())) {
+			p.add(new Pair<>(time,5));
+			ps2 = 0;
+			player.teleport(killer);
+			killer.setNoDamageTicks(0);
+			killer.damage(3,player);
+			if(iskill)ARSystem.playSound((Entity)player, "c100db");
+			killer = null;
+			iskill = false;
+			count++;
+			if(count <= 3) Rule.playerinfo.get(player).tropy(100,1);
+			cooldown[2] *= 1+p2*0.02;
 		}
 		return true;
 	}
 	
 	@Override
 	public boolean skill3() {
-		if(killer != null) {
-			player.teleport(killer);
-			ARSystem.giveBuff((LivingEntity) killer, new Silence((LivingEntity) killer), 60);
-			ARSystem.giveBuff((LivingEntity) killer, new Stun((LivingEntity) killer), 60);
-			killer = null;
-			ARSystem.playSound((Entity)player, "c100db");
-			count++;
-			if(count <= 3) Rule.playerinfo.get(player).tropy(100,1);
-		} else {
-			if(player.isSneaking()) {
-				player.teleport(player.getLocation().add(player.getLocation().getDirection().multiply(-10)).add(0,0.5,0));
+		ARSystem.playSound((Entity)player, "c100s1");
+
+		if(!player.isSneaking()) {
+			player.teleport(player.getLocation().add(player.getLocation().getDirection().multiply(10)).add(0,0.5,0));
+			if(BlockUtil.isAirbone(player.getLocation(), 2)) {
+				ARSystem.giveBuff(player, new Airborne(player), 4);
+				player.setVelocity(new Vector(0,0.1,0));
+
+				if(BlockUtil.isAirbone(player.getLocation(), 5)) {
+					p.add(new Pair<>(time,12));
+				} else {
+					p.add(new Pair<>(time,4));
+				}
 			} else {
-				player.teleport(player.getLocation().add(player.getLocation().getDirection().multiply(10)).add(0,0.5,0));
+				player.setVelocity(new Vector(0,0,0));
+				p.add(new Pair<>(time,2));
 			}
-			ARSystem.playSound((Entity)player, "c100s2");
+			player.setFallDistance(0);
+		} else {
+			List<Entity> target = ARSystem.box(player, new Vector(2,2,2), box.ALL);
+			if(target.size() <= 0) {
+				cooldown[3] = 0;
+				return true;
+			}
+			for(Entity e : target) {
+				killer = (LivingEntity)e;
+				ps2 = 60;
+				e.teleport(e.getLocation().add(player.getLocation().getDirection().multiply(15)).add(0,0.5,0));
+				e.setVelocity(new Vector(0,0,0));
+			}
+			p.add(new Pair<>(time,16));
+			cooldown[3] = setcooldown[3] * 8;
 		}
-		player.setVelocity(new Vector(0,0,0));
-		player.setFallDistance(0);
+		cooldown[3] *= 1+p2*0.02;
 		return true;
 	}
 	
@@ -123,7 +168,7 @@ public class c100kuroko extends c00main{
 	public boolean skill4() {		
 		LivingEntity target = null;
 		Location loc = player.getLocation().clone();
-		for(int i=0;i<27;i++) {
+		for(int i=0;i<14;i++) {
 			loc.add(loc.getDirection());
 			for (LivingEntity e : player.getWorld().getLivingEntities()) {
 				if(e.getLocation().distance(loc) <= 6 && e != player) {
@@ -140,7 +185,7 @@ public class c100kuroko extends c00main{
 			loc = ULocal.lookAt(loc, target.getLocation());
 			player.teleport(loc);
 			loc = target.getLocation();
-			target.damage(3,player);
+			target.damage(4,player);
 			LivingEntity e = target;
 			if(Rule.buffmanager.OnBuffTime(e, "stun")) {
 				Rule.buffmanager.selectBuffTime(e, "stun",0);
@@ -226,39 +271,63 @@ public class c100kuroko extends c00main{
 							},100);
 						} else {
 							e.setNoDamageTicks(0);
-							e.damage(6,player);
+							e.damage(4*(p2*0.01),player);
 							ARSystem.giveBuff(e, new Stun(e), 60);
 							ARSystem.giveBuff(e, new Silence(e), 60);
 						}
 					}
 				},6);
 			},3);
+			cooldown[4] *= 1+p2*0.02;
 		} else {
 			cooldown[4] = 0;
 		}
 		return true;
 	}
-	@Override
-	public void makerSkill(LivingEntity target, String n) {
-		if(n.equals("1")) {
-			target.setNoDamageTicks(0);
-			if(player.isSneaking()) {
-				ARSystem.giveBuff(target, new Stun(target), 20);
-				target.damage(1.5,player);
-			} else {
-				target.damage(3,player);
-			}
-		}
-	}
 	
 	@Override
+	public boolean teleportevent(PlayerTeleportEvent e) {
+		if(e.getPlayer() != player && e.getFrom().distance(e.getTo()) >= 3 && e.getFrom().distance(player.getLocation()) < 8) {
+			if(Rule.c.get(e.getPlayer()) != null) {
+				LivingEntity en = (LivingEntity) e.getPlayer();
+				killer = en;
+				ps2 = 40;
+			}
+		}
+		return super.teleportevent(e);
+	}
+
+	List<Pair<Integer, Integer>> removes = new ArrayList<>();
+	@Override
 	public boolean tick() {
-		if(ps > 0) {
-			ps--;
+		if(BlockUtil.isAirbone(startLoc, 1)) {
+			air++;
+		} else {
+			air = 0;
+		}
+		if(ps > 0 && s1 < 8) {
+			ps-=Math.max(1,(int)(skillmult+sskillmult));
+			if(ps <= 0) {
+				ps = 60;
+				s1++;
+			}
 		}
 		if(ps2 > 0) {
 			ps2--;
+			player.sendTitle(killer.getName(), AMath.round(ps2*0.05, 2)+"(s)",0,4,0);
 			if(ps2 == 0) killer = null;
+		}
+		removes.clear();
+		p2 = 0;
+		for(Pair<Integer,Integer> p : p) {
+			p.setKey(p.getKey()-Math.max(1,(int)(skillmult+sskillmult)/2));
+			p2 += p.getValue();
+			if(p.getKey() <= 0) removes.add(p);
+		}
+		for(Pair<Integer,Integer> p : removes) this.p.remove(p);
+		if(tk%20 == 0) {
+			scoreBoardText.add("&c ["+Main.GetText("c100:sk1")+ "] : " + s1+"("+AMath.round(ps*0.05, 1)+")");
+			scoreBoardText.add("&c ["+Main.GetText("c100:t1")+ "] : " + p2+"%");
 		}
 		return true;
 	}
@@ -266,35 +335,25 @@ public class c100kuroko extends c00main{
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
 		if(e != player && p != player) {
-			killer = e;
-			ps2 = 20;
+			killer = (LivingEntity)e;
+			ps2 = 60;
+			iskill = true;
 		}
 	}
 	
 	@Override
-	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
-		if(isAttack) {
-			if(e.getDamage() <= 1 && e.getDamage() > 0) {
-				Location loc = e.getEntity().getLocation();
-				loc.setPitch(AMath.random(180)-90);
-				loc.setYaw(AMath.random(360));
-				Location lc = ULocal.lookAt(ULocal.offset(loc, new Vector(2,0,0)),e.getEntity().getLocation());
-				ARSystem.spellLocCast(player, lc, "c100_ps");
-			}
-		} else {
-			if(e.getDamage() <= 1 && ps <= 0) {
-				ps = 10;
-				e.setDamage(0);
-				e.setCancelled(true);
-				player.teleport(ULocal.lookAt(e.getDamager().getLocation().add(AMath.random(3)-2,0,AMath.random(3)-2),e.getDamager().getLocation()));
-				
-			}
+	public void makerSkill(LivingEntity target, String n) {
+		if(n.equals("1")) {
+			target.setNoDamageTicks(0);
+			target.damage(1,player);
+			ARSystem.addBuff(target, new Stun(target), 4);
 		}
-		return true;
+		super.makerSkill(target, n);
 	}
 	
+	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {
@@ -303,7 +362,6 @@ public class c100kuroko extends c00main{
 					is = "micoto";
 					break;
 				}
-
 			}
 		}
 		

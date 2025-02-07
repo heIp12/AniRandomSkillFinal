@@ -82,6 +82,7 @@ public class c103diablo extends c00main{
 				cooldown[1] = 0;
 				return true;
 			}
+			ARSystem.spellCast(player, target, "c103_s1");
 			if(target.getHealth() < 2) {
 				ARSystem.playSound((Entity)player, "c103s12");
 				target.setMaxHealth(100);
@@ -155,7 +156,7 @@ public class c103diablo extends c00main{
 			if(e.size() > 0) {
 				player.sendTitle(e.get(0).getName(), ""+ e.get(0).getHealth() + " / " + e.get(0).getMaxHealth(),0,20,0);
 				if(Rule.c.get(e.get(0)) != null && Rule.c.get(e.get(0)).number%1000 == 3) {
-					if(!isps) {
+					if(!isps && skillCooldown(0)) {
 						spskillon();
 						spskillen();
 						ARSystem.playSound((Player)player, "c103rimuru");

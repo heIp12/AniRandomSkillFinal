@@ -1,6 +1,7 @@
 package buff;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -49,6 +50,7 @@ public class MindControl extends Buff{
 	
 	@Override
 	public boolean onTicks() {
+		if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 		Entity t = ARSystem.boxRandom(target, new Vector(14,14,14), box.ALL);
 		if(t != owner && !(onlyPlayer && (t instanceof Player))) targets = (LivingEntity)t;
 		if(targets != null) {

@@ -16,6 +16,7 @@ import ars.Rule;
 import ars.gui.G_AdvSelect;
 import ars.gui.G_HeddenSelect;
 import ars.gui.G_Nitory;
+import ars.gui.G_RareShop;
 import ars.gui.G_Select;
 import ars.gui.G_Supply;
 import chars.c2.c58nao;
@@ -44,7 +45,7 @@ public class G_SoloMenu extends GUIBase{
 						   0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 1, 2, 3, 0, 0, 8, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0,
-						   0, 4, 5, 6, 7, 0, 0, 0, 0,
+						   0, 4, 5, 6, 7, 9,10, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0
 				};
@@ -88,13 +89,17 @@ public class G_SoloMenu extends GUIBase{
 		return ItemCreate.Name(item,Text.get("main:solo8"));
 	}
 	public ItemStack gui9(){
-		ItemStack item = ItemCreate.Item(373);
+		ItemStack item = ItemCreate.Item(54);
 		return ItemCreate.Name(item,Text.get("main:solo9"));
+	}
+	public ItemStack gui10(){
+		ItemStack item = ItemCreate.Item(54);
+		return ItemCreate.Name(item,Text.get("main:solo10"));
 	}
 	
 	public void click0(boolean right,boolean shift) {}
 	public void click1(boolean right,boolean shift) {
-		new G_Select(player);
+		new G_Select(player, null);
 	}
 
 	public void click2(boolean right,boolean shift) {
@@ -122,5 +127,11 @@ public class G_SoloMenu extends GUIBase{
 		} else {
 			player.sendMessage("Not Select");
 		}
+	}
+	public void click9(boolean right,boolean shift) {
+		new G_ItemSelect(player,10000);
+	}
+	public void click10(boolean right,boolean shift) {
+		new G_RareShop(player);
 	}
 }

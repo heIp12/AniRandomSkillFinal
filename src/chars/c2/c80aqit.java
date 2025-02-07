@@ -188,6 +188,7 @@ public class c80aqit extends c00main{
 			}
 			e.setDamage(e.getDamage() * mydamage);
 			damage+= e.getDamage();
+			if(damage > 50) damage = 40;
 		} else {
 			if(mydamage<0.6 && player.getHealth() - e.getDamage() < 1 && ((LivingEntity)e.getDamager()).getHealth()/((LivingEntity)e.getDamager()).getMaxHealth() < 0.5) {
 				if(skillCooldown(0)) {
@@ -227,7 +228,7 @@ public class c80aqit extends c00main{
 						for(Entity en : ARSystem.box(player, new Vector(999,999,999),box.ALL)) {
 							ARSystem.addBuff((LivingEntity) en, new TimeStop((LivingEntity) en), 120);
 						}
-						mydamage = 0.8f;
+						mydamage = 1.0f;
 					},120);
 				}
 			}

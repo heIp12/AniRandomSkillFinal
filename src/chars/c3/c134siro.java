@@ -70,7 +70,7 @@ public class c134siro extends c00main{
 		boolean lvup = false;
 		exp += i;
 		while(exp >= maxexp) {
-			if(lv >= 14) {
+			if(lv >= 14 && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				Rule.c.put(player, new c1134siro(player, plugin, this));
@@ -441,7 +441,15 @@ public class c134siro extends c00main{
 		return true;
 	}
 
-	
+
+	@Override
+	public void kill(LivingEntity death, LivingEntity killer) {
+		if(killer == player) {
+			xp((int)(death).getMaxHealth());
+			ARSystem.playSound(unit, "c134eat");
+		}
+	}
+
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(!isAttack) {
@@ -449,10 +457,7 @@ public class c134siro extends c00main{
 			e.setCancelled(true);
 			return false;
 		} else {
-			if(((LivingEntity)e.getEntity()).getHealth() - e.getDamage() <= 1) {
-				xp((int)((LivingEntity)e.getEntity()).getMaxHealth());
-				ARSystem.playSound(unit, "c134eat");
-			}
+			
 		}
 		return true;
 	}

@@ -186,7 +186,7 @@ public class c05touma extends c00main{
 				}
 			}
 		}
-		if(e.getDamager() instanceof Player) {
+		if(ARSystem.E_sterEgg && e.getDamager() instanceof Player) {
 			if(Rule.c.get(e.getDamager()) != null) {
 				if(Rule.c.get(e.getDamager()).number == 25) {
 					if(ctime <= 0) {

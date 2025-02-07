@@ -12,6 +12,7 @@ import ars.ARSystem;
 import ars.Rule;
 import buff.Airborne;
 import buff.Exposure;
+import buff.Ice;
 import buff.NoHeal;
 import buff.Noattack;
 import buff.Nodamage;
@@ -76,6 +77,7 @@ public class MagicSpellVar extends InstantSpell implements TargetedEntitySpell{
 				if(set == 6) ARSystem.addBuff(e, new Panic(e), (int) (number*20), 0);
 				if(set == 7) ARSystem.addBuff(e, new Airborne(e), (int) (number*20), 0);
 				if(set == 8) ARSystem.addBuff(e, new NoHeal(e), (int) (number*20), 0);
+				if(set == 9) ARSystem.addBuff(e, new Ice(e,NpcPlayer.npc(e.getLocation())), (int) (number*20), 0);
 				if(set == 99) {
 					if(!Rule.buffmanager.isBuff(e, "exposure")) {
 						ARSystem.giveBuff(e, new Exposure(e) , 100, 0.1f);
@@ -94,6 +96,7 @@ public class MagicSpellVar extends InstantSpell implements TargetedEntitySpell{
 				if(set == 6) ARSystem.giveBuff(e, new Panic(e), (int) (number*20));
 				if(set == 7) ARSystem.giveBuff(e, new Airborne(e), (int) (number*20));
 				if(set == 8) ARSystem.giveBuff(e, new NoHeal(e), (int) (number*20));
+				if(set == 9) ARSystem.giveBuff(e, new Ice(e,NpcPlayer.npc(e.getLocation())), (int) (number*20), 0);
 			}
 		}
 	}

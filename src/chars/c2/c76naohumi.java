@@ -148,7 +148,7 @@ public class c76naohumi extends c00main{
 			}
 			damage++;
 			if(damage > 100) Rule.playerinfo.get(player).tropy(76,1);
-			if(damage >= 30 && !isps) {
+			if(damage >= 30 && !isps && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				ARSystem.playSound((Entity)player, "c76sp");

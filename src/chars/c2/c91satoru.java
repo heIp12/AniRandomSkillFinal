@@ -86,7 +86,7 @@ public class c91satoru extends c00main{
 		if(sptime > 0) sk1 = 10;
 		skill("c91_s1");
 		for(Entity e : ARSystem.box(player, new Vector(8,5,8), box.TARGET)) {
-			if(Rule.c.get(e) !=null && Rule.c.get(e) instanceof c18misogi) {
+			if(ARSystem.E_sterEgg && Rule.c.get(e) !=null && Rule.c.get(e) instanceof c18misogi) {
 				ARSystem.playSound(e, "c18noao");
 				ARSystem.giveBuff(player, new TimeStop(player), 30);
 				ARSystem.giveBuff((LivingEntity)e, new TimeStop((LivingEntity)e), 30);
@@ -109,7 +109,7 @@ public class c91satoru extends c00main{
 		if(sptime > 0) sk2 = 10;
 		skill("c91_s2");
 		for(Entity e : ARSystem.box(player, new Vector(8,5,8), box.TARGET)) {
-			if(Rule.c.get(e) !=null && Rule.c.get(e) instanceof c18misogi) {
+			if(ARSystem.E_sterEgg && Rule.c.get(e) !=null && Rule.c.get(e) instanceof c18misogi) {
 				ARSystem.playSound(e, "c18noaka");
 				ARSystem.giveBuff(player, new TimeStop(player), 30);
 				ARSystem.giveBuff((LivingEntity)e, new TimeStop((LivingEntity)e), 30);

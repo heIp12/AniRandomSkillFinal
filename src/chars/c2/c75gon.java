@@ -62,8 +62,8 @@ import util.Map;
 public class c75gon extends c00main{
 	int sk = 0;
 	int tsk = 0;
-	int lose = 0;
-	int ps = 0;
+	public int lose = 0;
+	public int ps = 0;
 	
 	public c75gon(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -240,7 +240,7 @@ public class c75gon extends c00main{
 			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c75:sk0")+ "] : "+ lose+" / 5");		
 			if(isps) scoreBoardText.add("&c ["+Main.GetText("c75:sk0")+ "] : "+ AMath.round(ps/20,2));
 		}
-		if(lose >=5 && !isps) {
+		if(lose >=5 && !isps && skillCooldown(0)) {
 			spskillen();
 			spskillon();
 			ARSystem.playSound((Entity)player, "c75sp");
@@ -251,7 +251,7 @@ public class c75gon extends c00main{
 		}
 		if(ps > 0) {
 			ps--;
-			if(ps == 0) Skill.remove(player, player);
+			if(ps <= 0) Skill.remove(player, player);
 		}
 		return true;
 	}

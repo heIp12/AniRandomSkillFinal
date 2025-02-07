@@ -60,7 +60,7 @@ public class c08yuuki extends c00main{
 	
 	@Override
 	public boolean skill4() {
-		if(player.getHealth() > 8) {
+		if(player.getHealth()/player.getMaxHealth() > 0.25) {
 			cooldown[1] = 0;
 			cooldown[2] = 0;
 			cooldown[3] = 0;
@@ -78,7 +78,7 @@ public class c08yuuki extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

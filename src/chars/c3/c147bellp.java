@@ -61,6 +61,8 @@ import chars.c.c00main;
 import chars.c.c09youmu;
 import chars.c.c10bell;
 import chars.c.c30siro;
+import chars.c.c38hajime;
+import chars.c.c38hajime.gun;
 import chars.c.c39sakuya;
 import chars.c.c45momo;
 import chars.c2.c57riri;
@@ -96,13 +98,13 @@ public class c147bellp extends c00main{
 	int stack = 0;
 	HashMap<String,Integer> ore = new HashMap<>();
 	List<Integer> mg = new ArrayList<Integer>();
+	List<Player> teams = new ArrayList<>();
 	
 	public c147bellp(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
 		number = 147;
 		load();
 		text();
-		c = this;
 		if(ARSystem.AniRandomSkill != null) {
 			delay(()->{
 				int power = 0;
@@ -220,7 +222,7 @@ public class c147bellp extends c00main{
 	
 	@Override
 	public boolean skill3() {
-		if(o(5) > 2 && player.isSneaking() && !isps) {
+		if(o(5) > 2 && player.isSneaking() && !isps && skillCooldown(0)) {
 			ore.clear();
 			spskillon();
 			ARSystem.playSound((Entity)player, "c147sp");
@@ -298,11 +300,11 @@ public class c147bellp extends c00main{
 
 				if(ARSystem.isGameMode("lobotomy")){
 					new G_Lvup(this, new ItemStack[] {
-						ItemCreate.Name(ItemCreate.Item(259, 0), (2+AMath.random(3))+"%"),
-						ItemCreate.Name(ItemCreate.Item(318, 0), AMath.random(6)+"%"),
-						ItemCreate.Name(ItemCreate.Item(275, 0), (AMath.random(25)-AMath.random(70))+"%"),
-						ItemCreate.Name(ItemCreate.Item(377, 0), (AMath.random(15)-AMath.random(40))+"%"),
-						ItemCreate.Name(ItemCreate.Item(326, 0), (AMath.random(10)-AMath.random(20))+"%")
+						ItemCreate.Name(ItemCreate.Item(259, 0), (2+AMath.random(5))+"%"),
+						ItemCreate.Name(ItemCreate.Item(318, 0), AMath.random(10)+"%"),
+						ItemCreate.Name(ItemCreate.Item(275, 0), (AMath.random(50)-AMath.random(100))+"%"),
+						ItemCreate.Name(ItemCreate.Item(377, 0), (AMath.random(30)-AMath.random(20))+"%"),
+						ItemCreate.Name(ItemCreate.Item(326, 0), (AMath.random(30)-AMath.random(10))+"%")
 				});
 				} else {
 					new G_Lvup(this, new ItemStack[] {
@@ -350,9 +352,63 @@ public class c147bellp extends c00main{
 		if(lore) return ItemCreate.Lore(ItemCreate.Item(id,data),name,Text.getLine(name+"_lore", 1));
 		return ItemCreate.Name(ItemCreate.Item(id,data),name);
 	}
+	int c = 0;
 	int pdelay = 20;
 	@Override
 	public boolean tick() {
+		Entity p2 = ARSystem.boxSPlayerOne(player, new Vector(6,6,6), box.ALL);
+		if(p2 != null && Rule.c.get(p2) != null && !teams.contains(p2) && c <= 0 && ARSystem.E_sterEgg) {
+			int n = Rule.c.get(p2).number;
+			if(n == 10 || n == 57) {
+				c = 40;
+				player.teleport(ULocal.lookAt(player.getLocation().clone(), p2.getLocation()));
+				ARSystem.giveBuff(player, new TimeStop(player), 20);
+				ARSystem.giveBuff((Player)p2, new TimeStop((Player)p2), 20);
+				skill("c147_p");
+				ARSystem.playSound((Entity)player, "c147kang",2,1);
+				ARSystem.playSound((Entity)player, "c147s3"+AMath.random(2));
+				teams.add((Player)p2);
+				if(n == 10) {
+					Rule.c.get(p2).setcooldown[1] *=0.75;
+					Rule.c.get(p2).setcooldown[2] *=0.5;
+					Rule.c.get(p2).setcooldown[3] *=2;
+					Rule.c.get(p2).setcooldown[0] *=5;
+					Rule.c.get(p2).hp = 8;
+					Rule.c.get(p2).frist_damage = 2.5f;
+					Rule.c.get(p2).frist_defence = 0.25f;
+					((LivingEntity)p2).setHealth(5);
+					((LivingEntity)p2).setMaxHealth(5);
+				}
+				if(n == 57) {
+					Rule.c.get(p2).s_damage += 20;
+					Rule.c.get(p2).hp += 8;
+					((LivingEntity)p2).setMaxHealth(((LivingEntity)p2).getMaxHealth()+8);
+					ARSystem.heal((LivingEntity)p2, 8);
+				}
+			}
+		}
+		if(Rule.team.isTeam(player) && ARSystem.E_sterEgg) {
+			Entity p = ARSystem.boxSPlayerOne(player, new Vector(6,6,6), box.TEAM);
+			if(p != null && Rule.c.get(p) != null && !teams.contains(p) && c <= 0) {
+				c = 40;
+				player.teleport(ULocal.lookAt(player.getLocation().clone(), p.getLocation()));
+				ARSystem.giveBuff(player, new TimeStop(player), 20);
+				ARSystem.giveBuff((Player)p, new TimeStop((Player)p), 20);
+				skill("c147_p");
+				ARSystem.playSound((Entity)player, "c147kang",2,1);
+				ARSystem.playSound((Entity)player, "c147s3"+AMath.random(2));
+				teams.add((Player)p);
+				if(Rule.c.get(p).number == 38 && ((Player)p).getMaxHealth() >= 20) {
+					((c38hajime)Rule.c.get(p)).en +=1;
+					((c38hajime)Rule.c.get(p)).enchent();
+				} else {
+					for(int i =0; i<10; i++) Rule.c.get(p).setcooldown[i] *= 0.8;
+					Rule.c.get(p).hp += 2;
+					((LivingEntity)p).setMaxHealth(Rule.c.get(p).hp);
+				}
+			}
+		}
+		if(c > 0) c--;
 		if(dg > 0) dg--;
 		if(sp > 0) {
 			sp--;
@@ -553,7 +609,7 @@ public class c147bellp extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

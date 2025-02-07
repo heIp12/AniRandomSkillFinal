@@ -90,6 +90,13 @@ public class c09youmu extends c00main{
 	}
 	
 	@Override
+	public void PlayerDeath(Player p, Entity e) {
+		if(e == player) {
+			sk3count+=2;
+		}
+	}
+	
+	@Override
 	public boolean tick() {
 		tick++;
 		s3c+= (skillmult + sskillmult);
@@ -112,7 +119,7 @@ public class c09youmu extends c00main{
 					sk3count++;
 				}
 			}
-			if(et.size() >= 3) {
+			if(et.size() >= 3 && skillCooldown(0)) {
 				spskillen();
 				ARSystem.playSoundAll("c9sp");
 				int i = 0;

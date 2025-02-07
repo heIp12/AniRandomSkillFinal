@@ -254,10 +254,20 @@ public class c1220yuyuco extends c00main{
 	public boolean skill0(){
 		spskillon();
 		spskillen();
+		Rule.playerinfo.get(player).tropy(122, 1);
+		Map.getMapinfo(1015);
+		
 		int i = Map.mapid;
 		Map.loc_f = new Location(player.getWorld(),Text.getI("map:map"+i+"x1"),Text.getI("map:map"+i+"y1"),Text.getI("map:map"+i+"z1"));
 		Map.loc_l = new Location(player.getWorld(),Text.getI("map:map"+i+"x2"),Text.getI("map:map"+i+"y2"),Text.getI("map:map"+i+"z2"));
-		Map.setting();
+		Location l = Map.getCenter();
+		Map.world.getWorldBorder().setCenter(l.getX(), l.getZ());
+		Map.world.getWorldBorder().setSize(500,0);
+		l.setX(772.5);
+		l.setY(28);
+		l.setZ(411.5);
+		loc = l;
+		player.teleport(l);
 		
 		ARSystem.playSoundAll("c122sp");
 		skill("c122_pr");
@@ -426,7 +436,7 @@ public class c1220yuyuco extends c00main{
 		return true;
 	}
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		for(c00main m : Rule.c.values()) {
 			if(m.number%1000 == 9 && m.player.getLocation().distance(player.getLocation()) > 10) {
 				ARSystem.playSound((Entity)player, "c122youmu1");

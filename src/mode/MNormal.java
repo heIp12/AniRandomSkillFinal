@@ -16,7 +16,7 @@ import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
 import types.MapType;
-
+import types.box;
 import util.AMath;
 import util.Map;
 import util.NpcPlayer;
@@ -34,56 +34,38 @@ public class MNormal extends ModeBase{
 		MNormal.time = time;
 		if(Map.mapid > 1000) return;
 		if(Map.mapid == 15) {
-			if(Bgm.bgmcode.equals("mk16")) {
-				ARSystem.AniRandomSkill.time-=2;
-				if(ARSystem.AniRandomSkill.time < 50) {
-					ARSystem.spellLocCast(NpcPlayer.npc(Map.randomLoc()), Map.randomLoc(), "azami_snake3");
-					ARSystem.spellLocCast(NpcPlayer.npc(ARSystem.RandomPlayer().getLocation()), ARSystem.RandomPlayer().getLocation(), "azami_snake3");
+			Location loc = new Location(Bukkit.getWorld("world"),325.5,31,-216.5,-130,0);
+			if(time == 120) {
+				boolean azami = false;
+				for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
+					if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
+						azami = true;
+					}
 				}
-				Location loc = Map.randomLoc();
-				if(AMath.random(10) == 2) loc = ARSystem.RandomPlayer().getLocation();
-				ARSystem.spellLocCast(NpcPlayer.npc(loc), loc, "azami_snake3");
-				
-				if(ARSystem.AniRandomSkill.time <= 2 && ARSystem.AniRandomSkill.time > 1) {
-					Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule,()->{
-						ARSystem.addGameMode(new MKagerou());
-					},10);
-					ARSystem.AniRandomSkill.time = 0;
+				if(azami == false) {
+					Map.spawn("azami",loc, 1);
 				}
 			}
-			if(!Bgm.bgmcode.equals("mk16")) {
-				Location loc = new Location(Bukkit.getWorld("world"),325.5,31,-216.5,-130,0);
-				if(time == 120) {
-					boolean azami = false;
-					for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
-						if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
-							azami = true;
-						}
-					}
-					if(azami == false) {
-						Map.spawn("azami",loc, 1);
+			if(time > 123 && time < 130) {
+				boolean azami = false;
+				for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
+					if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
+						azami = true;
 					}
 				}
-				if(time > 123 && time < 130) {
-					boolean azami = false;
-					for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
-						if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
-							azami = true;
-						}
-					}
-					if(azami == false) {
-						ARSystem.playSoundAll("mkb16");
-						Bgm.setForceBgm("mk16");
-					}
+				if(azami == false) {
+					Rule.Var.Save("System.info.mode.kagerou",true);
+					ARSystem.GameStop();
 				}
-				if(time == 130) {
-					for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
-						if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
-							Skill.remove(e, e);
-						}
+			}
+			if(time == 130) {
+				for(Entity e : ARSystem.locEntity(loc, new Vector(99,99,99), null)) {
+					if(e.getCustomName() != null && e.getCustomName().contains("Azami")) {
+						Skill.remove(e, e);
 					}
 				}
 			}
+			
 		}
 		
 		if(!ARSystem.isGameMode("team") && Map.mapType == MapType.NORMAL &&time >= 120 && time%30 == 0) {
@@ -121,6 +103,47 @@ public class MNormal extends ModeBase{
 	}
 
 	public static void RandomEvent(int i) {
+		
+		for(Player p : Rule.c.keySet()) {
+			if(Rule.c.get(p).number == 153 && Rule.c.get(p).cooldown[0] <= 0) {
+				boolean on = false;
+				
+				if(i == 10) {
+					Player pls = ARSystem.RandomPlayer();
+					int j = 0;
+					while(pls == p) {
+						pls = ARSystem.RandomPlayer();
+						j++;
+						if(j > 1000) break;
+					}
+					for(Player pl :Rule.c.keySet()) {
+						AdvManager.set(pl, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg7"));
+					}
+					Rule.c.get(p).spskillen();
+					Rule.c.get(p).cooldown[0] = Rule.c.get(p).setcooldown[0];
+					ARSystem.playSoundAll("c153sp");
+					ARSystem.Death(ARSystem.RandomPlayer(),ARSystem.RandomPlayer());
+					break;
+				}
+				else if(p.getHealth()/p.getMaxHealth() <= 0.5 && ARSystem.boxSOne(p, new Vector(10,10,10), box.TARGET) != null) {
+					on = true;
+					i = 3;
+				}
+				else if(Rule.c.get(p).cooldown[2] > 30) {
+					on = true;
+					i = 2;
+				}
+				
+				if(on) {
+					Rule.c.get(p).spskillen();
+					Rule.c.get(p).cooldown[0] = Rule.c.get(p).setcooldown[0];
+					ARSystem.playSoundAll("c153sp");
+					break;
+				}
+			}
+		}
+		
+		
 		if(i == 1) {
 			for(Player p :Rule.c.keySet()) {
 				Rule.c.get(p).sskillmult+=0.25;
@@ -207,7 +230,6 @@ public class MNormal extends ModeBase{
 			ARSystem.Death(ARSystem.RandomPlayer(),ARSystem.RandomPlayer());
 		}
 		if(i == 11) {
-			Player pls = ARSystem.RandomPlayer();
 			for(Player p :Rule.c.keySet()) {
 				AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg7"));
 			}

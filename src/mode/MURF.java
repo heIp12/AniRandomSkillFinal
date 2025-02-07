@@ -24,9 +24,14 @@ public class MURF extends ModeBase{
 	@Override
 	public void firstTick() {
 		ARSystem.playSoundAll("0select2");
-		for(Player p :Rule.c.keySet()) {
-			double cool = AMath.random(40) * 0.05;
-			cool = Math.round(cool*100)/100.0;
+		int max = getInt("3");
+		int min = getInt("2");
+		double cool = AMath.random(min, max) * 0.01;
+		
+		for(Player p : Rule.c.keySet()) {
+			if(getBool("1")) {
+				cool = AMath.random(min, max) * 0.01;
+			}
 			Rule.c.get(p).sskillmult+=cool;
 			AdvManager.set(p, 388, 0,  Main.GetText("main:msg2") +" "+ Main.GetText("main:msg3") +" +"+(cool*100)+"% ");
 		}

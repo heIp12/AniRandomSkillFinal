@@ -22,23 +22,29 @@ import util.Text;
 public class G_Select extends GUIBase{
 	PlayerInfo info;
 	
-	public G_Select(Player p) {
+	public G_Select(Player p,List<Integer> ban) {
 		super(p);
-		name = "Skill Select";
+		name = "Character Select";
 		int count = GetChar.getCount();
 		line = 6;
 		page = new int[Math.max(count,this.line*9) + (Math.max(count,this.line*9)/8) + 18];
 		info = Rule.playerinfo.get(player);
 		int j = 0;
+
 		
 		for(int i=0;j<count;i++) {
 			if((i+1)%9 == 0) {
 				page[i] = 0;
 				continue;
 			}
+
 			page[i] = j;
-			ItemStack item = GetChar.getColor(j+1);
-			ItemRep(j, ItemCreate.Name(item,"§f"+Text.get("c"+(j+1)+":name1")+ " "+Text.get("c"+(j+1)+":name2")));
+			if(ban.contains(j+1)) {
+				ItemRep(j, ItemCreate.Name(ItemCreate.Item(166),"§c"+Text.get("c"+(j+1)+":name1")+ " "+Text.get("c"+(j+1)+":name2")));				
+			} else {
+				ItemStack item = GetChar.getColor(j+1);
+				ItemRep(j, ItemCreate.Name(item,"§f"+Text.get("c"+(j+1)+":name1")+ " "+Text.get("c"+(j+1)+":name2")));
+			}
 			j++;
 		}
 		for(int i = 1; i< page.length; i++) {
@@ -64,7 +70,12 @@ public class G_Select extends GUIBase{
 		}
 		
 		int click = page[clickLocal];
-		Rule.c.put(Rule.playerinfo.get(player).target, GetChar.get(Rule.playerinfo.get(player).target, Rule.gamerule, ""+(click+1)));
+		if(items[click].getTypeId() == 166) {
+			
+		} else {
+			Rule.c.put(Rule.playerinfo.get(player).target, GetChar.get(Rule.playerinfo.get(player).target, Rule.gamerule, ""+(click+1)));
+			player.closeInventory();
+		}
 		return false;
 	}
 }

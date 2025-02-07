@@ -41,6 +41,7 @@ import buff.Wound;
 import chars.c.c00main;
 import chars.c.c20kurumi;
 import chars.c.c48yoshino;
+import chars.c4.c153nir;
 import chars.ca.c2000kurumi;
 import chars.ca.c4800yoshino;
 import chars.ca.c6800origami;
@@ -181,9 +182,13 @@ public class c68origami extends c00main{
 								jr = true;
 								break;
 							}
+							if(Rule.c.get(ee) instanceof c153nir) {
+								jr = true;
+								break;
+							}
 						}
 					}
-					if(jr && AMath.random(0,10) <= 5 && !ARSystem.isGameMode("lobotomy")) {
+					if(ARSystem.E_sterEgg && jr && AMath.random(0,10) <= 5 && !ARSystem.isGameMode("lobotomy")) {
 						Rule.c.put(player, new c6800origami(player,Rule.gamerule, this));
 					} else {
 						ps = true;
@@ -191,8 +196,8 @@ public class c68origami extends c00main{
 						spskillon();
 						ARSystem.playSound((Entity)player, "c68sp");
 						ARSystem.giveBuff(player, new Nodamage(player), 60);
-						player.setMaxHealth(18);
-						player.setHealth(18);
+						player.setMaxHealth(14);
+						player.setHealth(14);
 						e.setDamage(0);
 					}
 				}

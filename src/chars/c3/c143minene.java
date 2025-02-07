@@ -178,8 +178,7 @@ public class c143minene extends c00main{
 	}
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
-		if(p == player) {
-			for(int i =0; i<5; i++) if(cooldown[i] > 0) return;
+		if(p == player&& s_kill >= 1) {
 			skill("c143_p");
 			ARSystem.playSound((Entity)player, "0boom3", 1 , 0.75f);
 			
@@ -187,7 +186,7 @@ public class c143minene extends c00main{
 			for(Entity en : ARSystem.box(player, new Vector(12,12,12), box.TARGET)) {
 				LivingEntity ln = (LivingEntity)en;
 				ln.setNoDamageTicks(0);
-				ln.damage(15,player);
+				ln.damage(5 + s_damage, player);
 			}
 		}
 		if(e == player && s_kill >= 3) {

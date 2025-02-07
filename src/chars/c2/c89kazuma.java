@@ -66,6 +66,9 @@ public class c89kazuma extends c00main{
 	int ps = 80;
 	int count = 0;
 	
+	int tick = 0;
+	int sp = 0;
+	
 	TargetMap<c00main,Double> charlist;
 	
 	public c89kazuma(Player p,Plugin pl,c00main ch) {
@@ -119,7 +122,8 @@ public class c89kazuma extends c00main{
 		}
 		
 		if(target != null && Rule.c.get(target) != null) {
-			if(AMath.random(100+dbf) <= 5 && skillCooldown(0)) {
+			if(AMath.random(100+dbf) <= sp && skillCooldown(0)) {
+				sp = 0;
 				spskillon();
 				spskillen();
 				Rule.c.get(target).cooldown[1] = 120;
@@ -193,7 +197,7 @@ public class c89kazuma extends c00main{
 	}
 	boolean isNumber(int o) {
 		int n = o%1000;
-		if(n == 5 || n == 16 || n == 24 || n == 57 || n == 86 ||n == 52|| n == 92) return true;
+		if(n == 5 || n == 16 || n == 24 || n == 57 || n == 86 ||n == 52|| n == 92 || n == 161) return true;
 		if(o == 1084 || n == 139) return true;
 		if(o < 1000 && o >= 900) return true;
 		return false;
@@ -253,6 +257,14 @@ public class c89kazuma extends c00main{
 	
 	@Override
 	public boolean tick() {
+		tick++;
+		if(tick > 160) {
+			tick = 0;
+			sp++;
+			if(sp > 14) {
+				sp = 14;
+			}
+		}
 		for(c00main c : charlist.get().keySet()) {
 			charlist.add(c, -0.05);
 			if(charlist.get(c) <= 0) {
@@ -283,6 +295,7 @@ public class c89kazuma extends c00main{
 		if(stil != null) {
 			if(tk%20 == 0) {
 				scoreBoardText.add("&c ["+Main.GetText("c89:sk4")+"] : " + Main.GetText("c"+stil.number+":name2"));
+				scoreBoardText.add("&c ["+Main.GetText("c89:sk0")+"] : " + sp);
 			}
 		}
 		for(c00main c : charlist.get().keySet()) {
@@ -310,7 +323,7 @@ public class c89kazuma extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "c89db"+AMath.random(2));
 		return true;
 	}

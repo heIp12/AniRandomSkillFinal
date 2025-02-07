@@ -1,5 +1,6 @@
 package buff;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -16,6 +17,8 @@ public class Minecart extends Buff{
 	Location loc;
 	Vector vtr;
 	int tk = 0;
+	boolean groundstop = false;
+	
 	public Minecart(LivingEntity target,Vector vtr) {
 		super(target);
 		bufftype.add(BuffType.DEBUFF);
@@ -30,10 +33,11 @@ public class Minecart extends Buff{
 
 
 	public boolean onTicks() {
+		if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 		tk++;
 		if(tk > 10) {
 			tk = 0;
-			ARSystem.playSound(target, "minecraft:entity.minecart.riding");
+			if(!groundstop) ARSystem.playSound(target, "minecraft:entity.minecart.riding");
 		}
 		if(target.getLocation().distance(loc) > 3 && !target.getLocation().clone().add(0,-1,0).getBlock().isEmpty()) {
 			tick = 0;

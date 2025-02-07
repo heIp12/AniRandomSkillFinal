@@ -33,6 +33,7 @@ import ars.Rule;
 import buff.Buff;
 import buff.Cindaella;
 import buff.Curse;
+import buff.Fascination;
 import buff.Noattack;
 import buff.Nodamage;
 import buff.Panic;
@@ -45,6 +46,7 @@ import buff.Wound;
 import chars.c.c000humen;
 import chars.c.c00main;
 import chars.c.c44izuna;
+import event.FixedDealEvent;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
@@ -66,6 +68,7 @@ public class c84siro extends c00main{
 	LivingEntity taget = null;
 	int sk1c = 0;
 	int sk3 = 0;
+	float miss = 0;
 	
 	public c84siro(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -78,21 +81,24 @@ public class c84siro extends c00main{
 
 	@Override
 	public boolean skill1() {
+		if(sk1c > 0) {
+			sk1c--;
+			cooldown[1] = 0;
+		}
 		skill("c84_s1");
 		ARSystem.playSound((Entity)player, "c84s1");
 		return true;
 	}
 	@Override
 	public boolean skill2() {
-		float size = 8;
-		if(player.isSneaking()) size = 5;
-		Map.spawn("c84", player.getLocation().clone().add(player.getLocation().getDirection().multiply(size)),1);
+		skill("c84_s2");
 		return true;
 	}
 	
 	@Override
 	public boolean skill3() {
 		sk3 = 60;
+		miss = 0;
 		skill("c84_s3");
 		ARSystem.playSound((Entity)player, "c84s3");
 		return true;
@@ -101,41 +107,41 @@ public class c84siro extends c00main{
 	@Override
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
-			if(taget != target) sk1c = 0;
-			
 			taget = target;
 			sk1 = 40;
-			sk1c++;
-			if(sk1c > 3) sk1c = 3;
-			for(int i=0;i<sk1c;i++) {
-				delay(()->{
-					target.setNoDamageTicks(0);
-					target.damage(1,player);
-					if(target.getLocation().distance(player.getLocation()) <= 7) {
-						for(int s=0;s<10;s++) cooldown[s] -=0.3;
-					}
-				},i);
+			target.setNoDamageTicks(0);
+			target.damage(1,player);
+			if(target.getLocation().distance(player.getLocation()) <= 7) {
+				for(int s=0;s<10;s++) cooldown[s] -=0.4;
+				if(target.getLocation().distance(player.getLocation()) <= 4) {
+					delay(()->{
+						target.setNoDamageTicks(0);
+						target.damage(1,player);
+					},1);
+				}
 			}
+		}
+		if(n.equals("2")) {
+			target.damage(1 + AMath.random(9));
+			ARSystem.giveBuff(target, new Fascination(target, player), (int) Math.min(80, player.getLocation().distance(target.getLocation())*4),0.25);
 		}
 
 	}
 	
 	@Override
 	public boolean tick() {
-		if(sk1 > 0) {
-			sk1--;
-			if(sk1 <= 0) {
-				sk1c = 0;
-				taget = null;
-			}
-		}
 		if(sk3 > 0) {
 			sk3--;
 			if(sk3 == 0) {
-				Rule.buffmanager.selectBuffValue(player, "barrier", 6 );
+				Rule.buffmanager.selectBuffAddValue(player, "barrier", 3 + miss);
+				sk1c += miss/2;
+				if(Rule.buffmanager.GetBuffValue(player, "barrier") > 30) {
+					Rule.buffmanager.selectBuffValue(player, "barrier", 30);
+				}
 			}
 		}
 		if(tk%20 == 0) {
+			scoreBoardText.add("&c ["+Main.GetText("c84:sk3")+"] : " + sk1c);
 			if(player.isSprinting()) {
 				player.damage(1, player);
 			}
@@ -159,12 +165,13 @@ public class c84siro extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			if(isps) e.setDamage(e.getDamage()+2.f);
-			if(player.getLocation().getBlock().getLightLevel() <= 8) {
+			if(player.getLocation().getBlock().getLightLevel() <= 7) {
 				e.setDamage(e.getDamage() * 2.f);
 			}
 		} else {
 			if(isps) e.setDamage(e.getDamage()*0.5f);
 			if(sk3 > 0) {
+				miss += e.getDamage();
 				e.setDamage(0);
 				return false;
 			}
@@ -185,7 +192,7 @@ public class c84siro extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {
@@ -211,14 +218,25 @@ public class c84siro extends c00main{
 	public boolean damage(EntityDamageEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getEntity() == player) {
-			if(Rule.buffmanager.GetBuffTime(player, "nodamage") > 0 || sk3 > 0) {
+			if(sk3 > 0) {
+				miss += e.getDamage();
 				e.setDamage(0);
 				e.setCancelled(true);
 			}
 		}
 		return super.damage(e);
 	}
-
+	
+	@Override
+	public boolean fixeddamage(FixedDealEvent e) {
+		if(sk3 > 0) {
+			miss += e.getDamage();
+			e.setDamage(0);
+			e.setCancelled(true);
+		}
+		return super.fixeddamage(e);
+	}
+	
 	public void sp(Player p,Player target) {
 		spskillon();
 		spskillen();

@@ -110,7 +110,7 @@ public class c74ainz extends c00main{
 			if(((LivingEntity)en).getHealth() <= 14) {
 				Skill.remove(en, player);
 			} else {
-				ARSystem.fixedDamage((LivingEntity)en, player, ((LivingEntity)en).getHealth() * 0.2f);
+				ARSystem.fixedDamage((LivingEntity)en, player, ((LivingEntity)en).getHealth() * 0.8f);
 			}
 		} else {
 			cooldown[3] = 0;

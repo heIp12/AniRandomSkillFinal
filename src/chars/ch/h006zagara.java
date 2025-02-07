@@ -138,7 +138,7 @@ public class h006zagara extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "zagaradb");
 		return true;
 	}

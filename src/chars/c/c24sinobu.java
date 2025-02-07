@@ -165,11 +165,18 @@ public class c24sinobu extends c00main{
 			player.teleport(this.target);
 		},100);
 	}
+	
+	@Override
+	public void kill(LivingEntity death, LivingEntity killer) {
+		if(killer == player) {
+			
+		}
+	}
 
 	@Override
 	public boolean tick() {
 		ticks++;
-		if(!passive && heal >=15) {
+		if(!passive && heal >=15 && skillCooldown(0)) {
 			spskillen();
 			spskillon();
 			Rule.Var.open(player.getName()+".c"+(number%1000)+"Sp",true);

@@ -237,7 +237,7 @@ public class c117kanade extends c00main{
 	public void PlayerDeath(Player p, Entity e) {
 		if(p != player) {
 			ps++;
-			if(ps >= Math.max(3,count/2) && !isps && s_kill > 0) {
+			if(ps >= Math.max(3,count/2) && !isps && s_kill > 0 && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				skillmult += 0.5;

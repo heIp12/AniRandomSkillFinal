@@ -58,7 +58,10 @@ public class c45momo extends c00main{
 		if(count >= 30) {
 			Rule.playerinfo.get(player).tropy(45,1);
 		}
-
+		if(ARSystem.isGameMode("kagerou") && count > 15) {
+			count = 15;
+			return false;
+		}
 		if(ARSystem.isGameMode("lobotomy") && count > 30) {
 			return false;
 		}
@@ -95,7 +98,7 @@ public class c45momo extends c00main{
 			}
 		}
 		if(tick > 400) {
-			if(count == 0 && !sp) {
+			if(count == 0 && !sp && skillCooldown(0)) {
 				sp = true;
 				spskillon();
 				spskillen();
@@ -123,7 +126,7 @@ public class c45momo extends c00main{
 		return true;
 	}
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

@@ -143,7 +143,7 @@ public class c86iriya extends c00main{
 				}
 			}
 		}
-		if(player.getHealth() <= 3 && Mp >= 400 && Mp <= 420) {
+		if(player.getHealth() <= 3 && Mp >= 400 && Mp <= 420 && skillCooldown(0)) {
 			ARSystem.heal(player, 5);
 			ARSystem.giveBuff(player, new TimeStop(player), 200);
 			ARSystem.playSound((Entity)player, "c86sp");
@@ -159,7 +159,7 @@ public class c86iriya extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

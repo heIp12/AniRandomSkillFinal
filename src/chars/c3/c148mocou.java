@@ -205,7 +205,7 @@ public class c148mocou extends c00main{
 	
 	@Override
 	public void PlayerDeath(Player p, Entity e) {
-		if(p == player && heals >= 50 && !Rule.buffmanager.isBuff(player, "noheal") && ARSystem.AniRandomSkill != null && !isps) {
+		if(p == player && heals >= 50 && !Rule.buffmanager.isBuff(player, "noheal") && ARSystem.AniRandomSkill != null && !isps && skillCooldown(0)) {
 			Location lc = player.getLocation();
 			tpsdelay(()->{
 				player.teleport(lc);

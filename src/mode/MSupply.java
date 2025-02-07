@@ -45,19 +45,39 @@ public class MSupply extends ModeBase{
 		}
 	}
 	public void tick(int time) {
-		if((time+1)%50 == 0) {
+		if(time%getInt("1") == getInt("1")-getInt("2")) {
 			loc = Map.randomLoc();
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{ ARSystem.opCommand("as despawn ItemBox");});
-			Bukkit.broadcastMessage("§a§l[ARSystem] §f"+ Text.get("main:mode10-1") + " §c["+loc.getBlockX()+ ","+loc.getBlockY()+ ","+loc.getBlockZ()+"]");
+			if(loc != null && getInt("2") != 0) {
+				Bukkit.broadcastMessage("§a§l[ARSystem] §f"+ getInt("2")+Text.get("main:mode10-1") + " §c["+loc.getBlockX()+ ","+loc.getBlockY()+ ","+loc.getBlockZ()+"]");
+			}
 			randomCode();
 		}
 		
-		if(loc != null &&time > 40 &&(time+41)%50 == 0) {
+		if(loc != null &&time > getInt("1")-getInt("2") &&(time)%getInt("1") == 0) {
+			for(Player p : Rule.c.keySet()) {
+				if(Rule.c.get(p).number == 153 && Rule.c.get(p).cooldown[0] <= 0 && AMath.random(10) <= 2) {
+					Rule.c.get(p).spskillen();
+					Rule.c.get(p).cooldown[0] = Rule.c.get(p).setcooldown[0];
+					ARSystem.playSoundAll("c153sp");
+					if(AMath.random(10) <= 2) {
+						loc = p.getLocation();
+					} else {
+						int i = 0;
+						while(!Map.inMap(loc) || loc.distance(p.getLocation()) > 4+(i*0.02)) {
+							i++;
+							loc = Map.randomLoc();
+							if(i > 3000) break;
+						}
+					}
+					break;
+				}
+			}
 			if(!Map.inMap(loc)) {
 				loc = Map.randomLoc();
 			}
 			Bukkit.broadcastMessage("§a§l[ARSystem] §f"+ Text.get("main:mode10-2") + " §c["+loc.getBlockX()+ ","+loc.getBlockY()+ ","+loc.getBlockZ()+"]");
-			Player p = ARSystem.RandomOnlinePlayer();
+			Player p = NpcPlayer.npc(loc);
 			boolean isop = p.isOp();
 			p.setOp(true);
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{ p.performCommand("as despawn ItemBox");});

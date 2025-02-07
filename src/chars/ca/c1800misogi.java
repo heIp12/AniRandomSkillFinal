@@ -99,7 +99,7 @@ public class c1800misogi extends c00main{
 	
 
 	@Override
-	protected boolean skill9(){
+	public boolean skill9(){
 		if(dbcount) {
 			player.getWorld().playSound(player.getLocation(), "c18db", 1, 1);
 		} else {

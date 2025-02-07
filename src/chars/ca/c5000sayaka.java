@@ -94,7 +94,7 @@ public class c5000sayaka extends c00main{
 	}
 
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		player.getWorld().playSound(player.getLocation(), "c50db", 1, 1);
 		return true;
 	}

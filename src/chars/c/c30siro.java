@@ -179,9 +179,9 @@ public class c30siro extends c00main{
 					player.performCommand("tm anitext all TITLE true 20 c30:sk0/c30:t8");
 					isps = true;
 					if(ARSystem.AniRandomSkill != null) ARSystem.AniRandomSkill.modes.clear();
+					Map.getMapinfo(1001);
 					for(Player p : Bukkit.getOnlinePlayers()) {
 						AdvManager.set(p, 399, 0 , "§f§l"+player.getName() +"§a("+ n +") §f§l" + Main.GetText("c"+number+":sk0"));
-						Map.getMapinfo(1001);
 						Map.playeTp(p);
 						player.setHealth(player.getMaxHealth());
 						sp = true;
@@ -315,7 +315,7 @@ public class c30siro extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

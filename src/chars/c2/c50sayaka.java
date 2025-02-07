@@ -127,12 +127,15 @@ public class c50sayaka extends c00main{
 		if(delay < 4) delay = 4;
 		if(tick%delay==0) {
 			ARSystem.heal(player, 1);
+			if(player.getHealth()/player.getMaxHealth() <= 0.5) {
+				ARSystem.heal(player, 1);
+			}
 		}
 		if(tk%20==0) {
 			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c50:sk0")+ "] : "+ damage +"/ 200");
 			scoreBoardText.add("&c ["+Main.GetText("c50:sk4")+ "] : "+ (speed*5) +"%");
 		}
-		if(damage >= 140 && !isps&& !ARSystem.isGameMode("lobotomy")) {
+		if(damage >= 200 && !isps&& !skillCooldown(0)) {
 			sk0();
 		}
 		if(pstick <= 0) {
@@ -202,7 +205,7 @@ public class c50sayaka extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(Rule.c.get(e.getEntity()) != null) cooldown[4] -= e.getDamage()*3;
+			if(Rule.c.get(e.getEntity()) != null) cooldown[4] -= e.getDamage()*5;
 		} else {
 			if(Rule.c.get(e.getDamager()) != null) cooldown[4] -= 3;
 		}

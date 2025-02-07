@@ -136,7 +136,7 @@ public class h001chruno extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "c_chrunodb");
 		return true;
 	}

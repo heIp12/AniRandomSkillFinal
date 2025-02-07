@@ -150,7 +150,7 @@ public class c67akad extends c00main{
 				damage+=0.10;
 				skillmult += 0.3;
 			}
-			if(p == 4) {
+			if(p == 4 && skillCooldown(0)) {
 				spskillen();
 				spskillon();
 				ARSystem.playSound((Entity)player,"c67sp");

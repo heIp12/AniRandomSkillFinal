@@ -1,6 +1,9 @@
 package mode;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -14,12 +17,14 @@ import Main.Main;
 import ars.ARSinfo;
 import ars.ARSystem;
 import ars.Rule;
+import ars.TeamInfo;
 import buff.Buff;
 import buff.Nodamage;
 import buff.Silence;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
+import mode.MTeam.TeamComparator;
 import types.BuffType;
 import types.MapType;
 
@@ -30,12 +35,23 @@ import util.NpcPlayer;
 import util.Text;
 
 public class MTeamMatch extends ModeBase{
+	HashMap<String,List<Player>> team = new HashMap<>();
+	
 	public MTeamMatch(){
 		super();
 		modeName = "teammatch";
 		disPlayName = Text.get("main:mode4");
-		isOnlyOne = true;
+		isOne = true;
 	}
+
+	void teamCreate(String name,String color,int code) {
+		team.put(name,getPlayers(""+code));
+		Rule.team.teamCreate(name);
+		Rule.team.getTeam(name).setTeamWin(true);
+		Rule.team.getTeam(name).setTeamColor(color);
+		
+	}
+	
 	boolean end;
 	@Override
 	public void option() {
@@ -43,55 +59,37 @@ public class MTeamMatch extends ModeBase{
 		end = true;
 		Map.mapType = MapType.TEAMMATCH;
 		Map.getMapinfo(1003);
-		Rule.team.teamCreate("RED");
-		Rule.team.teamCreate("BLUE");
+		
+		teamCreate("RED","c",2);
+		teamCreate("BLUE","9",3);
+		
 		String local = Main.GetText("map:map1003t1");
 		Location loc = new Location(Map.loc_f.getWorld(),Integer.parseInt(local.split(",")[0]),Integer.parseInt(local.split(",")[1]),Integer.parseInt(local.split(",")[2]));
 		Rule.team.getTeam("RED").setTeamSpawn(loc);
 		local = Main.GetText("map:map1003t2");
+		
 		loc = new Location(Map.loc_f.getWorld(),Integer.parseInt(local.split(",")[0]),Integer.parseInt(local.split(",")[1]),Integer.parseInt(local.split(",")[2]));
 		Rule.team.getTeam("BLUE").setTeamSpawn(loc);
-		Rule.team.getTeam("RED").setTeamWin(true);
-		Rule.team.getTeam("BLUE").setTeamWin(true);
-		Rule.team.getTeam("RED").setTeamColor("c");
-		Rule.team.getTeam("BLUE").setTeamColor("9");
+
 		
-		List<Player> gameplayers = new ArrayList<Player>();
-		List<Player> gameplayers2 = new ArrayList<Player>();
-		for(Player p : Bukkit.getOnlinePlayers()) {
-			if(Rule.playerinfo.get(p).gamejoin) {
-				gameplayers.add(p);
-				gameplayers2.add(p);
-			}
-		}
-		int blue = 0;
-		int red = 0;
+
+		List<Player> players = ARSystem.getReadyPlayer();
+		if(getBool("1")) Collections.shuffle(players);
 		
-		for(Player p : gameplayers) {
-			if(Rule.playerinfo.get(p).team != null) {
-				if(Rule.playerinfo.get(p).team.equals("red")) {
-					Rule.team.teamJoin("RED", p);
-					gameplayers2.remove(p);
-					red++;
-				}
-				if(Rule.playerinfo.get(p).team.equals("blue")) {
-					Rule.team.teamJoin("BLUE", p);
-					gameplayers2.remove(p);
-					blue++;
+		for(Player p : players) {
+			boolean next = false;
+			for(String s : team.keySet()) {
+				if(team.get(s).contains(p)) {
+					next = true;
+					Rule.team.teamJoin(s, p);
+					break;
 				}
 			}
-		}
-		
-		for(Player p : gameplayers) {
-			if(gameplayers2.contains(p)) {
-				if(blue < red) {
-					Rule.team.teamJoin("BLUE", p);
-					blue++;
-				} else {
-					Rule.team.teamJoin("RED", p);
-					red++;
-				}
-			}
+			if(next) continue;
+			List<TeamInfo> teams = Rule.team.getTeams();
+	        Collections.sort(teams, new TeamComparator());
+	        teams.get(0).Join(p);
+			
 		}
 	}
 	
@@ -158,6 +156,18 @@ public class MTeamMatch extends ModeBase{
 				end = false;
 				ARSystem.gameEnd();
 			}
+		}
+	}
+	
+	public class TeamComparator implements Comparator<TeamInfo> {
+		@Override
+		public int compare(TeamInfo f1, TeamInfo f2) {
+			if (f1.getPlayer().size() > f2.getPlayer().size()) {
+				return 1;
+			} else if (f1.getPlayer().size() < f2.getPlayer().size()) {
+				return -1; 
+			}
+			return AMath.random(3)-2;
 		}
 	}
 }

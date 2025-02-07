@@ -70,9 +70,9 @@ public class c69himi extends c00main{
 	}
 	
 	void sp(){
-		if(ARSystem.isGameMode("lobotomy") && count > 20) {
-			count = 20;
-		}
+		if(ARSystem.isGameMode("lobotomy") && count > 20) count = 20;
+		if(ARSystem.isGameMode("kagerou") && count > 15) count = 15;
+		
 		if(ARSystem.isGameMode("lobotomy") && local.size() > 5) {
 			setcooldown[3] *= 1.75;
 			e = true;
@@ -80,7 +80,7 @@ public class c69himi extends c00main{
 		if(count > 60) {
 			Rule.playerinfo.get(player).tropy(69,1);
 		}
-		if(AMath.random(100) <= 1 && !isps) {
+		if(AMath.random(100) <= 1 && !isps && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			ARSystem.playSoundAll("c69sp");

@@ -60,6 +60,8 @@ public class c16saki extends c00main{
 	
 	int stack = 0;
 	
+	public int luck = 0;
+	
 	String voice = "c16";
 	float kangadd = 1.75f;
 	
@@ -107,7 +109,7 @@ public class c16saki extends c00main{
 		for(i=0; i<pe.length;i++){
 			pe[i] = false;
 		}
-		if(AMath.random(100) <= Integer.parseInt(Main.GetText("c16:luck"))) {
+		if(AMath.random(100) <= Integer.parseInt(Main.GetText("c16:luck"))+luck) {
 			luck();
 		}
 	}
@@ -594,7 +596,7 @@ public class c16saki extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		if(number == 10016) {
 			ARSystem.playSound((Entity)player, "c86db");
 		} else {

@@ -1,5 +1,6 @@
 package buff;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -31,6 +32,7 @@ public class Panic extends Buff{
 	@Override
 	public boolean onMove(PlayerMoveEvent e) {
 		if(target instanceof Player) {
+			if(((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 			ARSystem.playerAddRotate((Player) target, AMath.random(5)*l, 0);
 			if(target.getPotionEffect(PotionEffectType.BLINDNESS) == null) {
 				ARSystem.potion(target, 15, 60, 20);

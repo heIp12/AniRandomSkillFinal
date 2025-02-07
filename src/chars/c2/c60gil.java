@@ -195,7 +195,7 @@ public class c60gil extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			int rd = 3;
-			if(Rule.c.get(e.getEntity()) != null) {
+			if(ARSystem.E_sterEgg && Rule.c.get(e.getEntity()) != null) {
 				if(Rule.c.get(e.getEntity()) instanceof c126hera) {
 					rd = 8;
 				}
@@ -224,7 +224,7 @@ public class c60gil extends c00main{
 		return true;
 	}
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

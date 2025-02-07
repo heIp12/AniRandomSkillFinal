@@ -151,7 +151,7 @@ public class c116yumira extends c00main{
 		List<LivingEntity> targets = new ArrayList<>();
 		for(int i = 0; i<8; i++) {
 			player.teleport(loc);
-			for(Entity e : ARSystem.box(player, new Vector(5,5,5), box.TARGET)) {
+			for(Entity e : ARSystem.box(player, new Vector(3,3,3), box.TARGET)) {
 				if(!targets.contains(e)) targets.add((LivingEntity)e);
 			}
 			loc.add(loc.getDirection().multiply(1.5));
@@ -236,7 +236,7 @@ public class c116yumira extends c00main{
 			ARSystem.giveBuff((LivingEntity) e.getEntity(), new Stun((LivingEntity) e.getEntity()), 2);
 			ARSystem.giveBuff((LivingEntity) e.getEntity(), new NoHeal((LivingEntity) e.getEntity()), 100);
 		} else {
-			if(player.getHealth() - e.getDamage() > 0 && player.getHealth() - e.getDamage() < 2 && !isps) {
+			if(player.getHealth() - e.getDamage() > 0 && player.getHealth() - e.getDamage() < 2 && !isps && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				ARSystem.giveBuff(player, new TimeStop(player), 40);

@@ -5,10 +5,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
+import ars.ARSystem;
 import ars.Rule;
 import types.BuffType;
 import util.AMath;
 import util.Holo;
+import util.NpcPlayer;
 
 public class Barrier extends Buff{
 	String effect = "barrier";
@@ -39,9 +41,7 @@ public class Barrier extends Buff{
 	public boolean onHit(EntityDamageByEntityEvent e){
 		if(target.getNoDamageTicks() <= 0) {
 			 if(value > 0) {
-				if(target instanceof Player) {
-					((Player)target).performCommand("c "+effect);
-				}
+				 ARSystem.spellCast(NpcPlayer.npc(target.getLocation()), target, "effect");
 				Holo.create(target.getLocation(),"§e§l☇ "+ (Math.round(e.getFinalDamage()*100)/100.0f),20,new Vector(AMath.random(5)*0.02,0.1,AMath.random(5)*0.02));
 				value =  value - e.getFinalDamage();
 				if(value < 0) {

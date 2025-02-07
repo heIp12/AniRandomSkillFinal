@@ -124,7 +124,7 @@ public class c77aladin extends c00main{
 				}
 			}
 		}
-		if(!isps && ugo >= 10) {
+		if(!isps && ugo >= 10 && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			Rule.playerinfo.get(player).tropy(77,1);
@@ -155,7 +155,7 @@ public class c77aladin extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		int i = AMath.random(14);
 		if(!ARSystem.gameMode2) i = AMath.random(4);
 		if(i == 1) {

@@ -187,7 +187,7 @@ public class c14rocklee extends c00main{
 					Rule.playerinfo.get(player).tropy(14, 1);
 				}
 				hpCost(0.5, true);
-				if(AMath.random(100) <= AMath.random(2)) {
+				if(AMath.random(100) <= AMath.random(2) && skillCooldown(0)) {
 					spskillen();
 					spskillon();
 					skill("c14_sp");

@@ -25,6 +25,7 @@ import buff.Nodamage;
 import buff.Silence;
 import buff.Stun;
 import chars.c2.c68origami;
+import chars.c4.c153nir;
 import chars.ca.c6800origami;
 import event.Skill;
 import types.box;
@@ -35,7 +36,7 @@ import util.Pair;
 
 public class c20kurumi extends c00main{
 	int ticks = 0;
-	double shdow;
+	public double shdow;
 	float mult = 1.5f;
 	int bullets = 0;
 	int tan = 0;
@@ -223,19 +224,22 @@ public class c20kurumi extends c00main{
 			if(!(e.getEntity() instanceof ArmorStand)) {
 				shdow+=(e.getFinalDamage()*2);
 			}
-			if(e.getEntity() instanceof LivingEntity) {
-				LivingEntity entity = (LivingEntity) e.getEntity();
-				if(entity.getHealth() - e.getDamage() <= 1) {
-					shdow += entity.getMaxHealth();
-				}
-			}
 		} else {
 
 		}
 		return true;
 	}
+	
+	
 	@Override
-	protected boolean skill9() {
+	public void kill(LivingEntity death, LivingEntity killer) {
+		if(killer == player) {
+			shdow += death.getMaxHealth();
+		}
+	}
+	
+	@Override
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {
@@ -243,12 +247,17 @@ public class c20kurumi extends c00main{
 				if(Rule.c.get(e) instanceof c6800origami || Rule.c.get(e) instanceof c68origami) {
 					is = "origami";
 					break;
+				} else if(Rule.c.get(e) instanceof c153nir) {
+					is = "nir";
+					break;
 				}
 
 			}
 		}
 		
-		if(is.equals("origami")) {
+		if(is.equals("nir")) {
+			ARSystem.playSound((Entity)player, "c20nir");
+		} else if(is.equals("origami")) {
 			ARSystem.playSound((Entity)player, "c20origami");
 		} else {
 			ARSystem.playSound((Entity)player, "c20db");

@@ -18,6 +18,7 @@ public class MGUN extends ModeBase{
 		modeName = "gun";
 		disPlayName = Text.get("main:mode7");
 		isOne = true;
+		isSecret = true;
 	}
 	@Override
 	public void option() {

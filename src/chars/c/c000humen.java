@@ -37,7 +37,7 @@ public class c000humen extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "humendb"+(AMath.random(5)+1));
 		return true;
 	}

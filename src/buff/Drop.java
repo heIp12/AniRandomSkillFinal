@@ -1,5 +1,6 @@
 package buff;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -12,6 +13,7 @@ import ars.Rule;
 import types.BuffType;
 import util.AMath;
 import util.BlockUtil;
+import util.Map;
 
 public class Drop extends Buff{
 	Location loc;
@@ -37,8 +39,9 @@ public class Drop extends Buff{
 
 
 	public boolean onTicks() {
+		if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 		tk++;
-		if(loc.getBlock().isEmpty()) {
+		if(loc.getBlock().isEmpty() || !Map.inMap(loc)) {
 			tick = 0;
 		} else {
 			loc.add(new Vector(0,-0.1f,0));

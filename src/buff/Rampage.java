@@ -22,6 +22,7 @@ import util.ULocal;
 
 public class Rampage extends Buff{
 	Location loc;
+	LivingEntity entity;
 	int l = 1;
 	public Rampage(LivingEntity target) {
 		super(target);
@@ -30,6 +31,15 @@ public class Rampage extends Buff{
 		buffName = "rampage";
 		onlyone = true;
 		color = "§f§l";
+	}
+	public Rampage(LivingEntity target,LivingEntity tg) {
+		super(target);
+		bufftype.add(BuffType.DEBUFF);
+		bufftype.add(BuffType.HEADCC);
+		buffName = "rampage";
+		onlyone = true;
+		color = "§f§l";
+		entity = tg;
 	}
 
 	@Override
@@ -40,30 +50,34 @@ public class Rampage extends Buff{
 	
 	@Override
 	public boolean onTicks() {
-		Entity t = ARSystem.boxSOne(target, new Vector(14,14,14), box.ALL);
+		if(value < 1) value = 1;
+		Entity t2 = ARSystem.boxSOne(target, new Vector(14 * value,14 * value,14 * value), box.ALL);
+		if(entity != null) t2 = entity;
+		Entity t = t2;
+		
 		if(t != null) {
 			Location look = ULocal.lookAt(target.getLocation(), t.getLocation());
 			if(t.getLocation().distance(target.getLocation()) < 3) {
-				if(ARSystem.isGameMode("lobotomy") || tick%10 == 0) {
+				if(ARSystem.isGameMode("lobotomy") || tick%2 == 0) {
 					((LivingEntity)t).damage(1,target);
 					Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{((LivingEntity)t).damage(1,target);});
 				}
 			} else {
 				if(target instanceof Player) {
 					ARSystem.playerRotate((Player)target, look.getYaw(), look.getPitch());
-					target.setVelocity(target.getLocation().getDirection().setY(0).multiply(0.45));
+					target.setVelocity(target.getLocation().getDirection().setY(0).multiply(0.45 * value));
 				} else {
-					target.setVelocity(look.getDirection().setY(0).multiply(0.45));
+					target.setVelocity(look.getDirection().setY(0).multiply(0.45 * value));
 				}
 			}
 		} else {
 			if(target instanceof Player) {
 				ARSystem.playerRotate((Player)target, target.getLocation().getYaw()+10, 0);
-				target.setVelocity(target.getLocation().getDirection().setY(0).multiply(0.1));
+				target.setVelocity(target.getLocation().getDirection().setY(0).multiply(0.1 * value));
 			} else {
 				Location loc = target.getLocation();
 				loc.setYaw(loc.getYaw() + 20);
-				target.setVelocity(loc.getDirection().setY(0).multiply(0.2));
+				target.setVelocity(loc.getDirection().setY(0).multiply(0.2 * value));
 			}
 		}
 		return false;

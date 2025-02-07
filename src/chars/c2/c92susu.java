@@ -139,7 +139,7 @@ public class c92susu extends c00main{
 	@Override
 	public boolean tick() {
 		inGame = true;
-		if(!isps && AMath.random(5000) == 2) {
+		if(!isps && AMath.random(5000) == 2 && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			for(int i=0; i<14;i++)skill("c92_sp");

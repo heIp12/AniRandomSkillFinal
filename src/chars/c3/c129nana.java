@@ -146,7 +146,7 @@ public class c129nana extends c00main{
 		if(tk%20 == 0 && sp >= 0) {
 			sp++;
 			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c129:sk0")+ "] : "+ sp+" / 20");
-			if(sp >= 20 && !isps) {
+			if(sp >= 20 && !isps && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				ARSystem.playSound((Entity)player, "c129sp");
@@ -158,7 +158,7 @@ public class c129nana extends c00main{
 			mob = ARSystem.box(player, new Vector(10,10,10), box.ALL).size();
 			if(mob > 0) {
 				for(int i=0;i<10;i++) {
-					if(cooldown[i] > 0) cooldown[i] -= mob*0.02f;
+					if(cooldown[i] > 0) cooldown[i] -= mob*0.05f;
 				}
 				if(mob >= 30) {
 					Rule.playerinfo.get(player).tropy(129, 1);
@@ -184,7 +184,7 @@ public class c129nana extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

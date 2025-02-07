@@ -18,6 +18,7 @@ import buff.PowerUp;
 import buff.Reflect;
 import buff.TimeStop;
 import types.BuffType;
+import types.ItemList;
 import util.AMath;
 import util.GUIBase;
 import util.GetChar;
@@ -29,7 +30,7 @@ import util.Text;
 public class G_Nitory extends GUIBase{
 	PlayerInfo info;
 	boolean targetopen = false;
-	int item = 11;
+	int item = 12;
 	public G_Nitory(Player p) {
 		super(p);
 		name = "Nitory Box";
@@ -39,7 +40,7 @@ public class G_Nitory extends GUIBase{
 				{
 						   0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0,
-						   0, 0, 0, 0, 0, 0, 0, 0, 0
+						   0, 0, 0, 0, 0, 0, 0, 0,98
 				};
 		if(AMath.random(10) <= 2) {
 			page[10] = page[13] = page[16] = AMath.random(item);
@@ -114,6 +115,25 @@ public class G_Nitory extends GUIBase{
 		item = ItemCreate.Lore(item,"§f"+Text.get("c120:p11"),Text.getLine("c120:p11-", 1));
 		return item;
 	}
+	public ItemStack gui12(){
+		ItemStack item = ItemCreate.Item(277, 0);
+		item = ItemCreate.Lore(item,"§f"+Text.get("c120:p11"),Text.getLine("c120:p12-", 1));
+		return item;
+	}
+	
+	public ItemStack gui98(){
+		if(Rule.c.get(player) == null || Rule.c.get(player).number != 153 || Rule.c.get(player).cooldown[0] > 0) return gui0();
+		return ItemCreate.Name(ItemCreate.Item(381), Text.get("main:rr"));
+	}
+	public void click98(boolean right,boolean shift) {
+		if(Rule.c.get(player).cooldown[0] <= 0) {
+			Rule.c.get(player).cooldown[0] = Rule.c.get(player).setcooldown[0];
+			ARSystem.playSound(player, "c153sp");
+			Rule.c.get(player).spskillen();
+			player.closeInventory();
+			new G_Nitory(player);
+		}
+	}
 	
 	public void click0(boolean right,boolean shift) {}
 	public void click1(boolean right,boolean shift) {
@@ -162,6 +182,10 @@ public class G_Nitory extends GUIBase{
 	}
 	public void click11(boolean right,boolean shift) {
 		ARSystem.spellCast(player, "c120_sp11");
+		end();
+	}
+	public void click12(boolean right,boolean shift) {
+		ARSystem.addItem(player, ItemList.getValueCode(0, 3500));
 		end();
 	}
 	void end(){

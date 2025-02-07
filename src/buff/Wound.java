@@ -36,6 +36,9 @@ public class Wound extends Buff{
 		timer = delay;
 	}
 
+	public int getDelay() {
+		return time;
+	}
 	public void setEffect(String s) {
 		effect = s;
 	}

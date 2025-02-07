@@ -37,6 +37,7 @@ public class c27ray extends c00main{
 		load();
 		text();
 		if(player != null) loc = player.getLocation();
+		cooldown[3] = 30;
 	}
 
 	@Override
@@ -128,6 +129,7 @@ public class c27ray extends c00main{
 		if(!isstart){
 			isstart = true;
 			skill("c27");
+			cooldown[3] = 0;
 			delay(()->{skill("c27_s3");},2 );
 		}
 		if(isps && player.getLocation().distance(loc) > 1) {

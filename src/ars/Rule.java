@@ -11,6 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -20,9 +22,12 @@ import org.bukkit.util.Vector;
 import Main.Main;
 import aliveblock.ABlock;
 import ars.gui.G_CharInfo;
+import ars.gui.G_Item;
+import ars.gui.G_ItemShop;
 import ars.gui.G_Menu;
 import ars.gui.G_Tropy;
 import ars.gui.G_UMenu;
+import ars.gui.G_UserItem;
 import ars.gui.solo.G_SoloMenu;
 import buff.Buff;
 import chars.c.c001humen2;
@@ -31,18 +36,24 @@ import chars.c.c16saki;
 import chars.c.c38hajime;
 import chars.ca.c1600saki;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import item.list1.itemBase;
 import manager.AdvManager;
 import manager.Bgm;
 import manager.BuffManager;
 import manager.ScoreBoard;
+import mob.MobManager;
 import mode.MArena;
+import mode.MItem;
 import mode.MLoboTomy;
 import mode.MSupply;
 import mode.MZombie;
 import mode.ModeBase;
+import net.citizensnpcs.api.CitizensAPI;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import types.GameModes;
+import types.ItemList;
+import types.MobBuffs;
 import types.box;
 import util.GetChar;
 import util.Map;
@@ -55,6 +66,7 @@ public class Rule extends JavaPlugin{
 	public static Plugin gamerule;
 	public static Team team;
 	public static BuffManager buffmanager;
+	public static MobManager mobmanager;
 	
 	public static HashMap<Player, c00main> c;
 	public static HashMap<Player, PlayerInfo> playerinfo;
@@ -74,6 +86,12 @@ public class Rule extends JavaPlugin{
 	
     public static Event evt;
     
+    public static int itemmode1 = 0;
+    public static int itemmode2 = 0;
+    public static Player mvp;
+    
+    public static long openTime;
+    
 	@Override
 	public void onEnable() {
 		evt = new Event(this);
@@ -87,12 +105,13 @@ public class Rule extends JavaPlugin{
 		Map.getMapinfo(0);
 		Map.mm = MythicMobs.inst().getMobManager();
 		gamerule = this;
-		
+		openTime = System.currentTimeMillis();
 		team = new Team();
 		Var = api.Rule.var;
 		buffmanager = new BuffManager();
+		mobmanager = new MobManager();
 		ARSystem.killall();
-		
+		ItemList.set();
 		for(int i = 0; i < Score1.length; i++) {
 			if(!(Var.Load("info.rk"+i+".Name") instanceof Boolean && (boolean)Var.Load("info.rk"+i+".Name") == false)) {
 				Score1[i] = (String) Var.Load("info.rk"+i+".Name");
@@ -104,6 +123,7 @@ public class Rule extends JavaPlugin{
 			}
 		}
 		GetChar.BanLoad();
+
 		Rule.auto = (boolean)Rule.Var.Load("info.option.auto");
 		Rule.pick = (boolean)Rule.Var.Load("info.option.pick");
 		ARSystem.ban = (boolean)Rule.Var.Load("info.option.ban");
@@ -127,12 +147,22 @@ public class Rule extends JavaPlugin{
 					Rule.Var.setInt("info.Shop.money", 5000);
 				}
 				Map.loby();
+				
+				for(int n = 0; n< 11; n++) {
+					CitizensAPI.getNPCRegistry().getById(n).spawn(Map.getCenter().clone().add(0,-40,0));
+					CitizensAPI.getNPCRegistry().getById(n).despawn();
+				}
 			}
 		},0);
 	}
 	
 	@Override
 	public void onDisable() {
+		if(ARSystem.AniRandomSkill != null) {
+			for(ModeBase m : ARSystem.AniRandomSkill.modes) {
+				m.end();
+			}
+		}
 		ARSystem.killall();
 		GetChar.BanSave();
 		saveRank();
@@ -185,6 +215,7 @@ public class Rule extends JavaPlugin{
 				p.sendMessage("§a§l[ARSystem] : §f§l/ars help §7" + Main.GetText("main:cmd1"));
 				p.sendMessage("§a§l[ARSystem] : §f§l/ars info <Name> §7" + Main.GetText("main:cmd6"));
 				p.sendMessage("§a§l[ARSystem] : §f§l/ars code <Code> §7" + Main.GetText("main:cmd16"));
+				p.sendMessage("§a§l[ARSystem] : §f§l/ars code <Code> §7" + Main.GetText("main:cmd19"));
 				p.sendMessage("§a§l[ARSystem] : §f§l/ars cafe §7");
 			}
 		}
@@ -239,11 +270,32 @@ public class Rule extends JavaPlugin{
 			return false;
 		}
 		if(p==null || p.isOp() || ishelp(p)) {
+			if(a[0].equalsIgnoreCase("debug")) {
+				Bukkit.broadcastMessage(ARSystem.winstop +" : time | players : " + Rule.c.size());
+			}
 			if(a[0].equalsIgnoreCase("count")) {
 				GetChar.setCount(Integer.parseInt(a[1]));
+				return true;
 			}
 			if(a[0].equalsIgnoreCase("mapcount")) {
 				Map.maphuman = Integer.parseInt(a[1]);
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("rspawn")) {
+				Map.spawn(a[1], Integer.parseInt(a[2]));
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("ruspawn")) {
+				for(int i = 0; i < Integer.parseInt(a[2]); i++) {
+					Map.spawnMM(a[1], Map.randomLoc().add(0,Map.loc_l.getY()/2,0));
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("spawn")) {
+				for(int i = 0; i < Integer.parseInt(a[2]); i++) {
+					Map.spawnMM(a[1], p.getLocation());
+				}
+				return true;
 			}
 			if(a[0].equalsIgnoreCase("start")) {
 				Map.mapid = 0;
@@ -259,8 +311,20 @@ public class Rule extends JavaPlugin{
 				return true;
 			}
 			if(a[0].equalsIgnoreCase("kiyaho")) {
-				Player pl = Bukkit.getPlayer(a[1]);
-				pl.setPassenger(p);
+				if(a.length == 1) {	
+					ARSystem.box(p, new Vector(3, 5, 5), box.ALL).get(0).setPassenger(p);
+				} else {
+					Player pl = Bukkit.getPlayer(a[1]);
+					pl.setPassenger(p);
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("sound")) {
+				if(a.length == 2) {	
+					ARSystem.playSoundAll(a[1]);
+				} else {
+					ARSystem.playSoundAll(a[1],Float.parseFloat(a[2]));
+				}
 				return true;
 			}
 			if(a[0].equalsIgnoreCase("uhoy")) {
@@ -269,6 +333,22 @@ public class Rule extends JavaPlugin{
 				} else {
 					Player pl = Bukkit.getPlayer(a[1]);
 					p.setPassenger(pl);
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("mobbuff")) {
+				if(a.length <= 2) {	
+					Entity e = ARSystem.PlayerBeamV(p, 8, 2, box.ALL).get(0);
+					if(e != null) {
+						MobBuffs.get(a[1], (LivingEntity)e);
+						p.sendMessage("Buff "+e.getName()+" : " + a[1]);
+					} else {
+						MobBuffs.get(a[1], p);
+						p.sendMessage("Buff my : " + a[1]);
+					}
+				} else {
+					MobBuffs.get(a[1], p);
+					p.sendMessage("Buff my : " + a[1]);
 				}
 				return true;
 			}
@@ -308,12 +388,119 @@ public class Rule extends JavaPlugin{
 				}
 				return true;
 			}
+			if(a[0].equalsIgnoreCase("stand")) {
+				for(Entity en : p.getWorld().getEntities()) {
+					if(en instanceof ArmorStand) {
+						en.remove();
+					}
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("item")) {
+				if(a.length == 2) {
+					if(ARSystem.playerItem.get(p) != null) ARSystem.addItem(p, Integer.parseInt(a[1]));
+					return true;
+				}
+				if(a[1].equals("all")) {
+					for(Player pl : Rule.c.keySet()) {
+						if(ARSystem.playerItem.get(pl) != null) ARSystem.addItem(pl, Integer.parseInt(a[2]));
+					}
+				} else {
+					if(ARSystem.playerItem.get(Bukkit.getPlayer(a[1])) != null) ARSystem.addItem(Bukkit.getPlayer(a[1]), Integer.parseInt(a[2]));
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("itemcount")) {
+				if(a.length == 2) {
+					Rule.playerinfo.get(p).itemcount = Math.min(Math.max(Integer.parseInt(a[1]),0),12);
+					p.sendMessage("§a§l[ARSystem] : §f§l" + Text.get("item:itemmax") + " " + Rule.playerinfo.get(p).itemcount);
+					return true;
+				}
+				if(a[1].equals("all")) {
+					for(Player pl : Rule.c.keySet()) {
+						Rule.playerinfo.get(p).itemcount = Math.min(Math.max(Integer.parseInt(a[2]),0),12);
+						pl.sendMessage("§a§l[ARSystem] : §f§l" + Text.get("item:itemmax") + " " + Rule.playerinfo.get(pl).itemcount);
+					}
+				} else {
+					Rule.playerinfo.get(Bukkit.getPlayer(a[1])).itemcount = Math.min(Math.max(Integer.parseInt(a[2]),0),12);
+					p.sendMessage("§a§l[ARSystem] : §f§l" + Text.get("item:itemmax") + " " + Rule.playerinfo.get(Bukkit.getPlayer(a[1])).itemcount);
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("itembox")) {
+				try {
+					if(a.length == 2) {
+						if(Rule.c.get(p) != null) new G_Item(p, Integer.parseInt(a[1]), 0, 3000);
+						return true;
+					}
+					if(a.length == 3) {
+						if(Rule.c.get(p) != null) new G_Item(p, Integer.parseInt(a[1]), Integer.parseInt(a[2]), Integer.parseInt(a[2]));
+						return true;
+					}
+	
+					if(a[1].equals("all")) {
+						for(Player pl : Rule.c.keySet()) {
+							if(Rule.c.get(pl) != null) {
+								if(a.length == 5) {
+									new G_Item(pl, Integer.parseInt(a[2]), Integer.parseInt(a[3]), Integer.parseInt(a[4]));
+								} else {
+									new G_Item(pl, Integer.parseInt(a[2]), Integer.parseInt(a[3]), Integer.parseInt(a[3]));
+								}
+							}
+						}
+					} else {
+						if(Rule.c.get(Bukkit.getPlayer(a[1])) != null) {
+							if(a.length == 5) {
+								new G_Item(Bukkit.getPlayer(a[1]), Integer.parseInt(a[2]), Integer.parseInt(a[3]), Integer.parseInt(a[4]));
+							} else {
+								new G_Item(Bukkit.getPlayer(a[1]), Integer.parseInt(a[2]), Integer.parseInt(a[3]), Integer.parseInt(a[3]));
+							}
+							
+						}
+					}
+				} catch(Exception e) {
+					p.sendMessage("/ars itembox [size]");
+					p.sendMessage("/ars itembox [size] [value]");
+					p.sendMessage("/ars itembox all [size] [value]");
+					p.sendMessage("/ars itembox all [size] [min-value] [max-value]");
+					p.sendMessage("/ars itembox [player] [size] [value]");
+					p.sendMessage("/ars itembox [player] [size] [min-value] [max-value]");
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("itemremove")) {
+				if(a.length == 2) {
+					if(a[1].equals("all")) {
+						ARSystem.removeItemAll(p);
+					} else {
+						ARSystem.removeItem(p, Integer.parseInt(a[1]));
+					}
+					return true;
+				}
+				if(a[1].equals("all")) {
+					for(Player pl : Rule.c.keySet()) {
+						if(a[2].equals("all")) {
+							ARSystem.removeItemAll(pl);
+						} else {
+							ARSystem.removeItem(pl, Integer.parseInt(a[2]));
+						}
+					}
+				} else {
+					if(a[2].equals("all")) {
+						ARSystem.removeItemAll(Bukkit.getPlayer(a[1]));
+					} else {
+						ARSystem.removeItem(Bukkit.getPlayer(a[1]), Integer.parseInt(a[2]));
+					}
+				}
+				return true;
+			}
 			if(a[0].equalsIgnoreCase("sakiruck")) {
 				if(c.get(p) != null&& c.get(p).getCode()%10000 == 16) {
 					((c16saki)c.get(p)).luck();
 				}
 				return true;
 			}
+			
 			if(a[0].equalsIgnoreCase("hajimegun")) {
 				if(c.get(p) != null&& c.get(p).getCode() == 38) {
 					((c38hajime)c.get(p)).wepone();
@@ -326,7 +513,22 @@ public class Rule extends JavaPlugin{
 			}
 			if(a[0].equalsIgnoreCase("bgm")) {
 				if(Main.GetText("bgm:"+a[1]) != null) {
-					Bgm.setBgm(a[1]);
+					if(a.length < 3) {
+						Bgm.setBgm(a[1]);
+					} else {
+						Bgm.setBgm(a[1],Float.parseFloat(a[2]));
+					}
+				} else {
+					if(p != null) p.sendMessage("§a§l[ARSystem] : §cBgm Code is NULL");
+					System.out.println("[ARSystem] : Bgm Code is NULL");
+				}
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("lbgm")) {
+				if(Main.GetText("bgm:"+a[1]) != null) {
+					if(a.length < 3) {
+						Bgm.setForceBgm(a[1]);
+					}
 				} else {
 					if(p != null) p.sendMessage("§a§l[ARSystem] : §cBgm Code is NULL");
 					System.out.println("[ARSystem] : Bgm Code is NULL");
@@ -399,6 +601,9 @@ public class Rule extends JavaPlugin{
 				for(int i=0;i<10;i++) {
 					Rule.c.get(p).cooldown[i] = 0;
 				}
+				for(itemBase item : ARSystem.playerItem.get(p).items) {
+					item.cooldown = 0;
+				}
 				return true;
 			}
 			if(a[0].equalsIgnoreCase("msg") && ishelp(p)) {
@@ -456,6 +661,14 @@ public class Rule extends JavaPlugin{
 				new G_CharInfo(p);
 				return true;
 			}
+			if(a[0].equalsIgnoreCase("skill")) {
+				new G_CharInfo(p);
+				return true;
+			}
+			if(a[0].equalsIgnoreCase("metaton")) {
+				ARSystem.spellLocCast(Bukkit.getPlayer(a[1]), p.getLocation(), "metaton_sp");
+				return true;
+			}
 			if(a[0].equalsIgnoreCase("trophy")) {
 				new G_Tropy(p);
 				return true;
@@ -483,11 +696,11 @@ public class Rule extends JavaPlugin{
 				}
 				return true;
 			}
-			if(a[0].equalsIgnoreCase("arena")) {
-				for(ModeBase mb : ARSystem.AniRandomSkill.modes) {
-					if(mb instanceof MArena) {
-						((MArena) mb).oneGame = false;
-					}
+			if(a[0].equalsIgnoreCase("mmadd")) {
+				if(GameModes.getGameModes(a[1]) != null) {
+					ARSystem.AniRandomSkill.modes.add(GameModes.getGameModes(a[1]));
+				} else {
+					p.sendMessage("§a§l[ARSystem] : §c§l Not GameMode");
 				}
 				return true;
 			}
@@ -514,6 +727,13 @@ public class Rule extends JavaPlugin{
 	public boolean deopCommand(Player p, Command cmd, String s, String[] a) {
 		if(a[0].equalsIgnoreCase("test") && (Bukkit.getOnlinePlayers().size() <= 1 || ishelp(p) || Rule.oplist.contains(p.getName()))) {
 			new G_SoloMenu(p);
+		}
+		if(a[0].equalsIgnoreCase("shop")) {
+			new G_ItemShop(p);
+		}
+		if(a[0].equalsIgnoreCase("useritem")) {
+			new G_UserItem(p);
+			return true;
 		}
 		if(a[0].equalsIgnoreCase("help")) {
 			if(c.get(p) == null) {
@@ -558,6 +778,10 @@ public class Rule extends JavaPlugin{
 			}
 			return true;
 		}
+		if(a[0].equalsIgnoreCase("shop")) {
+			MItem.isCode(a[1],p);
+			return true;
+		}
 		return false;
 	}
 	public void runcooldown() {
@@ -590,7 +814,11 @@ public class Rule extends JavaPlugin{
 			ismsg = ""+Math.round(c.get(p).cooldown[9]*100)/100.0;
 			if(!ismsg.equals("0.0")) msg+="§a[§e:) §a: §c"+ismsg+"§a]";
 		}
-		
+		if(ARSystem.playerItem.get(p) != null && c.get(p) != null) {
+			for(itemBase item : ARSystem.playerItem.get(p).items) {
+				msg += item.getActionbar();
+			}
+		}
 		if(!c.get(p).buffText.equals("")) {
 			if(c.get(p).buffHardCC) {
 				msg = c.get(p).buffText;
@@ -641,6 +869,7 @@ public class Rule extends JavaPlugin{
 	    	}
         	//tps
         	while(time*20 > tick) {
+            	if(ARSystem.winstop > 0) ARSystem.winstop--;
 	        	tick++;
 	        	if(c.keySet() != null) {
 		        	for(Player p : c.keySet()) {
@@ -657,16 +886,16 @@ public class Rule extends JavaPlugin{
 		        		}
 		        		if(Rule.buffmanager.getBuffs(e) != null && Rule.buffmanager.getBuffs(e).getBuff() != null) {
 		        			// Error
-		        			//try {
+		        			try {
 					        	for(Buff buff : Rule.buffmanager.getBuffs(e).getBuff()) {
 					        		if(buff != null) {
 					        			buff.onTick();
 					        		}
 					    		}
 					        	Rule.buffmanager.getBuffs(e).bufforder();
-		        			/*} catch (Exception ee) {
-		                		Bukkit.broadcastMessage("[Error : Buff]");
-		        			}*/
+		        			} catch (Exception ee) {
+		        				System.out.println("[Error : Buff] " + ee);
+		        			}
 		        		}
 		        	}
 		        	for(LivingEntity e : el) {
@@ -696,6 +925,13 @@ public class Rule extends JavaPlugin{
 				    			scoreBoardText.add("&m&l=========================");
 				    			scoreBoardText.add("&f&l ["+Main.GetText("main:s10")+"] : &a&l"+ ARSystem.AniRandomSkill.getTime());
 				    			scoreBoardText.add("&6 ["+Main.GetText("main:s9")+"] : &f"+ ARSystem.getPlayerCount());
+				    			if(ARSystem.isGameMode("lobotomy")) {
+					    			scoreBoardText.add("&m&l=========================");
+					    			scoreBoardText.add("&c [Stage] : &f&l"+ MLoboTomy.level +"&7 - &f&l"+ MLoboTomy.count);
+					    			scoreBoardText.add("&c&l ["+Main.GetText("lobo:scbd1")+"] : "+ MLoboTomy.mobs.size());
+					    			scoreBoardText.add("&6&l ["+Main.GetText("lobo:scbd2")+"] : "+ MLoboTomy.etcmobs.size());
+					    			scoreBoardText.add("&9&l ["+Main.GetText("lobo:scbd3")+"] : "+ MLoboTomy.vilager.size()+" / " + MLoboTomy.humanMax);
+				    			}
 				    			ScoreBoard.createScoreboard(player, scoreBoardText);
 		        			}
 		        		}
@@ -730,7 +966,7 @@ public class Rule extends JavaPlugin{
 		        		if(join >= 2 && starttimer <= 0) {
 		        			starttimer = ARSystem.starttime;
 		        			ARSystem.Start(-1);
-		        		} else if( join <= 1) {
+		        		} else if(join <= 1) {
 		        			starttimer = ARSystem.starttime;
 		        		} else {
 		        			if(starttimer == 180 ||starttimer == 60 || starttimer == 30 ||starttimer == 20 ||starttimer == 10 ||starttimer == 5) {
@@ -753,6 +989,8 @@ public class Rule extends JavaPlugin{
 		        		}
 		        		if(!Rule.buffmanager.isBuff(p, "timestop")) {
 		        			c.get(p).ticks();
+
+		        			ARSystem.playerItem.get(p).onTicks();
 		        			if(tick%2 == 1) c.get(p).cooldown();
 			        		
 		        		}
@@ -778,6 +1016,7 @@ public class Rule extends JavaPlugin{
 				        	if(c.get(one).getScore() > c.get(two).getScore()*2 && one != bgm)
 				        	{
 				        		bgm = one;
+				        		mvp = one;
 				        		Bgm.setBgm(c.get(one).getBgm());
 				        	}
 			        	}
@@ -787,15 +1026,15 @@ public class Rule extends JavaPlugin{
 		        	}
 		        	
 		        }
+	        	Rule.mobmanager.onTick();
 	        }
+        	if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time >= 5) ARSystem.Stop();
         	try {
 	        	for(Player p : removePlayers) {
 	        		c.remove(p);
-	    			ARSystem.Stop();
 	        	}
         	} catch(ConcurrentModificationException e) {
-        		Bukkit.broadcastMessage("[Error : Game Stop]");
-        		ARSystem.Stop();
+        		
         	}
         	removePlayers = new ArrayList<Player>();
         	if(Rule.buffmanager != null) Rule.buffmanager.run();

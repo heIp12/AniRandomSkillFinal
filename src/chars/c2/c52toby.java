@@ -272,7 +272,7 @@ public class c52toby extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		for(Entity e : ARSystem.box(player, new Vector(8,8,8), box.TARGET)) {
 			if(Rule.c.get(e) != null && !sp.contains(e)) {
 				sp.add((Player)e);

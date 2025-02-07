@@ -125,7 +125,7 @@ public class c2200byakuya extends c00main{
 		return false;
 	}
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "c20select");
 		return true;
 	}

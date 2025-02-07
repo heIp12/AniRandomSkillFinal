@@ -36,6 +36,8 @@ public class c11yasuo extends c00main{
 		load();
 		text();
 		if(p != null) l = p.getLocation();
+
+		Rule.buffmanager.selectBuffAddValue(player, "barrier", (float)(player.getMaxHealth()*0.5f));
 	}
 	
 	@Override
@@ -69,7 +71,7 @@ public class c11yasuo extends c00main{
 			allairbone = true;
 		} else {
 			for(Player p :Rule.c.keySet()) {
-				if (!BlockUtil.isAirbone(p.getLocation(), 2) && p != player) {
+				if (!BlockUtil.isAirbone(p.getLocation(), 1) && p != player) {
 					allairbone = true;
 				} 
 			}
@@ -92,7 +94,7 @@ public class c11yasuo extends c00main{
 		} else {
 			List<Entity> en = ARSystem.box(player, new Vector(40,100,40), box.TARGET);
 			for(Entity entity : en) {
-				if(BlockUtil.isAirbone(entity.getLocation(), 5) ) {
+				if(BlockUtil.isAirbone(entity.getLocation(), 3) ) {
 					airbone = true;
 					player.teleport(ULocal.offset(entity.getLocation(), new Vector(-1,0,0)));
 					ARSystem.spellCast(player, entity, "YasuoR_TM");

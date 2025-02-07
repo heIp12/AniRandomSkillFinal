@@ -144,14 +144,19 @@ public class c43yuno extends c00main{
 		return true;
 	}
 	
-
+	int teamtick = 0;
 	@Override
 	public boolean tick() {
-		if(start) {
+		if(Rule.buffmanager.GetBuffTime(player, "timestop") > 0) {
+			
+		} else {
+			teamtick++;
+		}
+		if(teamtick == 100) {
 			start = false;
 			team();
 		}
-		if(yuki == null && ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time > 15) {
+		if(yuki == null &&teamtick > 400) {
 			Rule.c.put(player,new c4300yuno(player, plugin, null));
 		}
 		else if(yuki != null) {

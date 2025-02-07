@@ -92,7 +92,7 @@ public class c111artorya extends c00main{
 	
 	@Override
 	public boolean skill1() {
-		if(stack >= 50000) {
+		if(stack >= 50000&& skillCooldown(0)) {
 			stack = 0;
 			skillsp();
 			return true;
@@ -191,7 +191,7 @@ public class c111artorya extends c00main{
 		if(n.equals("1")) {
 			if(target instanceof Player) {
 				sp++;
-				if(sp == Rule.c.size()-1 && Rule.c.size() > 2) {
+				if(sp == Rule.c.size()-1 && Rule.c.size() > 2 && skillCooldown(0)) {
 					skillsp();
 				}
 			}
@@ -283,7 +283,7 @@ public class c111artorya extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

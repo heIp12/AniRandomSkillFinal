@@ -5,45 +5,35 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Husk;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
-
-import Main.Main;
 import ars.ARSystem;
 import ars.Rule;
 import ars.gui.G_Lobotomy;
-import buff.ChoSan;
 import buff.Exposure;
-import buff.Fascination;
-import buff.Ice;
-import buff.Nodamage;
 import buff.Panic;
-import buff.PowerUp;
-import buff.Rampage;
 import buff.Reflect;
 import buff.Silence;
-import buff.Sleep;
-import buffs.Buff;
+import buff.TimeStop;
 import chars.c.c00main;
 import chars.c.c38hajime;
 import manager.AdvManager;
 import manager.Bgm;
+import mob.M_LBDefence2;
+import mob.M_ROCKREE;
+import mode.lobobuff.LoboBuffBase;
+import mode.lobobuff.RB_b047;
+import types.LoboBuffs;
 import types.MapType;
-import types.box;
+import types.MobBuffs;
 import util.AMath;
 import util.GetChar;
 import util.ItemCreate;
-import util.MSUtil;
 import util.Map;
-import util.NpcPlayer;
 import util.Text;
 
 
@@ -54,6 +44,10 @@ public class MLoboTomy extends ModeBase{
 			this.damage = damage;
 			this.lastcooldown = lastcooldown;
 		}
+		public lobobuff Cooldown(int skill,int cooldown) {
+			this.cooldown[skill] = cooldown;
+			return this;
+		}
 		float hp = 1;
 		float damage = 1;
 		float cooldown[] = new float[] {1,1,1,1,1,1,1,1,1,1};
@@ -63,33 +57,42 @@ public class MLoboTomy extends ModeBase{
 	public static int rating = 0;
 	public static int count = 0;
 	public static int level = 0;
-	public double hpmult = 1;
+	public static double hpmult = 1;
+	public static HashMap<Integer,List<Integer>> upgrad = new HashMap<>();
+	public static HashMap<Integer,List<Integer>> mobupgrad = new HashMap<>();
 	public static HashMap<String,Integer> cr = new HashMap<>();
 	public static HashMap<Player,c00main> rep = new HashMap<>();
 	
-	static List<LivingEntity> mobs = new ArrayList<LivingEntity>();
-	static List<LivingEntity> etcmobs = new ArrayList<LivingEntity>();
-	static List<LivingEntity> vilager = new ArrayList<LivingEntity>();
+	public static List<LivingEntity> mobs = new ArrayList<LivingEntity>();
+	public static List<LivingEntity> etcmobs = new ArrayList<LivingEntity>();
+	public static List<LivingEntity> vilager = new ArrayList<LivingEntity>();
 	
-	static List<String> buff = new ArrayList<String>();
-	static List<String> debuff = new ArrayList<String>();
+	public static List<LoboBuffBase> buff = new ArrayList<LoboBuffBase>();
+	public static List<LoboBuffBase> debuff = new ArrayList<LoboBuffBase>();
 	
-	static Player bast = null;
-	static int sleep = 5;
+	public static int banDebuff = 0;
+	
+	public static Player bast = null;
+	public static int sleep = 5;
 	static int stageTime = 0;
 	int time = 0;
-	static boolean timer = false;
 	int mobcount = 0;
+	public int humanDelect = 0;
 	int villager_Death = 0;
-	float v = 1;
+	public float v = 1;
+	public float mobCountValue = 0;
 	static String itemmsg = "";
-	static float dmg = 1;
-	
-	public List<LivingEntity> love = new ArrayList<>();
+	static public float dmg = 1;
+	static int buffDelay = 0;
+
+	public int upcount;
+	private boolean humanSpawn;
+	public static int humanMax = 0;
+	public static int difficulty = 3;
 	
 	public MLoboTomy(){
 		super();
-		isSecret = true;
+		if(!(boolean)Rule.Var.Load("System.info.mode.loboclear")) isSecret = true;
 		isOnlyOne = true;
 		modeName = "lobotomy";
 		disPlayName = Text.get("main:mode666");
@@ -105,7 +108,7 @@ public class MLoboTomy extends ModeBase{
 		onbuff.put(11, new lobobuff(1.4f,1.4f,0.75f));
 		onbuff.put(13, new lobobuff(1.5f,1.4f,1f));
 		onbuff.put(14, new lobobuff(1.8f,1.4f,1f));
-		onbuff.put(15, new lobobuff(1f,2.5f,0.5f));
+		onbuff.put(15, new lobobuff(1f,2f,0.5f));
 		onbuff.put(16, new lobobuff(2f,1f,1f));
 		onbuff.put(19, new lobobuff(1.5f,1.4f,1f));
 		onbuff.put(20, new lobobuff(1f,2f,0.75f));
@@ -115,7 +118,7 @@ public class MLoboTomy extends ModeBase{
 		onbuff.put(27, new lobobuff(1.5f,2f,1f));
 		onbuff.put(29, new lobobuff(1.5f,2f,0.4f));
 		onbuff.put(30, new lobobuff(1.5f,2.2f,1f));
-		onbuff.put(31, new lobobuff(1f,2.4f,0.3f));
+		onbuff.put(31, new lobobuff(0.4f,2.4f,0.3f));
 		onbuff.put(32, new lobobuff(2f,1.5f,1f));
 		onbuff.put(34, new lobobuff(1.5f,1.4f,1f));
 		onbuff.put(36, new lobobuff(1.5f,1f,0.5f));
@@ -134,12 +137,12 @@ public class MLoboTomy extends ModeBase{
 		onbuff.put(52, new lobobuff(2f,2f,1f));
 		onbuff.put(56, new lobobuff(2f,2f,1f));
 		onbuff.put(57, new lobobuff(0.6f,1f,2.5f));
-		onbuff.put(58, new lobobuff(1.5f,1.4f,1f));
+		onbuff.put(58, new lobobuff(1.5f,0.6f,1f));
 		onbuff.put(59, new lobobuff(1.5f,2f,1f));
 		onbuff.put(60, new lobobuff(1f,1.8f,1f));
 		onbuff.put(61, new lobobuff(1f,2f,1f));
 		onbuff.put(62, new lobobuff(1f,2.5f,1f));
-		onbuff.put(63, new lobobuff(1.5f,1.5f,1f));
+		onbuff.put(63, new lobobuff(1.5f,1.5f,1f).Cooldown(0, 1000));
 		onbuff.put(64, new lobobuff(1f,1.5f,0.4f));
 		onbuff.put(65, new lobobuff(1.7f,1.5f,1f));
 		onbuff.put(66, new lobobuff(1.7f,1f,1f));
@@ -196,7 +199,7 @@ public class MLoboTomy extends ModeBase{
 		onbuff.put(133, new lobobuff(1.6f,1f,0.7f));
 		onbuff.put(135, new lobobuff(1f,2.5f,0.7f));
 		onbuff.put(139, new lobobuff(1.2f,1.25f,0.75f));
-		onbuff.put(140, new lobobuff(1.2f,1.4f,0.8f));
+		onbuff.put(140, new lobobuff(1.2f,1.4f,0.8f).Cooldown(0, 1000));
 		onbuff.put(141, new lobobuff(1f,1.5f,1f));
 		onbuff.put(142, new lobobuff(1f,2f,1f));
 		onbuff.put(143, new lobobuff(1f,2f,1f));
@@ -205,12 +208,21 @@ public class MLoboTomy extends ModeBase{
 		onbuff.put(148, new lobobuff(1f,1.5f,1f));
 		onbuff.put(149, new lobobuff(1.8f,2f,1f));
 		onbuff.put(150, new lobobuff(1.2f,1f,0.8f));
+		onbuff.put(151, new lobobuff(1.3f,0.6f,0.8f).Cooldown(0, 20));
+		onbuff.put(152, new lobobuff(1.3f,0.6f,0.8f).Cooldown(0, 20));
+		onbuff.put(154, new lobobuff(1.5f,1.4f,1f));
+		onbuff.put(155, new lobobuff(1.3f,1.2f,0.7f));
+		onbuff.put(156, new lobobuff(1.4f,1.8f,2f));
+		onbuff.put(157, new lobobuff(1.2f,2f,1f));
+		onbuff.put(158, new lobobuff(1f,1.4f,0.6f));
+		onbuff.put(159, new lobobuff(1.2f,1.6f,0.8f));
+		onbuff.put(160, new lobobuff(0.7f,1.6f,1f));
 	}
 	
 	@Override
 	public void option() {
 		Map.mapType = MapType.NORMAL;
-		ARSystem.selectGameMode.remove(modeName);
+		if(!(boolean)Rule.Var.Load("System.info.mode.loboclear")) ARSystem.selectGameMode.remove(modeName);
 		Map.getMapinfo(1004);
 		Rule.team.teamCreate("H");
 		Rule.team.getTeam("H").setTeamColor("7");
@@ -225,72 +237,79 @@ public class MLoboTomy extends ModeBase{
 		etcmobs.clear();
 		cr.clear();
 		debuff.clear();
-		timer = false;
 		bast = null;
 		dmg = 1;
 		villager_Death = 0;
 		itemmsg = "";
+		humanDelect = 0;
+		mobCountValue = 0;
+		sleep = 0;
 		v = 1;
+		buffDelay = 0;
+		upcount = 3;
+		int j = 1;
+		for(int i=0;i<1000;i++) {
+			if(Text.get("lobo:b"+j) != null) {
+				int n = Text.getI("lobo:b"+j+"v");
+				if(upgrad.get(n) == null) upgrad.put(n, new ArrayList<Integer>());
+				upgrad.get(n).add(j);
+				j++;
+			} else {
+				if(j < 100) {
+					j = 101;
+				} else {
+					break;
+				}
+			}
+		}
+		j = 1;
+		for(int i=0;i<1000;i++) {
+			if(Text.get("lobo:o"+j) != null) {
+				int n = Text.getI("lobo:o"+j+"v");
+				if(mobupgrad.get(n) == null) mobupgrad.put(n, new ArrayList<Integer>());
+				mobupgrad.get(n).add(j);
+				j++;
+			} else {
+				if(j < 100) {
+					j = 101;
+				} else {
+					break;
+				}
+			}
+		}
+		if(nobgmList == null) {
+			nobgmList = new ArrayList<String>();
+			nobgmList.add("m0");
+		}
+
+		/*
+		System.out.println("===== [ Load Item ] ========\n\n");
+		for(Integer i : upgrad.keySet()) {
+			System.out.println(Text.get("lobo:lv"+i) + " :  " + upgrad.get(i).size());
+		}
+		System.out.println("\\n===== [ Load Debuff ] ========\n\n");
+		for(Integer i : mobupgrad.keySet()) {
+			System.out.println(Text.get("lobo:lv"+i) + " :  " + mobupgrad.get(i).size());
+		}
+		*/
+		banDebuff = getInt("1");
+		humanSpawn = getBool("2");
+		difficulty = getInt("3");
 	}
-	static int[] onsp = {1,5,8,10,11,13,14,15,26,29,31,32,38,39,40,41,42,44,47,48,49,55,56,57,61,62,65,66,67,68,73,76,77,80,86,88,93,94,96,
-			99,101,105,106,109,110,112,114,116,120,121,124,126,127,130,131,132,133,136,137,141,142,143,145,146,149,150};
+	static int[] onsp = {1,5,8,10,11,13,14,15,24,26,29,31,32,38,39,40,41,42,44,47,48,49,55,56,57,61,62,63,65,66,67,68,73,76,77,80,86,88,93,94,96,
+			99,101,105,106,109,110,112,114,116,120,121,124,126,127,130,131,132,133,136,137,140,141,142,143,145,146,149,150,151,154,156,157,158,159,160};
 	static HashMap<Integer,lobobuff> onbuff = new HashMap<>();
 
 	public static void charRep(Player p) {
+		ARSystem.removeItemAll(p);
 		if(Rule.c.get(p).number == 57 || Rule.c.get(p).number == 86) return;
 		List<Integer> onsp = new ArrayList<>() ;
 		for(int i : MLoboTomy.onsp) onsp.add(i);
 		Rule.c.get(p).frist_damage += (dmg-1);
+		if(difficulty < 3) Rule.c.get(p).hp += 5;
 		Rule.c.get(p).hp*=1.15;
-		
-		if(buff.contains("b3")) {
-			Rule.c.get(p).skillmult += 0.15;
-		}
-		if(buff.contains("b4")) {
-			float rt = (AMath.random(0, 110)+40)*0.01f;
-			Rule.c.get(p).frist_damage *= rt;
-			p.sendTitle("§f"+Text.get("lobo:b4"), (int)(rt*100) + "%");
-		}
-		if(buff.contains("b5")) {
-			Rule.c.get(p).hp*=1.4;
-		}
-		if(buff.contains("b7")) {
-			Rule.c.get(p).skillmult += 0.8;
-		}
-		if(buff.contains("b8")) {
-			Rule.c.get(p).hpCost(8, true);
-			Rule.c.get(p).skillmult += 0.5;
-			Rule.c.get(p).frist_damage += 0.3;
-		}
-		if(buff.contains("b9") && p == bast) {
-			ARSystem.giveBuff(p, new ChoSan(p), 999999999);
-		}
-		if(buff.contains("b12")) {
-			Rule.c.get(p).skillmult += 1;
-			Rule.c.get(p).frist_damage += 0.5;
-		}
-		if(buff.contains("b21")) {
-			ARSystem.giveBuff(p, new Exposure(p), 200000, -2);
-		}
-		if(buff.contains("b22") && p == bast) {
-			
-			Rule.c.get(p).hpCost(p.getMaxHealth()*0.8, true);
-			Rule.buffmanager.selectBuffAddValue(p, "barrier", (int)p.getMaxHealth()*5);
-		}
-		if(buff.contains("b23")) {
-			Rule.c.get(p).skillmult -= 0.8;
-			Rule.c.get(p).frist_damage *= 1.50;
-		}
-		if(timer) {
-			Rule.c.get(p).hp*=0.8;
-		}
-		if(debuff.contains("o51")) {
-			if(!Rule.buffmanager.isBuff(p, "exposure")) {
-				ARSystem.giveBuff(p, new Exposure(p), 200000, 5);
-			} else {
-				Rule.buffmanager.selectBuffAddValue(p, "exposure", 5);
-			}
-		}
+		for(LoboBuffBase bf : buff) bf.onPlayerChar(p);
+
 		Rule.team.teamJoin("H", p);
 		
 		int code = Rule.c.get(p).number%1000;
@@ -310,32 +329,32 @@ public class MLoboTomy extends ModeBase{
 		p.setHealth(Rule.c.get(p).hp);
 		
 
-		if(level == 9 && count > 3) {
+		if(level == 9) {
 			if(Rule.c.get(p).frist_damage >= 4) {
 				Rule.c.get(p).frist_damage *= 0.55;
 			} else {
 				Rule.c.get(p).frist_damage *= 0.75;
-			}
-			if(count > 5) {
-				Rule.c.get(p).frist_defence *= 2f;
-			} else if(count > 4) {
-				Rule.c.get(p).frist_defence *= 1.5f;
 			}
 		}
 		
 	}
 	@Override
 	public void firstTick() {
+		ARSystem.winstop = 100000000;
 		ARSystem.playSoundAll("0select2");
 		ARSystem.AniRandomSkill.mob = true;
 		text(394,Text.get("lobo:start"));
-		hpmult = Math.max(0.6f, 0.3+0.2*cr.size());
-		if(hpmult > 2) {
-			hpmult -= (cr.size()-8)*0.1;
-		}
-		
-		text(394,Text.get("lobo:rep") +"§7§l ["+ (int)(hpmult*100)+"%]");
-		if(vilager.size() < 3) {
+		if(banDebuff != 0) Bukkit.broadcastMessage("§a§l[§c§l"+Text.get("lobo:ban") +"§a§l] §f: " + Text.get("lobo:o"+banDebuff));
+		Bukkit.broadcastMessage("§a§l[§c§l"+Text.get("mode:lobotomy_3") +"§a§l] §f: " + difficulty);
+		delay(()->{
+			hpmult = Math.max(0.6f, 0.3+0.2*cr.size());
+			if(hpmult > 2) hpmult -= (cr.size()-8)*0.1;
+			if(difficulty < 2) hpmult *= 0.5f; 
+			else if(difficulty > 3) hpmult *= 1 +( (difficulty-3)*0.1);
+			
+			text(394,Text.get("lobo:rep") +"§7§l ["+ (int)(hpmult*100)+"%]");
+		},20);
+		if(vilager.size() < 3 && humanSpawn) {
 			vilager.add(Map.spawnMM("human", Map.randomLoc()));
 		}
 
@@ -345,425 +364,99 @@ public class MLoboTomy extends ModeBase{
 		}
 	}
 	
-	public void buff() {
-		if(buff.contains("b1") && (stageTime == 111 || stageTime == 77)) {
-			for(Player p : Rule.c.keySet()) {
-				ARSystem.heal(p, p.getMaxHealth());
-			}
-			ARSystem.playSoundAll("fairy");
-		}
-		if(buff.contains("b3") && stageTime == 66) {
-			for(Player p : Rule.c.keySet()) {
-				Rule.c.get(p).skillmult += 0.35;
-			}
-			ARSystem.playSoundAll("wellcheers");
-		}
-		if(buff.contains("b6") && time%5 == 0) {
-			ARSystem.playSoundAll("theresia");
-			for(Player p : Rule.c.keySet()) {
-				if(time%50 == 0) {
-					ARSystem.giveBuff(p, new Panic(p), 100);
-				} else {
-					if(Rule.buffmanager.GetBuffTime(p, "panic") > 0) {
-						Rule.buffmanager.selectBuffAddTime(p, "panic", -300);
-					}
-				}
-			}
-		}
-		if(buff.contains("b11") && time%11 == 0) {
-			Player t = null;
-			float pw = 0;
+	public void addbuff(Player player) {
+		int rd = 1;
+		if(level == 2) rd = 2;
+		if(level == 3) rd = 3;
+		if(level > 3) {
+			rd = 4;
+			if(level > 6) rd = 5;
+			else if(level > 4 && AMath.random(5) <= 2) rd = 5;
 			
-			for(Player p : Rule.c.keySet()) {
-				if(Rule.buffmanager.GetBuffTime(p, "panic") > pw) {
-					t = p;
-					pw = Rule.buffmanager.GetBuffTime(p, "panic");
+		}
+		List<Integer> ints = new ArrayList<>();
+		for(int i =0; i < upcount; i++) {
+			int size = 0;
+			int code = 0;
+			do {
+				size++;
+				code = getRandomBf(rd);			
+				if(size > 200) {
+					break;
 				}
-			}
-			if(t != null) {
-				ARSystem.playSound(t,"healbullet");
-				Rule.buffmanager.selectBuffTime(t, "panic", 0);
-				ARSystem.addBuff(t, new Nodamage(t), 40);
-			}
-		}
-		if(buff.contains("b12") && time%50 == 0) {
-			for(Player p : Rule.c.keySet()) {
-				boolean d = false;
-				for(int i =0; i<10; i++) {
-					if(Rule.c.get(p).cooldown[i] > 0) {
-						d = true;
-						Rule.c.get(p).hpCost(Rule.c.get(p).setcooldown[i], true);
-					}
-				}
-				if(d) ARSystem.spellCast(p,p, "bload");
-			}
-		}
-		if(buff.contains("b13")) {
-			for(Player p : Rule.c.keySet()) {
-				if(time%39 == 0) {
-					if(p.getHealth() < p.getMaxHealth()) {
-						ARSystem.spellCast(p,p, "bload");
-						Rule.c.get(p).hpCost((p.getMaxHealth()-p.getHealth())*3, true);
-					}
-				}
-				if(time%1 == 0) {
-					ARSystem.heal(p, 1);
-				}
-			}
-		}
-		if(buff.contains("b14")) {
-			if(mobcount > mobs.size()) {
-				int c = mobs.size() - mobcount;
-				for(Player p : Rule.c.keySet()) {
-					for(int i =0; i<10; i++) {
-						if(Rule.c.get(p).cooldown[i] > 0) {
-							Rule.c.get(p).cooldown[i] -= 1;
-						}
-					}
-					Rule.c.get(p).skillmult += 0.02f;
-				}
-			}
-		}
-		if(buff.contains("b16")&& time%64 == 0) {
-			ARSystem.playSoundAll("snowquine");
-			for(LivingEntity e : mobs) {
-				ARSystem.giveBuff(e, new Ice(e, bast), 140);
-			}
-			for(Player p : Rule.c.keySet()) {
-				ARSystem.giveBuff(p, new Nodamage(p), 140);
-			}
-		}
-		if(buff.contains("b17")) {
-			for(Player p : Rule.c.keySet()) {
-				if(Rule.buffmanager.GetBuffTime(p, "panic") > 0) {
-					Rule.buffmanager.selectBuffAddTime(p, "panic", -60);
-				}
-			}
-		}
-		if(buff.contains("b20")&& time%2 == 0) {
-			if(time%8 == 0) {
-				Player p = ((Player)Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1]);
-				p.damage(p.getHealth() *0.4 + Math.min(0.4, 0.05f * Rule.c.keySet().size()),NpcPlayer.npc(Map.randomLoc()));
-			}
-			for(Player p : Rule.c.keySet()) {
-				ARSystem.heal(p, 1.5);
-			}
-		}
-	}
-
-	int havenTimer = 0;
-	public void debuff() {
-		if(debuff.contains("o11") && time%10 == 0) {
-			if(AMath.random(2) <= 1) {
-				Player p = ((Player)Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1]);
-				if(AMath.random(2) <= 1) {
-					 ARSystem.giveBuff(p, new Silence(p), 100);
-				} else {
-					p.teleport(Map.randomLoc());
-				}
-				ARSystem.playSound(p,"defult");
-			} else {
-				LivingEntity mob = mobs.get(AMath.random(mobs.size())-1);
-				ARSystem.playSound(mob,"defult");
-				mob.teleport(Map.randomLoc());
-			}
-		}
-
-		if(debuff.contains("o12") && time%44-Math.min(22,level*5) == 0) {
-			Location l = Map.randomLoc();
-			ARSystem.playSoundAll("spiderpop");
-			for(int i =0; i<3*v; i++) {
-				LivingEntity e = (LivingEntity) l.getWorld().spawnEntity(Map.randomLoc(), EntityType.SPIDER);
-				e.setMaxHealth((6 + level*2)*hpmult);
-				e.setHealth((6 + level*2)*hpmult);
-				e.setCustomName("§f"+Text.get("lobo:o12"));
-				mobs.add(e);
-			}
-		}
-		if(debuff.contains("o13") && time%33 == 0) {
-			Player p = ((Player)Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1]);
-			ARSystem.playSound((Entity)p,"sakura");
-			ARSystem.giveBuff(p, new Fascination(p, mobs.get(AMath.random(mobs.size())-1)), 60 + 10*level , 0.2+ 0.1*level);
-		}
-		if(debuff.contains("o15") && time%25 == 0) {
-			Player p = ((Player)Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1]);
-			ARSystem.playSound((Entity)p,"dream");
-			ARSystem.giveBuff(p, new Sleep(p), 100 , 1.5+ 0.3*cr.size());
-		}
-		if(debuff.contains("o21") && time%120 == 0) {
-			String txt = Text.get("lobo:"+level+"-"+(count-1));
-			if(txt == null) txt = Text.get("lobo:"+level+"-"+count);
-			String[] s = txt.split(",");
-			String[] mob = s[AMath.random(s.length)-1].split(":");
-			spawn(mob[0] , Integer.parseInt(mob[1]),true);
-			ARSystem.playSoundAll("babycry");
+				
+			} while(bfcontains(code) || ints.contains(code));
+			ints.add(code);
 		}
 		
-		if(debuff.contains("o22") && time%5 == 0) {
-			if(AMath.random(5)<=1) {
-				Player p = ((Player)Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1]);
-				ARSystem.spellLocCast(NpcPlayer.npc(Map.randomLoc()), p.getLocation().add((30-AMath.random(60))*0.1,0,(30-AMath.random(60))*0.1), "lobo_prj");
-			} else {
-				ARSystem.spellLocCast(NpcPlayer.npc(Map.randomLoc()), Map.randomLoc(), "lobo_prj");
-			}
-		}
-		
-		if(debuff.contains("o23") && time%(80-Math.min(60,cr.size()*5)) == 0) {
-			Player p = ((Player)Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1]);
-			etcmobs.add(Map.spawnMM("helper", p.getLocation()));
-		}
-		if(debuff.contains("o25") && time%39 == 0) {
-			etcmobs.add(Map.spawnMM("bunny", Map.randomLoc()));
-		}
-		if(debuff.contains("o31") && time%88-Math.min(63,cr.size()*3) == 0) {
-			Player p = ((Player)Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1]);
-			ARSystem.playSoundAll("redshoo");
-			ARSystem.giveBuff(p, new PowerUp(p), 400, 3);
-			ARSystem.giveBuff(p, new Rampage(p), 400, 2);
-			String name = p.getCustomName();
-			p.setCustomName(Text.get("lobo:o31_t"));
-			ARSystem.giveBuff(p, new Fascination(p, ((Player)Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1])), 400, 2);
-			double hp = p.getMaxHealth();
-			p.setMaxHealth(p.getMaxHealth()*5);
-			p.setHealth(p.getHealth()*5);
-			Rule.team.teamQuit("H", p);
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
-				p.setHealth(p.getHealth()/5);
-				p.setMaxHealth(hp);
-				Rule.team.teamJoin("H", p);
-				p.setCustomName(name);
-			},400);
-			
-		}
-		if(debuff.contains("o33") && time%77 == 0) {
-			ARSystem.playSoundAll("train");
-			Location l = Map.getCenter().clone().add((50-AMath.random(100))*0.2,0,(50-AMath.random(100))*0.2);
-			l.setY(Map.loc_f.getY()+2.5f);
-			if(AMath.random(10) <= 3) l = ((Player)Rule.c.keySet().toArray()[AMath.random(mobs.size())-1]).getLocation();
-			if(AMath.random(15) <= 1) { l.setX(111);l.setZ(262);l.setPitch(0);l.setY(56);l.setYaw(0); }
-			ARSystem.spellLocCast(NpcPlayer.npc(l), l, "lobo_trin");
-		}
-		if(debuff.contains("o34")) {
-			boolean pt = false;
-			boolean not = false;
-			for(LivingEntity m : etcmobs) {
-				if(m.getCustomName().contains("파고드는")) {
-					for(Player p : Rule.c.keySet()) {
-						for(Entity e : ARSystem.PlayerBeamBox(p, 50, 3, box.ALL)) {
-							if(e == m) {
-								havenTimer = 0;
-							}
-						}
-					}
-					pt = true;
-					if(havenTimer <= 10) {
-						havenTimer++;
-					} else if(havenTimer > 10){
-						if(AMath.random(10) <= 2) {
-							m.teleport(Map.randomLoc());
-						}
-						ARSystem.playSoundAll("heven");
-						for(Player p : Rule.c.keySet()) {
-							p.damage(1,m);
-						}
-					}
-				} else {
-					not = true;
-					havenTimer = 0;
-				}
-			}
-			if(!pt && (not || etcmobs.size() <= 0)) etcmobs.add(Map.spawnMM("haven", Map.randomLoc()));
-			
-		}
-		if(debuff.contains("o35") && time%39-Math.min(20,level*5) == 0) {
-			Location l = Map.getCenter();
-			ARSystem.playSoundAll("shark");
-			if(AMath.random(3) <= 1) {
-				l.setX(111);l.setZ(262);l.setPitch(0);
-				if(AMath.random(3) <= 1) {
-					l.setY(50);l.setYaw(180);
-				} else {
-					l.setY(56);l.setYaw(0);
-				}
-			} else {
-				l = Map.getCenter().clone().add((50-AMath.random(100))*0.2,0,(50-AMath.random(100))*0.2);
-				l.setY(Map.loc_f.getY()+1.5f);
-				l.setYaw(AMath.random(360));
-			}
-			ARSystem.spellLocCast(NpcPlayer.npc(l), l, "shark");
-		}
-		if(debuff.contains("o43") && mobcount > mobs.size()) {
-			int count =  mobcount - mobs.size();
-			ARSystem.playSoundAll("c1139s12");
-			for(int i =0; i < count; i++) {
-				Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{
-					Location l = Map.getCenter().clone().add((50-AMath.random(100))*0.15,0,(50-AMath.random(100))*0.15);
-					l.setY(Map.loc_f.getY()+1.5f);
-					if(AMath.random(3) <= 1) l = ((Player)Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1]).getLocation();
-					l.setYaw(AMath.random(360));
-					ARSystem.spellLocCast(NpcPlayer.npc(l),l,"lobo_matan");
-				},i*4);
-			}
-		}
-		if(debuff.contains("o45") && time%8 == 0) {
-			ARSystem.spellLocCast(NpcPlayer.npc(Map.randomLoc()), Map.randomLoc(), "apple");
-		}
-		if(debuff.contains("o51") && stageTime%123 == 0) {
-			double hp = 0;
-			Player f = null;
-			for(Player p : Rule.c.keySet()) {
-				if(p.getHealth() > hp) {
-					hp = p.getHealth();
-					f = p;
-				}
-			}
-			ARSystem.playSound((Entity)f, "0swrod5", 0.2f, 3);
-			f.setHealth(1);
-		}
-		if(debuff.contains("o52") && time%3 == 0) {
-			ARSystem.playSoundAll("bluestar");
-			for(Player p : Rule.c.keySet()) {
-				if(Rule.buffmanager.GetBuffTime(p, "panic") > 0) {
-					p.damage(5,NpcPlayer.npc(Map.randomLoc()));
-				} else {
-					p.damage(1,NpcPlayer.npc(Map.randomLoc()));
-				}
-			}
-		}
-		if(Bgm.bgmcode.equals("m5")) {
-			if(time%3 == 0) {
-				for(Player p : Rule.c.keySet()) {
-					ARSystem.giveBuff(p, new Silence(p), 20, 0);
-				}
-			}
-			if(time%10 == 0) {
-				for(LivingEntity e : mobs) {
-					ARSystem.heal(e, e.getMaxHealth()*0.15 + 8);
-					ARSystem.potion(e, 22, 40, level/2);
-				}
-			}
-		}
-		if(debuff.contains("o54") && time%3 == 0) {
-			List<Entity> dh = new ArrayList<>();
-			
-			if(love.size() <= 3) {
-				Entity e = vilager.get(AMath.random(vilager.size())-1);
-				int i = 0;
-				while(love.contains(e)) {
-					if(AMath.random(3) <= 2) {
-						e = vilager.get(AMath.random(vilager.size())-1);
-					} else if(AMath.random(3) <= 2) {
-						e = mobs.get(AMath.random(mobs.size())-1);
-					} else {
-						e = ARSystem.RandomPlayer();
-					}
-					i++;
-					if(i > 1000) break;
-				}
-				love.add((LivingEntity)e);
-			}
-			
-			for(LivingEntity e : love) {
-				if(vilager.contains(e)) {
-					if(AMath.random(10) <= 2) {
-						Entity t = ARSystem.boxSOne(e, new Vector(30, 8, 30), box.TARGET);
-						if(t != null) ARSystem.giveBuff(e, new Fascination(e, (LivingEntity)t), 40, 3);
-					}
-					ARSystem.potion(e, 1, 200, 4);
-				}
-				ARSystem.playSound(e, "slimegirl");
-				ARSystem.spellCast(NpcPlayer.npc(Map.randomLoc()), e, "lobo_slime");
-				for(Entity en : ARSystem.box(e, new Vector(5,5,5), box.ALL)) {
-					if(!love.contains(en) && AMath.random(10) <= 2) {
-						Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
-							love.add((LivingEntity)en);
-						},20);
-					}
-					((LivingEntity)en).damage(3 + cr.size()/2, NpcPlayer.npc(e.getLocation()));
-				}
-				if(e.getHealth() < 1 || e.isDead() || (e instanceof Player && ((Player) e).getGameMode() != GameMode.ADVENTURE)) {
-					dh.add(e);
-				}
-			}
-			for(Entity d : dh) {
-				love.remove(d);
-			}
-			boolean all = true;
-			for(Player p : Rule.c.keySet()) {
-				if(!love.contains(p)) {
-					all = false;
-				}
-			}
-			if(all && cr.size() >= 3) {
-				ARSystem.playSoundAll("slimegirl");
-				for(Player p : Rule.c.keySet()) {
-					for(int i =0; i< 20; i++) {
-						Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{
-							ARSystem.spellCast(p, p, "bload");
-							ARSystem.spellCast(p ,p, "lobo_slime");
-							Rule.c.get(p).hpCost(0.5, false);
-						},i);
-					}
-					Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
-						ARSystem.Death(p, NpcPlayer.npc(p.getLocation()));
-					},20);
-				}
-			}
-		}
-		if(debuff.contains("o55") && time%14 == 0) {
-			ARSystem.playSoundAll("blackswan");
-			for(LivingEntity e : mobs) {
-				ARSystem.spellLocCast(NpcPlayer.npc(e.getLocation()), e.getLocation(), "blackswan");
-				Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{
-					ARSystem.giveBuff(e, new Reflect(e), 40, 2);
-				},20);
-			}
-		}
-	}
-	
-	public void addbuff() {
-		int rd = 5;
-		if(level == 2) rd = 11;
-		if(level == 3) rd = 17;
-		if(level > 3) rd = 23;
-		
-		int a,b,c;
-		a=b=c=AMath.random(rd);
-		
-		while(buff.contains("b"+a)) a = AMath.random(rd);
-		while(buff.contains("b"+b) || a == b) b = AMath.random(rd);
-		while(buff.contains("b"+c) || a == c || b == c) c = AMath.random(rd);
-		new G_Lobotomy(bast,item(a,b,c), new int[]{a,b,c});
+		new G_Lobotomy(player,item(ints), ints);
 	}
 
-	public void removedebuff() {
-		int r = 40-Math.min(30,level*7);
-		if(level >= 9) r = 30;
-		if(debuff.size() > 0 && AMath.random(100) <= r) {
-			int rd = AMath.random(debuff.size())-1;
-			text(393,Text.get("lobo:"+debuff.get(rd)) + Text.get("lobo:o2"));
-
-			debuff.remove(rd);
+	private List<ItemStack> item(List<Integer> list) {
+		List<ItemStack> i = new ArrayList<ItemStack>();
+		for(Integer it : list) {
+			i.add(ItemCreate.Lore(ItemCreate.Item(277), "§f"+LoboBuffs.getName("b"+it), Text.getLine("lobo:b"+it+"_lore", 1)));
 		}
-	}
-	private ItemStack[] item(int a,int b,int c) {
-		ItemStack[] i = new ItemStack[3];
-		i[0] = ItemCreate.Lore(ItemCreate.Item(277), "§f"+Main.GetText("lobo:b"+a), Text.getLine("lobo:b"+a+"_lore", 1));
-		i[1] = ItemCreate.Lore(ItemCreate.Item(277), "§f"+Main.GetText("lobo:b"+b), Text.getLine("lobo:b"+b+"_lore", 1));
-		i[2] = ItemCreate.Lore(ItemCreate.Item(277), "§f"+Main.GetText("lobo:b"+c), Text.getLine("lobo:b"+c+"_lore", 1));
+		
 		return i;
 	}
 	
-	static public void addbuff(String st) {
-		buff.add("b"+st);
-		if(st.equals("10")) {
-			for(LivingEntity v : vilager) {
-				v.remove();
+	
+	int getRandomBf(int i) {
+		int size = 0;
+		int r = AMath.random(i);
+		if(banDebuff == 0 && AMath.random(300) <= level) r = 6;
+		for(int j=0;j<30;j++) {
+			size = upgrad.get(r).size();
+			if(size<=0) {
+				r = AMath.random(i);
+			} else {
+				break;
 			}
 		}
-		text(392,Text.get("lobo:b_1") +"§a§l《§f§l"+Text.get("lobo:b"+st) + "§a§l》§f"+Text.get("lobo:b_2"));
-		itemmsg += Text.get("lobo:b"+st) +"\n";
-		Bukkit.broadcastMessage(Text.get("lobo:b"+st));
+		if(size <= 0) return -1;
+		return upgrad.get(r).get(AMath.random(size)-1);
+	}
+
+	
+	@Override
+	public void EntityDeathEvent(Entity p, Entity killer) {
+		if(!(p instanceof Player)) {
+			for(LoboBuffBase bf : buff) bf.onEntityDie((LivingEntity)p,(LivingEntity)killer);
+			for(LoboBuffBase bf : debuff) bf.onEntityDie((LivingEntity)p,(LivingEntity)killer);
+		}
+	}
+	
+	public void removedebuff() {
+		int r = 50-Math.max(40, level*5 + (count*3));
+		if(level >= 9) r = 30;
+		if(debuff.size() > 0 && AMath.random(100) <= r) {
+			int rd = AMath.random(debuff.size())-1;
+			text(393,debuff.get(rd).getName() + Text.get("lobo:ot2"));
+			debuff.get(rd).onRemove();
+			debuff.remove(rd);
+		}
+	}
+	static public void addbuff(String st,int delay) {
+		if(buffDelay <= 0) {
+			buffDelay = delay;
+			addbuff(st);
+		}
+	}
+	static public void addbuff(String st) {
+		buff.add(LoboBuffs.get("b"+st));
+		int n = Integer.parseInt(st);
+		for(int i = 1; i < upgrad.size()+1;i++) {
+			for(int j = 0; j < upgrad.get(i).size(); j++) {
+				if(upgrad.get(i).get(j) == n) {
+					upgrad.get(i).remove(j);	
+					break;
+				}
+			}
+		}
+		text(392,Text.get("lobo:b_1") +"§a§l《§f§l"+LoboBuffs.getName("b"+st) + "§a§l》§f"+Text.get("lobo:b_2"));
+		itemmsg += LoboBuffs.getName("b"+st) +"\n";
+		Bukkit.broadcastMessage(LoboBuffs.getName("b"+st));
 		for(String s : Text.getLine("lobo:b"+st+"_lore",1)) {
 			Bukkit.broadcastMessage("§7§l"+ s);
 			itemmsg += "§7§l"+ s +"\n";
@@ -774,46 +467,69 @@ public class MLoboTomy extends ModeBase{
 		int max = level;
 		if(level > 5) max = 5;
 		if(level >= 9) max = 8;
-		
+		if(difficulty > 3) max += (difficulty-2)/2;
 		if(level > 0) {
-			if(debuff.size() < max && AMath.random(100) <= 10+ (max - debuff.size())*15) {
+			if((debuff.size() < max || AMath.random(100) <= 5) && AMath.random(100) <= 15+ (max - debuff.size())*15) {
 				int df = AMath.random(Math.min(max, 5));
-				int dl = AMath.random(5);
-				while(debuff.contains("o"+df+dl) || (level > 8 && df == 2 && dl == 1)) {
+				int dl = AMath.random(mobupgrad.get(df).size())-1;
+				int code = mobupgrad.get(df).get(dl);
+				while(dbfcontains(mobupgrad.get(df).get(dl)) || (level > 8 && code == 6) || banDebuff == code) {//태아벤
 					df = AMath.random(Math.min(max, 5));
-					dl = AMath.random(5);
+					dl = AMath.random(mobupgrad.get(df).size())-1;
+					code = mobupgrad.get(df).get(dl);
 				}
+				
+				
 
-				if(df == 5 && df == dl) {
-					hpmult +=0.5;
-				}
-				if(df == 5 && dl == 4) {
-					love.clear();
-				}
-				if(df == 5 && dl == 3 && !Bgm.bgmcode.equals("m5")) {
-					Bgm.setBgm("m5");
-					text(393,Text.get("lobo:o"+df+dl) + Text.get("lobo:o1"));
-				} else if(!(df == 5 && dl == 3)){
-					debuff.add("o"+df+dl);
-					text(393,Text.get("lobo:o"+df+dl) + Text.get("lobo:o1"));
-				}
+				debuff.add(LoboBuffs.get("o"+code));
 			}
 		}
 	}
-
-	public static void adddebuff(String st) {
-		debuff.add("o"+st);
-		if(st.equals("51")) {
-			for(Player p : Rule.c.keySet()) {
-				ARSystem.giveBuff(p, new Exposure(p), 200000, 5);
+	boolean dbfcontains(Integer s) {
+		for(LoboBuffBase bf : debuff) {
+			if(bf.getId() == s) {
+				return true;
 			}
 		}
-		text(393,Text.get("lobo:o"+st) + Text.get("lobo:o1"));
+		return false;
+	}
+	boolean bfcontains(Integer s) {
+		for(LoboBuffBase bf : buff) {
+			if(bf.getId() == s) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isdebuff(int i) {
+		for(LoboBuffBase db : debuff) {
+			if(db.getId() == i) {
+				return true;
+			}
+		}
+		 return false;
+	}
+	public static void adddebuff(String st) {
+		debuff.add(LoboBuffs.get("o"+st));
+		if(st.equals("51")) {
+			for(Player p : Rule.c.keySet()) {
+				ARSystem.giveBuff(p, new Exposure(p), 20000, 5);
+			}
+		}
+		text(393,LoboBuffs.getName("o"+st) + Text.get("lobo:ot1"));
 		
 	}
 	public void tick(int time) {
+		for(int i = 0;i<20;i++) {
+			delay(()->{
+				for(LoboBuffBase bf : buff) bf.onTick();
+				for(LoboBuffBase bf : debuff) bf.onTick();
+			},i);
+		}
 		this.time = time;
 		repBgm();
+		if(buffDelay > 0) buffDelay--;
 		if(sleep > 0) {
 			sleep--;
 			return;
@@ -829,6 +545,9 @@ public class MLoboTomy extends ModeBase{
 				sleep = 10;
 				stageTime = -50;
 				txt = Text.get("lobo:"+level+"-"+count);
+
+				for(LoboBuffBase bf : buff) bf.onNextLevel();
+				for(LoboBuffBase bf : debuff) bf.onNextLevel();
 				if(txt == null) {
 					endGame();
 					sleep = 10000;
@@ -845,11 +564,15 @@ public class MLoboTomy extends ModeBase{
 						bast = p;
 						sleep+=5;
 						text(394,"§7§l§n"+ bast.getName()+"§f"+Text.get("lobo:team"));
+
+						if(bast == null) bast = ARSystem.RandomPlayer();
 						Bukkit.getScheduler().scheduleAsyncDelayedTask(Rule.gamerule, ()->{
-							addbuff();
+							addbuff(bast);
 						},100);
 					} else {
-						addbuff();
+
+						if(bast == null) bast = ARSystem.RandomPlayer();
+						addbuff(bast);
 					}
 				}
 				removedebuff();
@@ -862,7 +585,7 @@ public class MLoboTomy extends ModeBase{
 					for(int i = 0; i<Math.max(1, count/2.3);i++) removedebuff();
 					for(int i = 0; i<Math.max(1, count/2.3);i++) adddebuff();
 				}
-				if(level >= 2 && count == 2 && count == 4) {
+				if(level >= 2 && (count == 2 || count == 4)) {
 					for(Player p : Rule.c.keySet()) {
 						if(Rule.c.get(p) instanceof c38hajime) {
 							if(Rule.c.get(p).isps) ((c38hajime)Rule.c.get(p)).wepone();
@@ -870,49 +593,66 @@ public class MLoboTomy extends ModeBase{
 					}
 				}
 				dango = true;
-				rvv.clear();
-				for(LivingEntity en : vilager) if(en.getHealth() / en.getMaxHealth() < 0.8|| en.isDead()) rvv.add(en);
-				for(LivingEntity en : rvv) {
-					villager_Death++;
-					if(villager_Death == 30) text(393,"§f"+Text.get("lobo:dango1"));
-					if(villager_Death == 80) text(393,"§f"+Text.get("lobo:dango2"));
-					if(villager_Death == 150) text(393,"§f"+Text.get("lobo:dango3"));
-					
-					vilager.remove(en);
-					en.remove();
-				}
-				
-				int c = 5 + (int)(level*1.4);
-				if(buff.contains("b10")) c-= 5;
-				float pw = 0;
-				if(count == 0 && level == 0) {
-					pw = 50;
-					Bukkit.broadcastMessage(Text.get("lobo:t2") + AMath.round(pw,2) +"%");
-				} else {
-					if(vilager.size() == 0) {
-						pw = -20;
-						if(level >= 9) pw = -10;
-						if(dmg <= 0.5f) pw *= 0.3;
-						Bukkit.broadcastMessage(Text.get("lobo:t4") + AMath.round(pw,2) +"%");
+				if(humanSpawn) {
+					rvv.clear();
+					for(LivingEntity en : vilager) if(en.getHealth() / en.getMaxHealth() < 0.8 || en.isDead()) rvv.add(en);
+					for(LivingEntity en : rvv) {
+						villager_Death++;
+						if(villager_Death == 30) text(393,"§f"+Text.get("lobo:dango1"));
+						if(villager_Death == 80) text(393,"§f"+Text.get("lobo:dango2"));
+						if(villager_Death == 150) text(393,"§f"+Text.get("lobo:dango3"));
 						
-					} else if(vilager.size() == c) {
-						pw = 5;
-						if(level > 6) {
-							pw = 10;
-						}
+						vilager.remove(en);
+						en.remove();
+					}
+					
+					humanMax = 5 + (int)(level*1.4);
+					humanMax -= humanDelect;
+					float pw = 0;
+					if(count == 0 && level == 0) {
+						pw = 50;
+						if(difficulty < 3) pw += 25 *(3-difficulty);
+						else if(difficulty > 3) pw -= 10 *(difficulty-3);
 						Bukkit.broadcastMessage(Text.get("lobo:t2") + AMath.round(pw,2) +"%");
 					} else {
-						pw = (4f * (float)vilager.size()/(float)c);
-						Bukkit.broadcastMessage(Text.get("lobo:t1") + AMath.round(pw,2) +"%");
+						if(vilager.size() == 0) {
+							pw = -20;
+							if(level >= 9) pw = -10;
+							if(dmg <= 0.5f) pw *= 0.3;
+							if(difficulty > 4) pw *= 2;
+							if(difficulty > 9) pw *= 5;
+							Bukkit.broadcastMessage(Text.get("lobo:t4") + AMath.round(pw,2) +"%");
+							
+						} else if(vilager.size() == humanMax) {
+							pw = 8;
+							if(level > 6) {
+								pw = 20;
+							}
+							if(difficulty < 3) pw += 8 *(3-difficulty);
+							else if(difficulty > 3 && level > 1) pw += 2 *(difficulty-3);
+							Bukkit.broadcastMessage(Text.get("lobo:t2") + AMath.round(pw,2) +"%");
+						} else {
+							pw = (7f * (float)vilager.size()/(float)humanMax);
+							Bukkit.broadcastMessage(Text.get("lobo:t1") + AMath.round(pw,2) +"%");
+						}
+					}
+					dmg += pw*0.01;
+					for(Player p : Rule.c.keySet()) {
+						Rule.c.get(p).frist_damage += pw*0.01;
+					}
+					while(vilager.size() < humanMax) {
+						vilager.add(Map.spawnMM("human", Map.randomLoc()));
+					}
+				} else {
+					if(count == 0 && level == 0) {
+						float pw = 100;
+						if(difficulty < 3) pw += 35 *(3-difficulty);
+						else if(difficulty > 3) pw -= 15 *(difficulty-3);
+						Bukkit.broadcastMessage(Text.get("lobo:t2") +  AMath.round(pw,2) + "%");
+						dmg+=pw*0.01;
 					}
 				}
-				dmg += pw*0.01;
-				for(Player p : Rule.c.keySet()) {
-					Rule.c.get(p).frist_damage += pw*0.01;
-				}
-				while(vilager.size() < c) {
-					vilager.add(Map.spawnMM("human", Map.randomLoc()));
-				}
+				
 				for(LivingEntity e : etcmobs) {
 					e.remove();
 				}
@@ -922,93 +662,45 @@ public class MLoboTomy extends ModeBase{
 					spawn(mob[0] , Integer.parseInt(mob[1]),true);
 				}
 				count++;
-				if(buff.contains("b2")) {
-					for(Player p : Rule.c.keySet()) {
-						if(Rule.buffmanager.GetBuffValue(p, "barrier") < 12) {
-							Rule.buffmanager.selectBuffValue(p, "barrier", 12);
-						}
-					}
-				}
-				if(buff.contains("b18")) {
-					for(Player p : Rule.c.keySet()) {
-						ARSystem.heal(p, p.getMaxHealth() * 0.2);
-						ARSystem.giveBuff(p, new Nodamage(p), 200);
-					}
-				}
 
-				if(debuff.contains("o14")) {
-					Location l = Map.randomLoc();
-					for(int i =0; i<1*v; i++) {
-						LivingEntity e = (LivingEntity) l.getWorld().spawnEntity(Map.randomLoc(), EntityType.ZOMBIE);
-						e.setMaxHealth((20 + level*5)*hpmult);
-						e.setHealth((20 + level*5)*hpmult);
-						e.setCustomName("§f"+Text.get("lobo:o14"));
-						ARSystem.potion(e, 1, 10000, level);
-					}
-				}
-				if(debuff.contains("o24")) {
-					Location l = Map.randomLoc();
-					for(int i =0; i<1*v; i++) {
-						LivingEntity e = (LivingEntity) l.getWorld().spawnEntity(Map.randomLoc(), EntityType.VEX);
-						e.setMaxHealth((18 + level*8)*hpmult);
-						e.setHealth((18 + level*8)*hpmult);
-						e.setCustomName("§f"+Text.get("lobo:o24"));
-					}
-				}
-				if(debuff.contains("o44")) {
-					Location l = Map.randomLoc();
-					for(int i =0; i<2*v; i++) {
-						LivingEntity e = (LivingEntity) l.getWorld().spawnEntity(Map.randomLoc(), EntityType.EVOKER);
-						e.setMaxHealth((200 + level*20)*hpmult);
-						e.setHealth((200 + level*20)*hpmult);
-						e.setCustomName("§f"+Text.get("lobo:o44"));
-						ARSystem.potion(e, 11, 20000, 3);
-					}
-				}
+				for(LoboBuffBase bf : buff) bf.onNextStage();
+				for(LoboBuffBase bf : debuff) bf.onNextStage();
 			}
-			if(level == 9 && count > 3) {
-				for(Player p : Rule.c.keySet()) {
-					if(Rule.c.get(p).frist_damage >= 4) {
-						Rule.c.get(p).frist_damage *= 0.55;
-					} else {
-						Rule.c.get(p).frist_damage *= 0.75;
-					}
-					if(count > 5) {
-						Rule.c.get(p).frist_defence *= 2f;
-					} else if(count > 4) {
-						Rule.c.get(p).frist_defence *= 1.5f;
-					}
-				}
-			}
+			
 			String s = "§7";
-			for(String o : debuff) s += " "+ Text.get("lobo:"+o) +"§f§l,§7";
+			for(LoboBuffBase o : debuff) s += " "+o.getName() +"§f§l,§7";
 			if(debuff.size() <=0) s = "§a -";
-
-			s = "["+level+"-"+(count+1)+"]§c§l" +"\n"+ Text.get("lobo:team1") +bast.getName()  
+			String bastname = "-";
+			if(bast != null) bastname = bast.getName();
+			
+			s = "["+level+"-"+(count+1)+"]§c§l" +"\n"+ Text.get("lobo:team1") +bastname  
 			+"\n§c" + Text.get("lobo:t5") + villager_Death
-			+"\n" + Text.get("lobo:t3")+ (int)(dmg*100) +"%" + "\n§a=-=-=-=-=-=-=-=-=-=-=-=-=-=-=§f\n" + itemmsg + "\n§a=-=-=-=-=-=-=-=-=-=-=-=-=-=-=§f\n" + Text.get("lobo:o3") + s + "\n";
+			+"\n" + Text.get("lobo:t3")+ (int)(dmg*100) +"%" + "\n§a=-=-=-=-=-=-=-=-=-=-=-=-=-=-=§f\n" + itemmsg + "\n§a=-=-=-=-=-=-=-=-=-=-=-=-=-=-=§f\n" + Text.get("lobo:ot3") + s + "\n";
 			for(Player p : Bukkit.getOnlinePlayers()) 
 				p.spigot().sendMessage(Text.hover(p,"§a§l"+Text.get("lobo:t0"), s));
 			
 		}
 		v = 1;
-		if(buff.contains("b18")) v +=0.3;
-		if(debuff.contains("o32")) v +=0.5;
+		v+= mobCountValue;
 		for(LivingEntity e : Map.mm.getAllMythicEntities()) {
+			if(Rule.buffmanager.getBuffs(e) != null && Rule.buffmanager.isBuff(e,"timestop")) continue;
 			if(!mobs.contains(e) && !etcmobs.contains(e) && !vilager.contains(e) && !e.isDead() && e.getHealth() >= 1) {
-				e.setMaxHealth(e.getMaxHealth() *hpmult);
-				e.setHealth(e.getMaxHealth());
-				mobs.add(e);
+				addMob(e);
 			}
 		}
-		buff();
-		debuff();
+
+		for(LoboBuffBase bf : buff) bf.onTime(stageTime);
+		for(LoboBuffBase bf : debuff) bf.onTime(stageTime);
 		moblist();
 		for(Player p : Rule.c.keySet()) {
 			if(rep.get(p) != Rule.c.get(p)) {
 				rep.put(p, Rule.c.get(p));
 				charRep(p);
 			}
+		}
+		if(level >= 1 && count >= 1 && (bast == null || !bast.isOnline())) {
+			bast = ARSystem.RandomPlayer();
+			text(394,"§7§l§n"+ bast.getName()+"§f"+Text.get("lobo:team"));
 		}
 	}
 	
@@ -1017,7 +709,7 @@ public class MLoboTomy extends ModeBase{
 		size *= v;
 		
 		for(int i = 0; i < size; i++) {
-			if(name.equals("dango")){
+			if(name.equals("dango") && humanSpawn){
 				if(villager_Death >= 30) {
 					if(villager_Death >= 80) {
 						en = Map.spawnMM("dango2" , Map.randomLoc());
@@ -1045,25 +737,46 @@ public class MLoboTomy extends ModeBase{
 						ARSystem.potion(en, 11, 100000, 1);
 					}
 				}
-			} else if(debuff.contains("o41")) {
-				if(name.equals("c")) {
-					en = Map.spawnMM("c2", Map.randomLoc());
-				} else if(name.equals("sn")) {
-					en = Map.spawnMM("sn2", Map.randomLoc());
-				} else if(name.equals("food")) {
-					en = Map.spawnMM("food3", Map.randomLoc());
-				} else if(name.equals("food2")) {
-					en = Map.spawnMM("food4", Map.randomLoc());
-				} else {
+			} else {
+				boolean isspawn = true;
+				for(LoboBuffBase b: buff) {
+					en = b.onEntityCreate(name,size);
+					if(en != null) {
+						isspawn = false;
+						break;
+					}
+				}
+				if(isspawn) {
+					for(LoboBuffBase b: debuff) {
+						en = b.onEntityCreate(name,size);
+						if(en != null) {
+							isspawn = false;
+							break;
+						}
+					}
+				}
+				
+				if(isspawn){
 					en = Map.spawnMM(name, Map.randomLoc());
 				}
-			} else {
-				en = Map.spawnMM(name, Map.randomLoc());
 			}
+			
 			if(en != null) {
 				en.setMaxHealth(AMath.round(en.getMaxHealth() * hpmult,2));
 				en.setHealth(en.getMaxHealth());
+				for(LoboBuffBase b: buff) b.onEntitySpawn(en);
+				for(LoboBuffBase b: debuff) b.onEntitySpawn(en);
 				mobs.add(en);
+				if(level > 3) {
+					Rule.mobmanager.Add(new M_LBDefence2(en,level));
+					int rd = level*2;
+					if(difficulty > 2) {
+						if(difficulty > 4) rd *= (difficulty-5);
+						if(AMath.random(200) <= rd) MobBuffs.get("lbhp", en);
+						if(AMath.random(250) <= rd) MobBuffs.get("lbmaxhp", en);
+						if(AMath.random(400) <= rd) MobBuffs.get("lbdefence", en);
+					}
+				}
 			}
 		}
 		if(en != null && msg) text(394,en.getCustomName() + "§f"+Text.get("lobo:exit"+AMath.random(2)));
@@ -1071,18 +784,11 @@ public class MLoboTomy extends ModeBase{
 	}
 	
 	public static void nextGame() {
-		if(buff.contains("b4")) {
-			ARSystem.playSoundAll("promise");
-		}
-		if(buff.contains("b22")) {
-			ARSystem.playSoundAll("girlkiss");
-		}
-		
 		for(String pl : cr.keySet()) {
 			Player p = Bukkit.getPlayer(pl);
 			if(p == null) continue;
 			Rule.c.put(p,GetChar.get(p, Rule.gamerule, "" + cr.get(pl)));
-			charRep(p);
+			//charRep(p);
 		}
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			Rule.team.teamJoin("H", p);
@@ -1096,12 +802,12 @@ public class MLoboTomy extends ModeBase{
 		}
 		System.out.println("Lobotomy :"+s);
 	}
-	
+	public List<String> nobgmList;
 	public void repBgm() {
-		String s = Bgm.bgmcode;
+		String s = Bgm.bgmNameCode;
 		rating = mobs.size()+(level*4) + debuff.size()*2;
 		if(level >= 9) rating = 1000;
-		if(!s.equals("m5")){
+		if(!nobgmList.contains(s)){
 			if(rating >= 100) {
 				if(!s.equals("m4")) Bgm.setBgm("m4");
 			} else if(rating >=30) {
@@ -1127,19 +833,20 @@ public class MLoboTomy extends ModeBase{
 		for(LivingEntity en : vilager) if(en.getHealth() < 1 || en.isDead()) rvv.add(en);
 		
 		for(LivingEntity en : rmv) mobs.remove(en);
-		for(LivingEntity en : rvv) {
-			villager_Death++;
-			if(villager_Death == 30) text(393,"§f"+Text.get("lobo:dango1"));
-			if(villager_Death == 80) text(393,"§f"+Text.get("lobo:dango2"));
-			if(villager_Death == 150) text(393,"§f"+Text.get("lobo:dango3"));
-			vilager.remove(en);
+		if(humanSpawn) {
+			for(LivingEntity en : rvv) {
+				villager_Death++;
+				if(villager_Death == 30) text(393,"§f"+Text.get("lobo:dango1"));
+				if(villager_Death == 80) text(393,"§f"+Text.get("lobo:dango2"));
+				if(villager_Death == 150) text(393,"§f"+Text.get("lobo:dango3"));
+				vilager.remove(en);
+			}
 		}
-
 		for(Player p : Bukkit.getOnlinePlayers()) p.setLevel(mobs.size());
 
 
-		int c = 5 + (int)(level*1.4);
-		if(buff.contains("b10")) c-= 5;
+		humanMax = 5 + (int)(level*1.4);
+		humanMax -= humanDelect;
 		int size = vilager.size();
 
 		for(LivingEntity en : vilager) if(en.getHealth()/en.getMaxHealth() <= 0.8 || en.isDead()) size--;
@@ -1149,7 +856,7 @@ public class MLoboTomy extends ModeBase{
 			}
 		}
 		
-		if(dango && c - size >= 5 && mobcount > 0) {
+		if(dango && humanMax - size >= 5 && mobcount > 0) {
 			dango = false;
 			if(level >= 3) {
 				int count = 1;
@@ -1158,6 +865,22 @@ public class MLoboTomy extends ModeBase{
 				spawn("dango" , count ,true);
 			}
 		}
+		if(Rule.c.size() < 1) {
+			text(394,Text.get("lobo:fail"));
+			for(LoboBuffBase m : debuff) {
+				m.onRemove();
+			}
+			for(LoboBuffBase m : buff) {
+				m.onRemove();
+			}
+			ARSystem.GameStop();
+		}
+	}
+	
+	public void addMob(LivingEntity e) {
+		mobs.add(e);
+		e.setMaxHealth(e.getMaxHealth() *hpmult);
+		e.setHealth(e.getMaxHealth());
 	}
 	
 	public static void dieMsg(Player name) {
@@ -1166,75 +889,119 @@ public class MLoboTomy extends ModeBase{
 		} else {
 			text(394,"§7§l§n"+ name.getName()+"§f" + Text.get("lobo:death2"));
 		}
-		
-		for(Player p : Rule.c.keySet()) {
-			ARSystem.addBuff(p, new Panic(p), 60+(level*20));
-		}
-		if(name == bast) {
+		if(Map.mapid == 1004) {
 			for(Player p : Rule.c.keySet()) {
-				ARSystem.addBuff(p, new Panic(p), 30+(level*30));
+				ARSystem.addBuff(p, new Panic(p), 60+(level*20));
+			}
+			if(name == bast) {
+				for(Player p : Rule.c.keySet()) {
+					ARSystem.addBuff(p, new Panic(p), 30+(level*30));
+				}
 			}
 		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
-			if(Rule.c.size() < 1) {
-				text(394,Text.get("lobo:fail"));
-				ARSystem.GameStop();
-			} else {
-				if(buff.contains("b7") && bast == name) {
-					for(Player p : Rule.c.keySet()) {
-						Rule.c.get(p).skillmult -= 1.2;
-					}
-				}
-				if(buff.contains("b15")) {
-					Player t=null;double h = 2;
-					for(Player p : Rule.c.keySet()) {
-						if(p.getHealth()/p.getMaxHealth() < h) {
-							t = p;
-							h = p.getHealth()/p.getMaxHealth();
-						}
-					}
-					ARSystem.heal(t, 9999);
-					Rule.c.get(t).frist_damage *= 1.25;
-					Bukkit.broadcastMessage(Text.get("lobo:ad") + t.getName());
-				}
-				if(buff.contains("b19") &&!timer && Rule.c.size() == 2) {
-					ARSystem.playSoundAll("warptime");
-					count = 0;
-					timer = true;
-					sleep = 10;
-					for(Player p : Rule.c.keySet()) {
-						ARSystem.giveBuff(p, new Nodamage(p), 400);
-					}
-					
-					ARSystem.opCommand("mm m killall");
-					ARSystem.opCommand("killall monster");
-					ARSystem.opCommand("killall animals");
-					ARSystem.opCommand("killall villager");
-					Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
-					nextGame();
-					},140);
-				}
-				
-
-				if(debuff.contains("o42")) {
-					ARSystem.playSoundAll("queenbeespawn");
-					ARSystem.spellLocCast(NpcPlayer.npc(name.getLocation()),name.getLocation(), "lobo_bee");
-					if(cr.size() > 2) ARSystem.spellLocCast(NpcPlayer.npc(name.getLocation()),name.getLocation(), "lobo_bee");
-					if(cr.size() > 4) ARSystem.spellLocCast(NpcPlayer.npc(name.getLocation()),name.getLocation(), "lobo_bee");
-					if(cr.size() > 8) ARSystem.spellLocCast(NpcPlayer.npc(name.getLocation()),name.getLocation(), "lobo_bee");
-					if(cr.size() > 13) ARSystem.spellLocCast(NpcPlayer.npc(name.getLocation()),name.getLocation(), "lobo_bee");
-					
-				}
+			if(Rule.c.size() > 1) {
+				for(LoboBuffBase bf : buff) bf.onPlayerDie(name);
+				for(LoboBuffBase bf : debuff) bf.onPlayerDie(name);
 			}
-		},0);
+		},5);
 	}
 	
 	public void endGame() {
+		Rule.Var.Save("System.info.mode.loboclear",true);
 		text(394,Text.get("lobo:end"));
-		for(Player p : rep.keySet()) {
-			Rule.playerinfo.get(p).tropy(0, 40);
+		boolean win = true;
+		for(LoboBuffBase b : buff) if(b instanceof RB_b047) win = false;
+		
+		String s = "";
+		String s2 = "";
+		for(LoboBuffBase o : debuff) s += "\n§7"+o.getName();
+		for(LoboBuffBase o : buff) s2 += "\n§7"+o.getName();
+		if(debuff.size() <=0) s = "§a -";
+		String bastname = "-";
+		if(bast != null) bastname = bast.getName();
+
+		String teams = "";
+		for(String p : cr.keySet()) {
+			teams += p+ "§c["+cr.get(p)+"] §c§l";
 		}
-		ARSystem.GameStop();
+		
+		s = "[Level "+difficulty+" Clear]§4§l" +"\n"+ Text.get("lobo:team1") +bastname +"\n§c§l"+ Text.get("lobo:team2") +teams
+		+"\n§c" + Text.get("lobo:t5") + villager_Death
+		+"\n" + Text.get("lobo:t3")+ (int)(dmg*100) +"%"
+		+"\n§e"+ Text.get("main:s10") +" : "+ARSystem.AniRandomSkill.time +
+		
+		"\n§a=-=-=-=-=-=-=-=-=-=-=-=-=-=-=§f" + s2 + "\n§a=-=-=-=-=-=-=-=-=-=-=-=-=-=-=§f\n" + s + "\n";
+		for(String p : cr.keySet()) {
+			if(Rule.Var.Load(p+".info.loboLv") == null) {
+				Rule.Var.Save(p+".info.loboLv",0);
+			}
+			if(Rule.Var.Loadint(p+".info.loboLv") <= difficulty) {
+				Rule.Var.Save(p + ".info.loboC",s);
+				Rule.Var.Save(p + ".info.loboLv", difficulty);
+			}
+			Rule.playerinfo.get(Bukkit.getPlayer(p)).tropy(0, 42);
+		}
+
+		if(win && difficulty >=2) {
+			Bgm.setForceBgm("m0");
+			Map.getMapinfo(1011);
+			Location center = Map.getCenter();
+			center.setY(4);
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				p.stopSound("", SoundCategory.MASTER);
+				ARSystem.giveBuff(p, new TimeStop(p), 410);
+				for(Player pl : Bukkit.getOnlinePlayers()) {
+					p.hidePlayer(pl);
+				}
+			}
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				p.teleport(center.clone());
+			}
+			ARSystem.spellLocCast(ARSystem.RandomPlayer(), center.clone(), "lbend");
+			delay(()->{
+				for(Player p : rep.keySet()) {
+					Rule.playerinfo.get(p).tropy(0, 40);
+					if(difficulty == 10) {
+						Rule.playerinfo.get(p).tropy(0, 41);
+					}
+				}
+				ARSystem.GameStop();
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						p.sendTitle("§c§l『§e§lWin§c§l』", "", 100, 0, 100);
+					}
+				},60);
+			},480);
+
+		} else {
+			Bgm.setForceBgm("m0");
+			Map.getMapinfo(1011);
+			Location center = Map.getCenter();
+			center.setY(4);
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				p.stopSound("", SoundCategory.MASTER);
+				ARSystem.giveBuff(p, new TimeStop(p), 410);
+				for(Player pl : Bukkit.getOnlinePlayers()) {
+					p.hidePlayer(pl);
+				}
+			}
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				p.teleport(center.clone());
+			}
+			ARSystem.spellLocCast(ARSystem.RandomPlayer(), center.clone(), "lbend2");
+			delay(()->{
+				for(Player p : rep.keySet()) {
+					Rule.playerinfo.get(p).tropy(0, 35);
+				}
+				ARSystem.GameStop();
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
+					for(Player p : Bukkit.getOnlinePlayers()) {
+						p.sendTitle("§c§l『§e§lWin§c§l』", "", 100, 0, 100);
+					}
+				},60);
+			},480);
+		}
 	}
 
 }

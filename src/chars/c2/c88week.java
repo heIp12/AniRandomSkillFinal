@@ -252,6 +252,10 @@ public class c88week extends c00main{
 		if(st > maxst) st = maxst;
 	}
 
+	boolean isblock(Location loc) {
+		return BlockUtils.isPathable(loc.getBlock());
+	}
+	
 	boolean effect = false;
 	@Override
 	public boolean tick() {
@@ -293,13 +297,24 @@ public class c88week extends c00main{
 				if(isps) st += pm*2;
 				speed*= (0.98 -(pm*0.0025));
 			}
-			player.setVelocity(player.getLocation().getDirection().multiply(speed*0.0008).setY(-2));
+			int id = player.getLocation().clone().getBlock().getTypeId();
+			if(speed >= 800 && (id == 8 || id == 9)) {
+				player.setVelocity(player.getLocation().getDirection().multiply(speed*0.0008).setY(0.2));
+				for(int i=0; i < speed/200;i++) {
+					skill("c88_e3");
+				}
+			} else {
+				player.setVelocity(player.getLocation().getDirection().multiply(speed*0.0008).setY(-1));
+				for(int i=0; i < speed/200;i++) {
+					skill("c88_e");
+				}
+			}
 			Location local = player.getLocation().clone().add(player.getLocation().getDirection().multiply(1).setY(0));
 			if(Math.abs((player.getLocation().getPitch())) > 80) {
 				speed *= 0.5;
-			} else if(!BlockUtils.isPathable(local.getBlock()) && BlockUtils.isPathable(local.add(0,1,0).getBlock()) && BlockUtils.isPathable(local.add(0,2,0).getBlock())) {
+			} else if(!isblock(local) && isblock(local.add(0,1,0)) && isblock(local.add(0,2,0))) {
 				player.setVelocity(player.getLocation().getDirection().multiply(speed*0.0015).setY(0.5));
-			} else if(!BlockUtils.isPathable(local.getBlock()) && !BlockUtils.isPathable(local.add(0,1,0).getBlock())) {
+			} else if(!isblock(local) && !isblock(local.add(0,1,0))) {
 				speed-=addspeed;
 				speed*= 0.85;
 				speed-=1;
@@ -315,9 +330,6 @@ public class c88week extends c00main{
 				((LivingEntity)e).setNoDamageTicks(0);
 				((LivingEntity)e).damage(speed*0.0003,player);
 			}
-			for(int i=0; i < speed/200;i++) {
-				skill("c88_e");
-			}
 			int sound = 10;
 			sound -= speed/200;
 			if(sound < 4) sound = 4;
@@ -330,7 +342,7 @@ public class c88week extends c00main{
 			} else {
 				if(tk%sound == 0) ARSystem.playSound((Entity)player,"minecraft:entity.horse.step",(float) (0.5 + speed/1000.f));
 			}
-			if(speed > 2200 && !isps) {
+			if(speed > 2200 && !isps && skillCooldown(0)) {
 				Rule.playerinfo.get(player).tropy(88,1);
 				spsound = 240;
 				player.stopSound("");

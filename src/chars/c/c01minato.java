@@ -32,7 +32,7 @@ public class c01minato extends c00main{
 	private Location[] lc = new Location[3];
 	private Entity[] et = new Entity[3];
 	private Location loc;
-	int na = 0;
+	public int na = 0;
 	float cm = 0;
 	
 	int stack = 0;

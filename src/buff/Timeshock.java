@@ -3,6 +3,7 @@ package buff;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -35,6 +36,7 @@ public class Timeshock extends Buff{
 	}
 
 	public boolean onTicks() {
+		if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 		if(!(target instanceof Player)) {
 			if(loc != null) target.teleport(loc);
 			loc = target.getLocation();
@@ -46,6 +48,7 @@ public class Timeshock extends Buff{
 	
 	@Override
 	public boolean onMove(PlayerMoveEvent e) {
+		if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 		loc = e.getFrom();
 		if(!ULocal.isEqual(loc,e.getTo())) e.setCancelled(true);
 		return false;

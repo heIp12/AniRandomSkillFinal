@@ -30,9 +30,9 @@ public class G_UMenu extends GUIBase{
 		line = 3;
 		page = new int[]
 			{
-					   0, 0, 0, 0, 0, 0, 0, 0, 0,
-					   0, 1, 2, 0, 0, 0, 0, 0, 0,
-					   0, 0, 0, 0, 0, 0, 0, 0, 0
+					   0, 0, 0, 0,11,12,13,14, 0,
+					   0, 1, 2, 0, 3, 4, 5, 6, 0,
+					   0, 0, 0, 0, 7, 8, 9,10, 0
 			};
 		line = 3;
 		this.target = target;
@@ -79,6 +79,48 @@ public class G_UMenu extends GUIBase{
 		return is;
 	}
 	
+	ItemStack isItem(int i) {
+		if(ARSystem.playerItem.get(target) == null || ARSystem.playerItem.get(target).items.size() <= i || ARSystem.playerItem.get(target).items.get(i) == null) {
+			return gui0();
+		}
+		return ARSystem.playerItem.get(target).items.get(i).getItem();
+	}
 	
+	public ItemStack gui3(){
+		return isItem(0);
+	}
+	public ItemStack gui4(){
+		return isItem(1);
+	}
+	public ItemStack gui5(){
+		return isItem(2);
+	}
+	public ItemStack gui6(){
+		return isItem(3);
+	}
+	public ItemStack gui7(){
+		return isItem(4);
+	}
+	public ItemStack gui8(){
+		return isItem(5);
+	}
+	public ItemStack gui9(){
+		return isItem(6);
+	}
+	public ItemStack gui10(){
+		return isItem(7);
+	}
+	public ItemStack gui11(){
+		return isItem(8);
+	}
+	public ItemStack gui12(){
+		return isItem(9);
+	}
+	public ItemStack gui13(){
+		return isItem(10);
+	}
+	public ItemStack gui14(){
+		return isItem(11);
+	}
 	public void click0(boolean right,boolean shift) {}
 }

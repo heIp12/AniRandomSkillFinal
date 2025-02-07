@@ -134,8 +134,7 @@ public class c120nitory extends c00main{
 	@Override
 	public boolean skill5() {
 		List<Entity> entitys = ARSystem.PlayerBeamBox(player, 20, 10, box.ALL);
-		
-		if((score-200) >= 100 + (spcount*200) && ((player.isSneaking() && entitys.size() > 0 && Rule.c.get(entitys.get(0)) != null) || !player.isSneaking())) {
+		if((score-200) >= 100 + (spcount*200) && ((player.isSneaking() && entitys.size() > 0 && Rule.c.get(entitys.get(0)) != null) || !player.isSneaking()) && skillCooldown(0)) {
 			s_score -= (400 + (spcount*200));
 			spcount++;
 			spskillon();
@@ -147,7 +146,6 @@ public class c120nitory extends c00main{
 			} else {
 				ARSystem.playSound((Entity)player, "c120sp");
 				new G_Nitory(player);
-				
 			}
 		}
 
@@ -176,6 +174,10 @@ public class c120nitory extends c00main{
 			wt++;
 			if(wt > 400) Rule.playerinfo.get(player).tropy(120, 1);
 		} else {
+			if(!s1 && tk%10 == 0) {
+				w++;
+				if(w > 250) w = 250;
+			}
 			wt = 0;
 		}
 		for(LivingEntity e : target.get().keySet()) {

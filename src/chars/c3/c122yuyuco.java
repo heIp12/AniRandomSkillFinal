@@ -72,7 +72,7 @@ import util.Text;
 
 public class c122yuyuco extends c00main{
 	public int stack = 0;
-	Location loc;
+	public Location loc;
 	Location locf;
 	Location locl;
 	
@@ -154,9 +154,15 @@ public class c122yuyuco extends c00main{
 		if(stack >= 10 && e instanceof Player && !killList.contains(e)) {
 			killList.add((Player)e);
 		}
+		
 		if(!removes.contains(e)) {
 			removes.add(e);
-
+			if(ARSystem.isGameMode("lobotomy")) {
+				e.damage(e.getMaxHealth()*0.2,player);
+			} else {
+				Skill.remove(e, player);
+			}
+			
 			ARSystem.spellLocCast(player, e.getLocation(), "c122_e");
 			delay(()->{ARSystem.spellLocCast(player, loc.clone().add(0,1,0), "c122_pl");},2);
 			delay(()->{
@@ -186,18 +192,7 @@ public class c122yuyuco extends c00main{
 		if(!removes.contains(en)) {
 			FixedDealEvent ev = ARSystem.fixedDamage((LivingEntity)en, player, damage);
 			if(!ev.isCancelled() && ev.isDeath) {
-				if(en instanceof Player) {
-					remove(en);
-				} else {
-					Skill.remove(en, player);
-					ARSystem.spellLocCast(player, target.getLocation(), "c122_e");
-					delay(()->{ARSystem.spellLocCast(player, loc.clone().add(0,1,0), "c122_pl");},2);
-					delay(()->{
-						stack++;
-						ARSystem.heal(player, 8);
-						upgrad();
-					},60);
-				}
+				remove(en);
 			}
 		}
 	}
@@ -252,11 +247,19 @@ public class c122yuyuco extends c00main{
 		spskillon();
 		spskillen();
 		Rule.playerinfo.get(player).tropy(122, 1);
+		Map.getMapinfo(1015);
+		
 		int i = Map.mapid;
 		Map.loc_f = new Location(player.getWorld(),Text.getI("map:map"+i+"x1"),Text.getI("map:map"+i+"y1"),Text.getI("map:map"+i+"z1"));
 		Map.loc_l = new Location(player.getWorld(),Text.getI("map:map"+i+"x2"),Text.getI("map:map"+i+"y2"),Text.getI("map:map"+i+"z2"));
-		Map.setting();
-		
+		Location l = Map.getCenter();
+		Map.world.getWorldBorder().setCenter(l.getX(), l.getZ());
+		Map.world.getWorldBorder().setSize(500,0);
+		l.setX(772.5);
+		l.setY(28);
+		l.setZ(411.5);
+		loc = l;
+		player.teleport(l);
 		ARSystem.playSoundAll("c122sp");
 		skill("c122_pr");
 		ARSystem.spellLocCast(player,loc,"c122_sp");
@@ -395,35 +398,36 @@ public class c122yuyuco extends c00main{
 		}
 	}
 	
+	@Override
+	public void kill(LivingEntity death, LivingEntity killer) {
+		if(killer == player) {
+			ARSystem.spellLocCast(player, death.getLocation(), "c122_e");
+			delay(()->{ARSystem.spellLocCast(player, loc.clone().add(0,1,0), "c122_pl");},2);
+			delay(()->{
+				stack++;
+				ARSystem.heal(player, 8);
+				upgrad();
+			},60);
+		}
+	}
 	
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			e.setDamage(e.getDamage() * (1.0 + stack*0.12));
 			LivingEntity en = (LivingEntity) e.getEntity();
-			if(Rule.c.get(en) != null && Rule.c.get(en).number == 146) return true;;
+			if(Rule.c.get(en) != null && Rule.c.get(en).number == 146) return true;
 			if(!removes.contains(en)) {
 				FixedDealEvent ev = ARSystem.fixedDamage((LivingEntity)en, player, e.getDamage());
 				if(ev.isCancelled() && ev.isDeath) {
-					if(e.getEntity() instanceof Player) {
-						remove(en);
-					} else {
-						ARSystem.spellLocCast(player, en.getLocation(), "c122_e");
-						delay(()->{ARSystem.spellLocCast(player, loc.clone().add(0,1,0), "c122_pl");},2);
-						delay(()->{
-							stack++;
-							ARSystem.heal(player, 8);
-							upgrad();
-						},60);
-						Skill.remove(en, player);
-					}
+					remove(en);
 				}
 			}
 			e.setDamage(0);
 			e.setCancelled(true);
 			return false;
 		} else {
-			if(Rule.c.get(e.getDamager()) != null) {
+			if(ARSystem.E_sterEgg && Rule.c.get(e.getDamager()) != null) {
 				if(Rule.c.get(e.getDamager()).number%1000 == 9) {
 					e.setDamage(0);
 					e.setCancelled(true);
@@ -436,7 +440,7 @@ public class c122yuyuco extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		for(c00main m : Rule.c.values()) {
 			if(m.number%1000 == 9 && m.player.getLocation().distance(player.getLocation()) > 10) {
 				ARSystem.playSound((Entity)player, "c122youmu1");

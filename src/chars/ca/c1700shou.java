@@ -179,7 +179,7 @@ public class c1700shou extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player,"c17db"+AMath.random(4));
 		return true;
 	}

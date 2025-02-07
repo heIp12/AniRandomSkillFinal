@@ -177,7 +177,7 @@ public class c121cocoro extends c00main{
 		if(sp >= 100) {
 			Rule.playerinfo.get(player).tropy(121, 1);
 		}
-		if(sp >= 40 && !isps) {
+		if(sp >= 40 && !isps && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			ARSystem.playSound((Entity)player, "c121sp");
@@ -199,7 +199,7 @@ public class c121cocoro extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player,"c121db"+AMath.random(5));
 		return true;
 	}

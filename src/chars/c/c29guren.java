@@ -37,7 +37,7 @@ import util.Map;
 
 public class c29guren extends c00main{
 	int ticks = 0;
-	int mana = 0;
+	public int mana = 0;
 	int type = 1;
 	int cast = 0;
 	boolean arukana = false;
@@ -125,7 +125,7 @@ public class c29guren extends c00main{
 			if(cast == 7) {
 				spskillon();
 			}
-			if(cast > 7) {
+			if(cast > 7 && skillCooldown(0)) {
 				ARSystem.giveBuff(player, new Stun(player), 80);
 				ARSystem.giveBuff(player, new Nodamage(player), 80);
 				spskillen();

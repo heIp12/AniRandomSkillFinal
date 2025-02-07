@@ -66,7 +66,7 @@ public class G_Saito extends GUIBase{
 	public void click1(boolean right,boolean shift) {
 		if(Rule.c.get(player) instanceof c131saito) {
 			((c131saito)Rule.c.get(player)).setChar(1);
-			Rule.c.get(player).setcooldown[1] *= 0.6;
+			Rule.c.get(player).setcooldown[1] *= 0.8;
 			Rule.c.get(player).setcooldown[2] *= 0.7;
 			Rule.c.get(player).setcooldown[4] *= 0.5;
 		}
@@ -85,10 +85,10 @@ public class G_Saito extends GUIBase{
 	public void click3(boolean right,boolean shift) {
 		if(Rule.c.get(player) instanceof c131saito) {
 			((c131saito)Rule.c.get(player)).setChar(3);
-			Rule.c.get(player).setcooldown[1] *= 1.2;
-			Rule.c.get(player).setcooldown[2] *= 0.8;
-			Rule.c.get(player).setcooldown[3] *= 0.7;
-			Rule.c.get(player).setcooldown[4] *= 1.6;
+			Rule.c.get(player).setcooldown[1] *= 2.8;
+			Rule.c.get(player).setcooldown[2] *= 2.4;
+			Rule.c.get(player).setcooldown[3] *= 1.6;
+			Rule.c.get(player).setcooldown[4] *= 2.5;
 		}
 		end();
 	}

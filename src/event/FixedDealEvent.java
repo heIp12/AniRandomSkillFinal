@@ -34,6 +34,7 @@ public class FixedDealEvent extends Event{
 	
 	public FixedDealEvent(Entity caster,Entity target, float damage) {
         this.caster = caster;
+        this.target = target;
         this.isCancelled = false;
         this.damage = damage;
         this.fristdamage = damage;

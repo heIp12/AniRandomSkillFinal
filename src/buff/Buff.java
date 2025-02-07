@@ -17,6 +17,7 @@ import util.AMath;
 public class Buff {
 	public int order = 100;
 	float tick = 0;
+	int tick2 = 0;
 	double value;
 	boolean alltime = false;
 	boolean onlyone = false;
@@ -89,7 +90,7 @@ public class Buff {
 	public String getText() {
 		String s = color+" [" +buffName +"] :";
 		if(tick > 0) {
-			s += " &7"+AMath.round(tick*0.05,1)+"(s)";
+			s += " &7"+AMath.round(((int)tick)*0.05,1)+"(s)";
 		}
 		if(value > 0){
 			if(isValueP) {
@@ -108,15 +109,16 @@ public class Buff {
 	}
 	
 	public boolean onTick(){
+		tick2++;
 		if(target instanceof ArmorStand) {
 			stop();
 		}
 		if(target == null) return true;
 		else if(buffName.equals("timestop") || !Rule.buffmanager.OnBuffTime(target, "timestop")) {
 			if(!alltime) {
-				if(Rule.c.get(target) != null && tick%2 == 0 ) {
+				if(Rule.c.get(target) != null && tick2%2 == 0 ) {
 					if(!Rule.c.get(target).buffText.contains(color+" ["+buffName +"§f:") && isText) {
-						Rule.c.get(target).buffText += color+" ["+buffName +"§f:"+ AMath.round(tick*0.05,1)+color+"]";
+						Rule.c.get(target).buffText += color+" ["+buffName +"§f:"+ AMath.round(((int)tick)*0.05,1)+color+"]";
 						if(bufftype.contains(BuffType.HEADCC)){
 							Rule.c.get(target).buffHardCC = true;
 						} else {

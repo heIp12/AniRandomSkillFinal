@@ -63,7 +63,7 @@ import util.Map;
 public class c97sorao extends c00main{
 	Location loc;
 	int pc = 0;
-	int tp = 0;
+	public int tp = 0;
 	
 	public c97sorao(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -134,7 +134,7 @@ public class c97sorao extends c00main{
 		if(loc.distance(player.getLocation()) >= 6 && pc <= 0) {
 			pc = 10;
 			skillmult += 0.1;
-			Rule.buffmanager.selectBuffValue(player, "barrier", 10);
+			Rule.buffmanager.selectBuffValue(player, "barrier", tp*2);
 			ARSystem.heal(player, 5);
 			tp++;
 		}
@@ -221,7 +221,7 @@ public class c97sorao extends c00main{
 		if(isAttack) {
 
 		} else {
-			if(AMath.random(10) <= 1) {
+			if(AMath.random(12) <= 1) {
 				player.teleport(Map.randomLoc());
 			}
 		}

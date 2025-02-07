@@ -1,5 +1,7 @@
 package event;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -14,43 +16,85 @@ import ars.Rule;
 import buff.Timeshock;
 import chars.c3.c101aris;
 import chars.ca.c2400sinobu;
+import chars.ca.c2500Accelerator;
 import chars.ca.c3002siro;
 import chars.ca.c5600enju;
 import chars.ca.c8400subi;
+import item.list1.itemBase;
 import manager.AdvManager;
 import manager.BuffManager;
 import mode.MLoboTomy;
+import mode.ModeBase;
 import util.GetChar;
 import util.Holo;
 import util.MSUtil;
 import util.Map;
+import util.NpcPlayer;
 
 public class Skill {
+	public static HashMap<Entity,Integer> remete = new HashMap<>();
+	public static void EntityDeath(LivingEntity death, LivingEntity killer) {
+		for(Entity e : Rule.c.keySet()) {
+			if(Rule.c.get(e) != null) {
+				Rule.c.get(e).kill(death, killer);
+			}
+
+			if(ARSystem.playerItem.get(e) != null) {
+				for(itemBase item : ARSystem.playerItem.get(e).items) item.kill(death,killer);
+			}
+		}
+		if(ARSystem.AniRandomSkill != null) {
+			for(ModeBase md : ARSystem.AniRandomSkill.modes) md.EntityDeathEvent(death,killer);
+		}
+		if(Rule.mobmanager.contains(death)) Rule.mobmanager.onDeath(killer,death);
+		if(Rule.mobmanager.contains(killer)) Rule.mobmanager.onKill(death,killer);
+	}
+	
 	static public void remove(Entity entity,Entity player) {
+		if(remete.get(entity) == null) remete.put(entity, 0);
+		if(remete.get(entity) >= 3) {
+			if(remete.get(entity) == 3) {
+				remete.put(entity,remete.get(entity)+1);
+				Holo.create(entity.getLocation(),"§6§l<< Delete Immunity >>",100,new Vector(0,0.01,0));
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule,()->{
+					if(entity != null) {
+						remete.put(entity, 0);
+					}
+				}, 60);
+			} else {
+				Holo.create(entity.getLocation(),"§6§l<< Delete Immunity >>",10,new Vector(0,0,0));
+			}
+			return;
+		} else {
+			remete.put(entity,remete.get(entity)+1);
+		}
 		Holo.create(entity.getLocation(),"§c§l<< Delete >>",100,new Vector(0,0.01,0));
 		if(entity instanceof Player) {
 			if(Rule.c.get(entity) != null) {
 				if(Rule.c.get(entity).remove(player)) {
-					if(ARSystem.isGameMode("lobotomy")) {
-						MLoboTomy.dieMsg((Player)entity);
-					} else {
-						for(Player p : Bukkit.getOnlinePlayers()) {
-							AdvManager.set(p, 258, 0 , "§f§l"+player.getName() +" >>§4§l delete §f§l " + entity.getName());
+					if(ARSystem.playerItem.get(entity).onRemove(player)) {
+						if(ARSystem.isGameMode("lobotomy")) {
+							MLoboTomy.dieMsg((Player)entity);
+						} else {
+							for(Player p : Bukkit.getOnlinePlayers()) {
+								AdvManager.set(p, 359, 0 , "§f§l"+player.getName() +" >>§4§l delete §f§l " + entity.getName());
+							}
 						}
+						if(Rule.c.get(player) != null) {
+							Rule.c.get(player).kill();
+							Rule.playerinfo.get(player).addcradit(5,entity.getName()+" "+Main.GetText("main:msg104"));
+						}
+						EntityDeath((LivingEntity)entity,(LivingEntity)player);
+						ARSystem.Death((Player)entity,player);
 					}
-					if(Rule.c.get(player) != null) {
-						Rule.c.get(player).kill();
-						Rule.playerinfo.get(player).addcradit(5,entity.getName()+" "+Main.GetText("main:msg104"));
-					}
-					ARSystem.Death((Player)entity,player);
 				}
 			}
 		} else {
-			if(((LivingEntity)entity).getMaxHealth() >= 500) {
-				((LivingEntity)entity).damage(((LivingEntity)entity).getMaxHealth()/2.5 + 250);
+			if(((LivingEntity)entity).getMaxHealth() >= 100) {
+				((LivingEntity)entity).damage(((LivingEntity)entity).getMaxHealth()*0.2 + 30,player);
 			} else {
 				((LivingEntity)entity).setNoDamageTicks(0);
-				((LivingEntity)entity).damage(((LivingEntity)entity).getMaxHealth());
+				((LivingEntity)entity).damage(((LivingEntity)entity).getMaxHealth(),player);
 			}
 		}
 	}
@@ -69,8 +113,10 @@ public class Skill {
 					AdvManager.set(p, 267, 0 , "§f§l"+player.getName() +" >>§c§l Kill §f§l " + entity.getName());
 				}
 			}
+			EntityDeath((LivingEntity)entity,(LivingEntity)player);
 			ARSystem.Death((Player)entity,player);
 		} else {
+			EntityDeath((LivingEntity)entity,(LivingEntity)player);
 			((LivingEntity)entity).setHealth(0);
 		}
 	}
@@ -82,12 +128,15 @@ public class Skill {
 				MLoboTomy.dieMsg((Player)entity);
 			} else {
 				for(Player p : Bukkit.getOnlinePlayers()) {
-					AdvManager.set(p, 258, 0 , "§d§l Quit §f§l " + entity.getName());
+					AdvManager.set(p, 359, 0 , "§d§l Quit §f§l " + entity.getName());
 				}
 			}
 			ARSystem.Death((Player)entity,entity);
 		} else {
-			if(!(entity instanceof Player)) entity.setHealth(0);
+			if(!(entity instanceof Player)) {
+				entity.setHealth(0);
+				entity.remove();
+			}
 		}
 	}
 
@@ -100,7 +149,7 @@ public class Skill {
 	}
 	
 	public static void win(String str) {
-		ARSystem.RandomPlayer().performCommand("c removeall");
+		NpcPlayer.npc(Map.getCenter()).performCommand("c removeall");
 		if(Rule.buffmanager != null) Rule.buffmanager.clear();
 		Rule.buffmanager = new BuffManager();
 		
@@ -145,6 +194,9 @@ public class Skill {
 		}
 		if(number == 56) {
 			Rule.c.put((Player) target, new c5600enju((Player) target, Rule.gamerule, null));
+		}
+		if(number == 25) {
+			Rule.c.put((Player) target, new c2500Accelerator((Player) target, Rule.gamerule, null));
 		}
 		if(number > 999) {
 			Rule.c.put((Player) target, GetChar.get((Player) target, Rule.gamerule, ""+(number%1000)));

@@ -66,8 +66,8 @@ public class c105suya extends c00main{
 	int mp = 100;
 	int tr = 0;
 	
-	int itemlv1 = 0;
-	int itemlv2 = 0;
+	public int itemlv1 = 0;
+	public int itemlv2 = 0;
 	
 	public c105suya(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);

@@ -92,7 +92,7 @@ public class c115stunk extends c00main{
 		c = this;
 		if(p != null) {
 		LocalTime now = LocalTime.now();
-			if(now.getHour() > 0 && now.getHour() < 7) {
+			if(now.getHour() > 0 && now.getHour() < 7 && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				spp = 6974;

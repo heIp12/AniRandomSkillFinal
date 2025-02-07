@@ -14,15 +14,19 @@ import ars.Rule;
 import buff.Buff;
 import buff.Curse;
 import buff.NoCC;
+import buff.Noattack;
 import buff.Nodamage;
+import buff.Nodie;
 import buff.Silence;
 import buff.Stun;
 import buff.TimeStop;
 import chars.c.c00main;
+import event.Skill;
 import types.BuffType;
 import types.box;
 
 import util.AMath;
+import util.Text;
 import util.ULocal;
 
 public class c126hera extends c00main{
@@ -33,6 +37,10 @@ public class c126hera extends c00main{
 	
 	Location loc;
 	int sp = 0;
+	
+
+	LivingEntity bg = null;
+	int bge = 0;
 	
 	public c126hera(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -48,7 +56,6 @@ public class c126hera extends c00main{
 		// TODO Auto-generated method stub
 		p = (int)f;
 	}
-	
 	@Override
 	public boolean skill1() {
 		if(p <= 4 && skillCooldown(0)) {
@@ -99,6 +106,14 @@ public class c126hera extends c00main{
 			ARSystem.playSound((Entity)player, "c126s2");
 			for(Entity e : ARSystem.box(player, new Vector(7,5,7), box.TARGET)) {
 				LivingEntity en = (LivingEntity) e;
+				if(Rule.c.get(en) != null && Rule.c.get(en).number == 149 && Rule.c.get(en).cooldown[0] > 0 && en.getHealth() <= 10) {
+					bg = en;
+					player.setMaxHealth(player.getMaxHealth()+bg.getMaxHealth());
+					hp = (float) player.getMaxHealth();
+					ARSystem.giveBuff(player, new NoCC(player), 100);
+					ARSystem.heal(player, bg.getMaxHealth());
+					ARSystem.playSoundAll("c149e1");
+				}
 				ARSystem.giveBuff(en, new Stun(en), 60);
 			}
 		} else {
@@ -123,6 +138,38 @@ public class c126hera extends c00main{
 	
 	@Override
 	public boolean tick() {
+		if(bg != null) {
+			if(!player.getPassengers().contains(bg)) {
+				player.addPassenger(bg);
+				ARSystem.giveBuff(bg, new Noattack(bg), 20000);
+				ARSystem.giveBuff(bg, new Silence(bg), 20000);
+				ARSystem.giveBuff(bg, new Nodamage(bg), 20000);
+				ARSystem.giveBuff(bg, new Nodie(bg), 20000);
+			}
+			LivingEntity en = null;
+			for(Entity e : ARSystem.box(player, new Vector(16,10,16), box.TARGET)) {
+				if(Rule.c.get(e) != null && Rule.c.get(e).number == 2030) en = (LivingEntity) e;
+			}
+			if(en != null && p <= 3) {
+				ARSystem.giveBuff(en, new TimeStop(en), 200);
+				ARSystem.giveBuff(player, new TimeStop(player), 200);
+				ARSystem.playSoundAll("c149e4");
+				Location l = en.getLocation().clone();
+				spskillen(Text.get("c126:e"));
+				LivingEntity e = en;
+				delay(()->{
+					ARSystem.spellLocCast((Player)bg, l, "ratio20");
+					delay(()->{
+						ARSystem.spellLocCast(player, bg.getLocation(), "c2030_s1-3");
+						Skill.quit(e);
+						Skill.quit(bg);
+					},20);
+				},60);
+			}
+			else if(Rule.c.size() < 3) {
+				Skill.death(bg, player);
+			}
+		}
 		if(tk%20 == 0) {
 			boolean iscc = false;
 			if(Rule.buffmanager.selectBuffType(player, BuffType.HEADCC) != null) {
@@ -179,6 +226,25 @@ public class c126hera extends c00main{
 		return true;
 	}
 	
+	@Override
+	public void PlayerDeath(Player p, Entity e) {
+		if(p == bg) bg = null;
+		if(p == player && bg != null) {
+			ARSystem.playSoundAll("c149e3");
+			tpsdelay(()->{
+				ARSystem.giveBuff(bg, new NoCC(bg), 2000);
+				for(int i = 0; i< 40; i++) {
+					tpsdelay(()->{
+						bg.setVelocity(new Vector(AMath.random(0,10)*0.1,AMath.random(0,20)*0.1-1,AMath.random(0,10)*0.1));
+					},i);
+					tpsdelay(()->{
+						Skill.quit(bg);
+					},41);
+				}
+			},1);
+		}
+	}
+	
 	void ps(Entity e) {
 		if(p == 2) {
 			Rule.playerinfo.get(player).tropy(126, 1);
@@ -217,6 +283,10 @@ public class c126hera extends c00main{
 			if(sp > 0) {
 				((LivingEntity)e.getEntity()).setVelocity(new Vector(0,-0.1,0));
 				ARSystem.giveBuff((LivingEntity) e.getEntity(), new Stun((LivingEntity) e.getEntity()), 1);
+			}
+			if(Rule.c.get(e.getEntity()) != null && Rule.c.get(e.getEntity()).number == 2030 && bge == 0) {
+				bge = 1;
+				ARSystem.playSoundAll("c149e2");
 			}
 		} else {
 			if(player.getHealth() - e.getDamage() < 1 && p > 0) {

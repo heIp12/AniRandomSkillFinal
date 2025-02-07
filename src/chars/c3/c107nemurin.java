@@ -138,7 +138,7 @@ public class c107nemurin extends c00main{
 			tick++;
 		}
 		
-		if(player.getWorld().getTime() > 23000 && !isps) {
+		if(player.getWorld().getTime() > 23000 && !isps && skillCooldown(0)) {
 			spskillon();
 			spskillen();
 			Skill.remove(player, player);

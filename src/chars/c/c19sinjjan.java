@@ -86,7 +86,7 @@ public class c19sinjjan extends c00main{
 	}
 
 	@Override
-	protected boolean skill9(){
+	public boolean skill9(){
 		count++;
 		if(count >= 20) {
 			Rule.playerinfo.get(player).tropy(19,1);

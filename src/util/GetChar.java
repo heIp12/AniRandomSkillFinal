@@ -13,6 +13,8 @@ import ars.ARSystem;
 import ars.Rule;
 import chars.c.c000humen;
 import chars.c.c001humen2;
+import chars.c.c001humen3;
+import chars.c.c001humen4;
 import chars.c.c001nb;
 import chars.c.c00main;
 import chars.c.c01minato;
@@ -64,6 +66,8 @@ import chars.c.c46zero;
 import chars.c.c47ren;
 import chars.c.c48yoshino;
 import chars.c.c49aria;
+import chars.c.cMove;
+import chars.c.cNote;
 import chars.c2.c100kuroko;
 import chars.c2.c50sayaka;
 import chars.c2.c51zenos;
@@ -171,6 +175,17 @@ import chars.c3.c147bellp;
 import chars.c3.c148mocou;
 import chars.c3.c149lanser;
 import chars.c3.c150tenshi;
+import chars.c4.c151black;
+import chars.c4.c152senku;
+import chars.c4.c153nir;
+import chars.c4.c154gaara;
+import chars.c4.c155shasha;
+import chars.c4.c156karu;
+import chars.c4.c157sizuo;
+import chars.c4.c158ako;
+import chars.c4.c159sakamoto;
+import chars.c4.c160siki;
+import chars.c4.c161aizen;
 import chars.c3.c144jostar;
 import chars.ca.c0100minato;
 import chars.ca.c0200kirito;
@@ -187,6 +202,7 @@ import chars.ca.c100001;
 import chars.ca.c1000gay;
 import chars.ca.c1090kirua;
 import chars.ca.c1100yasuo;
+import chars.ca.c1108suwaco;
 import chars.ca.c1110artorya;
 import chars.ca.c1123rin;
 import chars.ca.c1130shimakaze;
@@ -206,6 +222,7 @@ import chars.ca.c2100abigeil;
 import chars.ca.c2200byakuya;
 import chars.ca.c2300madoka;
 import chars.ca.c2400sinobu;
+import chars.ca.c2402sinobu;
 import chars.ca.c2500Accelerator;
 import chars.ca.c2501Systers;
 import chars.ca.c2600ribai;
@@ -219,6 +236,7 @@ import chars.ca.c4200touno;
 import chars.ca.c4300yuno;
 import chars.ca.c4400izuna;
 import chars.ca.c4600zero;
+import chars.ca.c4700ren;
 import chars.ca.c4800yoshino;
 import chars.ca.c4900aria;
 import chars.ca.c5000sayaka;
@@ -227,10 +245,13 @@ import chars.ca.c5600enju;
 import chars.ca.c6300micoto;
 import chars.ca.c6500cohina;
 import chars.ca.c6600akame;
+import chars.ca.c6700akad;
 import chars.ca.c6800origami;
 import chars.ca.c7200plan;
+import chars.ca.c7202plan;
 import chars.ca.c7300nyaruco;
 import chars.ca.c8100saitama;
+import chars.ca.c8500maka;
 import chars.ca.c9200susu;
 import chars.ca.c9201flan;
 import chars.ca.c9300bakugo;
@@ -242,6 +263,7 @@ import chars.ch.h004alice;
 import chars.ch.h005mery;
 import chars.ch.h006zagara;
 import chars.ch.h007anduin;
+import chars.ch.h008metaton;
 import mode.ModeBase;
 /**
  * 캐릭터 추가 방법
@@ -253,7 +275,7 @@ import mode.ModeBase;
  *
  */
 public class GetChar {
-	static int count = 150;
+	static int count = 161;
 	public static HashMap<String,List<Integer>> charban;
 	/**
 	 * {어벤번호,그 번호 어벤 갯수}
@@ -262,9 +284,9 @@ public class GetChar {
 			{1,1},{2,2},{3,1},{4,1},{5,1},
 			{7,2},{8,1},{9,1},{11,1},{13,1},{16,1},
 			{15,1},{17,1},{18,1},{19,1},{20,1},{22,1},{26,1},{36,1},
-			{30,1},{37,1},{39,1},{42,1},{44,1},{48,1},{49,1},{46,1},
-			{50,1},{55,1},{56,1},{65,1},{66,1},{72,1},{73,1},{81,1},{63,1},{93,1},{100,1},
-			{109,1},{111,1},{113,1},{122,1},{123,1},{124,1}};
+			{30,1},{37,1},{39,1},{42,1},{44,1},{48,1},{49,1},{46,1},{47,1},
+			{50,1},{55,1},{56,1},{65,1},{66,1},{72,1},{73,1},{85,1},{81,1},{63,1},{93,1},{100,1},
+			{108,1},{109,1},{111,1},{113,1},{122,1},{123,1},{124,1}};
 	
 	static public int getCount() {
 		return count;
@@ -299,8 +321,8 @@ public class GetChar {
 		charban.put("arena",ca(new int[]{12,17,24,28,37,38,40,43,46,53,58,59,70,79,81,90,92,95,105,107,118,138}));
 		charban.put("mirror",ca(new int[]{3,12,17,25,28,37,43,52,53,59,74,89,92,112,118}));
 		charban.put("teammatch",ca(new int[]{12,28,35,37,43,53,58,79,90}));
-		charban.put("team",ca(new int[] {43,53,58,79}));
-		charban.put("lobotomy",ca(new int[]{12,17,18,23,28,35,37,46,53,70,78,79,81,90,100,107,128,129,134,138}));
+		charban.put("team",ca(new int[] {43,28,53,58,79,81}));
+		charban.put("lobotomy",ca(new int[]{12,17,18,23,28,35,37,46,53,70,78,79,81,90,100,107,128,129,134,138,153,161}));
 		
 		for(int i=0;i<count;i++) {
 			if((Boolean)Rule.Var.Load("#ARS.ban.normal"+(i+1))) charban.get("normal").add(i+1);
@@ -318,8 +340,11 @@ public class GetChar {
 	}
 	public static boolean isBan(int i) {
 		if(charban.get("normal").contains(i+1) && ARSystem.ban) return false;
-		if(ARSystem.AniRandomSkill.player < 3 && charban.get("player3").contains(i+1)) return false;
+		for (String bm : ARSystem.selectGameMode) {
+			if(charban.get(bm) != null && charban.get(bm).contains(i+1)) return false;
+		}
 		if(ARSystem.AniRandomSkill != null) {
+			if(ARSystem.AniRandomSkill.player < 3 && charban.get("player3").contains(i+1)) return false;
 			for (ModeBase bm : ARSystem.AniRandomSkill.modes) {
 				if(charban.get(bm.getModeName()) != null && charban.get(bm.getModeName()).contains(i+1)) return false;
 			}
@@ -329,7 +354,7 @@ public class GetChar {
 	static public c00main get(Player p,Plugin pl,String name,c00main crt) {
 		int i = 0;
 		if(p != null) {
-			if(!ARSystem.isGameMode("lobotomy")) {
+			if(!ARSystem.isGameMode("lobotomy") && !ARSystem.isGameMode("kagerou")) {
 				if(!name.contains("86")) {
 					if(!Rule.playerinfo.get(p).abchar && AMath.random(1000) <= Integer.parseInt(Main.GetText("general:hidden_chance"))) {
 						return getHiden(p);
@@ -346,7 +371,7 @@ public class GetChar {
 						}
 					}
 				}
-				if(i > 0) i *=  Float.parseFloat(Main.GetText("general:adv_code_mult"));
+				if(i > 0 && Rule.playerinfo.get(p).abchar) i *=  Float.parseFloat(Main.GetText("general:adv_code_mult"));
 				
 				int i2 = 0;
 				if(name.equals("23") || name.equals("118") || name.equals("40") || name.equals("6")) {
@@ -523,7 +548,17 @@ public class GetChar {
 		if(name.equals("148")) return new c148mocou(p,pl,crt);
 		if(name.equals("149")) return new c149lanser(p,pl,crt);
 		if(name.equals("150")) return new c150tenshi(p,pl,crt);
-		
+		if(name.equals("151")) return new c151black(p,pl,crt);
+		if(name.equals("152")) return new c152senku(p,pl,crt);
+		if(name.equals("153")) return new c153nir(p,pl,crt);
+		if(name.equals("154")) return new c154gaara(p,pl,crt);
+		if(name.equals("155")) return new c155shasha(p,pl,crt);
+		if(name.equals("156")) return new c156karu(p,pl,crt);
+		if(name.equals("157")) return new c157sizuo(p,pl,crt);
+		if(name.equals("158")) return new c158ako(p,pl,crt);
+		if(name.equals("159")) return new c159sakamoto(p,pl,crt);
+		if(name.equals("160")) return new c160siki(p, pl, crt);
+		if(name.equals("161")) return new c161aizen(p, pl, crt);
 		
 		
 		if(name.equals("86f1")) return new c8601iriya(p,pl, crt);
@@ -537,6 +572,8 @@ public class GetChar {
 		if(name.equals("000")) return new c100001(p,pl, crt);
 		if(name.equals("no")) return new c000humen(p,pl, crt);
 		if(name.equals("no2")) return new c001humen2(p,pl,crt);
+		if(name.equals("10003")) return new c001humen4(p,pl,crt);
+		if(name.equals("gun")) return new c001humen3(p,pl,crt);
 		if(name.equals("boy")) return new c1000gay(p,pl,crt);
 
 		if(name.equals("⑨")) return new h001chruno(p,pl, crt);
@@ -546,6 +583,9 @@ public class GetChar {
 		if(name.equals("들켜버렸다~♪알아버렸다~♪메리의비밀~☆")) return new h005mery(p,pl, crt);
 		if(name.equals("여왕이시여,영원하소서!")) return new h006zagara(p,pl, crt);
 		if(name.equals("빛이승리를불러올것입니다!")) return new h007anduin(p,pl, crt);
+		if(name.equalsIgnoreCase("ATTACKOFTHEKILLERROBOT!")) return new h008metaton(p,pl, crt);
+		if(name.equals("note")) return new cNote(p,pl, crt);
+		if(name.equals("move")) return new cMove(p,pl, crt);
 		
 		return getAdv(p,pl,name,crt);
 	}
@@ -562,6 +602,7 @@ public class GetChar {
 			name = ""+n;
 			if(name.equals("1021")) return new c2100abigeil(p,pl, new c21abigeil(p, pl, crt));
 			if(name.equals("1024")) return new c2400sinobu(p,pl, new c24sinobu(p, pl, crt));
+			if(name.equals("2024")) return new c2402sinobu(p,pl, crt);
 
 			if(name.equals("1046")) return new c4600zero(p,pl, crt);
 			if(name.equals("1123")) return new c1123rin(p,pl, crt);
@@ -583,8 +624,10 @@ public class GetChar {
 			if(name.equals("1040")) return new c4000megumin(p,pl, crt);
 			if(name.equals("1044")) return new c4400izuna(p,pl, crt);
 			if(name.equals("1037")) return new c3700subaru(p,pl, crt);
+			if(name.equals("1067")) return new c6700akad(p,pl, crt);
 			if(name.equals("1050")) return new c5000sayaka(p,pl, crt);
 			if(name.equals("1072")) return new c7200plan(p,pl, crt);
+			if(name.equals("2072")) return new c7202plan(p,pl, crt);
 			if(name.equals("1073")) return new c7300nyaruco(p,pl, crt);
 			if(name.equals("1042")) return new c4200touno(p,pl, crt);
 			if(name.equals("1013")) return new c1300nagisa(p,pl, crt);
@@ -621,20 +664,24 @@ public class GetChar {
 			if(name.equals("1122")) return new c1220yuyuco(p,pl, crt);
 			if(name.equals("1134")) return new c1134siro(p,pl, crt);
 			if(name.equals("1036")) return new c3600kaneki(p,pl, crt);
+			if(name.equals("1047")) return new c4700ren(p,pl, crt);
+			if(name.equals("1108")) return new c1108suwaco(p,pl, crt);
+			if(name.equals("1085")) return new c8500maka(p,pl, crt);
 			if(name.equals("1118") && Rule.playerinfo.get(p).isTropy(118, 1)) return new cc1180Ai(p,pl, crt);
 			if(name.equals("1023") && Rule.playerinfo.get(p).isTropy(23, 1)) return new c2300madoka(p,pl, crt);
 
 		return new c001nb(p,pl,crt);
 	}
 	static public c00main getHiden(Player p) {
-		int z = AMath.random(7);
+		int z = AMath.random(8);
 		if(z == 1) return new h001chruno(p, Rule.gamerule, null);
 		if(z == 2) return new h002claw(p, Rule.gamerule, null);
 		if(z == 3) return new h003rentaro(p, Rule.gamerule, null);
 		if(z == 4) return new h004alice(p, Rule.gamerule, null);
 		if(z == 5) return new h005mery(p, Rule.gamerule, null);
 		if(z == 6) return new h006zagara(p, Rule.gamerule, null);
-		return new h007anduin(p, Rule.gamerule, null);
+		if(z == 7) return new h007anduin(p, Rule.gamerule, null);
+		return new h008metaton(p, Rule.gamerule, null);
 	}
 	public static ArrayList<Integer> advList() {
 		ArrayList<Integer> list = new ArrayList<>();

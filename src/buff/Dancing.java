@@ -1,5 +1,6 @@
 package buff;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -27,6 +28,7 @@ public class Dancing extends Buff{
 	}
 	
 	public boolean onTicks() {
+		if(((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 		
 		if(AMath.random(100) <= 5) {
 			y = AMath.random(3)-2;

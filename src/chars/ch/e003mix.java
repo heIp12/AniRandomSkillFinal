@@ -212,11 +212,17 @@ public class e003mix extends c00main{
 				ch.set(0,GetChar.get(null, plugin, e.getMessage().replace(" ", "").replace("c1", "")));
 				ch.get(0).player = player;
 				player.sendMessage("Select1 : " + ch.get(0).number);
+				if(ch.get(0).number > 900 && ch.get(0).number < 1000) {
+					e.setMessage("c1 §c§l§kabcdefghijklmn");
+				}
 			}
 			if(e.getMessage().contains("c2")) {
 				ch.set(1,GetChar.get(null, plugin, e.getMessage().replace(" ", "").replace("c2", "")));
 				ch.get(1).player = player;
 				player.sendMessage("Select2 : " + ch.get(1).number);
+				if(ch.get(1).number > 900 && ch.get(1).number < 1000) {
+					e.setMessage("c2 §c§l§kabcdefghijklmn");
+				}
 			}
 		}
 		return super.chat(e);

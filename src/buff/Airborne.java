@@ -1,5 +1,6 @@
 package buff;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -28,6 +29,7 @@ public class Airborne extends Buff{
 	}
 
 	public boolean onTicks() {
+		if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 		target.setVelocity(target.getVelocity().setY(0));
 		if(target.getLocation().getY() < y) {
 			target.setVelocity(target.getVelocity().setY(0.5));
@@ -41,6 +43,7 @@ public class Airborne extends Buff{
 	
 	@Override
 	public boolean onMove(PlayerMoveEvent e) {
+		if(target instanceof Player && ((Player)target).getGameMode() == GameMode.SPECTATOR) return false;
 		target.setVelocity(target.getVelocity().setY(0));
 		return false;
 	}

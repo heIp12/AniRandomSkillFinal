@@ -59,7 +59,7 @@ import util.Map;
 
 public class c81saitama extends c00main{
 
-	int sp = 0;
+	public int sp = 0;
 	
 	public c81saitama(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -161,7 +161,7 @@ public class c81saitama extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

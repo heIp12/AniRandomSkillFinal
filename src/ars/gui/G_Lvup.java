@@ -44,7 +44,12 @@ public class G_Lvup extends GUIBase{
 		
 		this.str = str.clone();
 		
-		if(str.length <= 2) {
+		if(str.length == 1) {
+			page = new int[]
+					{
+							   0, 0, 0, 0, 1, 0, 0, 0, 0
+					};
+		} else if(str.length == 2) {
 			page = new int[]
 					{
 							   0, 0, 1, 0, 0, 0, 2, 0, 0

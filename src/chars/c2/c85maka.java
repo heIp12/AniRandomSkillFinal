@@ -135,13 +135,14 @@ public class c85maka extends c00main{
 						e.add(en);
 					}
 				}
-				if(e.size() > 0) {
+				if(e.size() > 0 && skillCooldown(0)) {
 					sp = true;
 					entitys = new ArrayList<>();
 					spskillon();
 					spskillen();
 					for(LivingEntity en : e) {
 						en.teleport(ULocal.offset(player.getLocation(), new Vector(-5,0,0)));
+						ARSystem.removeItemAll((Player)en);
 						Rule.c.put((Player) en, new c000humen((Player) en, plugin, null));
 						ARSystem.addBuff(en,new TimeStop(en), 300);
 						delay(()->{ARSystem.addBuff(en,new TimeStop(en), 300);},20);
@@ -196,6 +197,8 @@ public class c85maka extends c00main{
 		if(isAttack) {
 			if(pp) e.setDamage(e.getDamage()*1.5f);
 			p += e.getDamage()*4;
+			if(ARSystem.isGameMode("kagerou")) p -= e.getDamage()*3;
+			
 			if(p >= 100) {
 				p = 100;
 				if(!pp) {

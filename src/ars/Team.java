@@ -37,10 +37,10 @@ public class Team {
 		}
 	}
 	public void teamJoin(String name,Player p) {
-		player.get(name).Join(p);
+		if(player.get(name) != null) player.get(name).Join(p);
 	}
 	public void teamQuit(String name,Player p) {
-		player.get(name).Quit(p);
+		if(player.get(name) != null) player.get(name).Quit(p);
 	}
 	
 	public TeamInfo getTeam(String name) {
@@ -50,7 +50,7 @@ public class Team {
 	public List<TeamInfo> getTeam(Player player){
 		List<TeamInfo> team = new ArrayList<TeamInfo>();
 		for(String s : this.player.keySet()) {
-			if(this.player.get(s).teamPlayer.contains(player)) {
+			if(this.player.get(s) != null && this.player.get(s).teamPlayer != null && this.player.get(s).teamPlayer.contains(player)) {
 				team.add(this.player.get(s));
 			}
 		}
@@ -73,7 +73,7 @@ public class Team {
 		if(team.size() > 0) {
 			for(TeamInfo t : team) {
 				if(t.getTeamSpawn() != null) {
-					loc = t.getTeamSpawn();
+					loc = t.getTeamSpawn().clone();
 				}
 			}
 		}

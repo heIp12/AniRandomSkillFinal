@@ -155,9 +155,12 @@ public class c132tsuna extends c00main{
 				skill("c132_s1-2");
 				ARSystem.giveBuff(player, new Stun(player), 2);
 			} else {
-				player.setVelocity(player.getLocation().getDirection().multiply(-3.5));
+				Location lc = player.getLocation();
+				if(lc.getPitch() < -80) lc.setPitch(-80);
+				if(lc.getPitch() > 80) lc.setPitch(80);
+				player.setVelocity(lc.getDirection().multiply(-3.5));
 			}
-		} else if(tk%5 == 0 && stack < 200) {
+		} else if(tk%4 == 0 && stack < 200) {
 			stack+= sskillmult + skillmult;
 		}
 		if(isps && tk%20 == 0 && AMath.random(20) <= 1) {
@@ -205,7 +208,7 @@ public class c132tsuna extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(!isAttack) {
-			if(!isps && player.getHealth() - e.getDamage() <= 1 && ((LivingEntity)e.getDamager()).getHealth() / ((LivingEntity)e.getDamager()).getMaxHealth() <= 0.3f) {
+			if(!isps && player.getHealth() - e.getDamage() <= 1 && ((LivingEntity)e.getDamager()).getHealth() / ((LivingEntity)e.getDamager()).getMaxHealth() <= 0.3f && skillCooldown(0)) {
 				spskillon();
 				spskillen();
 				e.setDamage(0);

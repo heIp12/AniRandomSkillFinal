@@ -273,8 +273,8 @@ public class c141hajama extends c00main{
 	@Override
 	public boolean tick() {
 		if(sk2 <= sk2max-1) {
-			sk2t+= skillmult+sskillmult;
-			if(sk2t > 160) {
+			if(player.isOnGround()) sk2t+= skillmult+sskillmult;
+			if(sk2t > 100) {
 				sk2t = 0;
 				sk2++;
 			}
@@ -301,7 +301,7 @@ public class c141hajama extends c00main{
 	@Override
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
-			if(e.getEntity() == spe && BlockUtil.isAirbone(e.getEntity().getLocation(), 1)) {
+			if(e.getEntity() == spe && BlockUtil.isAirbone(e.getEntity().getLocation(), 1) && BlockUtil.isAirbone(e.getDamager().getLocation(), 1)) {
 				if(((LivingEntity)e.getEntity()).getNoDamageTicks() <= 0) spt++;
 			} else {
 				spe = (LivingEntity)e.getEntity();
@@ -379,7 +379,7 @@ public class c141hajama extends c00main{
 				},30);
 				delay(()->{
 					target.setNoDamageTicks(0);
-					target.damage(6,player);
+					target.damage(10,player);
 					if(Rule.buffmanager.OnBuffTime(player, "stun")) {
 						Rule.buffmanager.selectBuffTime(player, "stun",0);
 					}

@@ -40,6 +40,7 @@ import util.MSUtil;
 import util.Map;
 
 public class c38hajime extends c00main{
+	public int plusUp = 0;
 	Location loc;
 	float cooldownc[] = new float[4];
 	
@@ -54,17 +55,17 @@ public class c38hajime extends c00main{
 		,SPEED
 	}
 	
-	List<gun> mygun = new ArrayList<gun>();
+	public List<gun> mygun = new ArrayList<gun>();
 	int gun = 0;
 	int guncount = 0;
 	
 	int replay = 1;
 	int tick = 0;
-	int heal = 0;
+	public int heal = 0;
 	int ruck = 0;
 	int timer = 0;
 	
-	int en = 0;
+	public int en = 0;
 
 	public c38hajime(Player p,Plugin pl,c00main ch) {
 		super(p,pl,ch);
@@ -144,7 +145,7 @@ public class c38hajime extends c00main{
 			}
 		}
 		if(tk%20==0) {
-			if(psopen) scoreBoardText.add("&a "+Main.GetText("c38:sk0")+ " : " + AMath.round(timer*0.05,2));
+			if(psopen && !isps) scoreBoardText.add("&a "+Main.GetText("c38:sk0")+ " : " + AMath.round(timer*0.05,2));
 			if(heal > 0) {
 				scoreBoardText.add("&a "+Main.GetText("c38:sk3")+ " : " + heal);
 			}
@@ -173,7 +174,7 @@ public class c38hajime extends c00main{
 		} else {
 			ARSystem.playSound((Entity)player,"c38_p");
 		}
-		en = e;
+		en = e + plusUp;
 		gun = guncount;
 		mygun.add(new gun(guncount++));
 		enchent();
@@ -340,14 +341,14 @@ public class c38hajime extends c00main{
 		return true;
 	}
 	
-	private class gun {
-		double damage = 2.5;
+	public class gun {
+		public double damage = 2.5;
 		int code = 0;
 		
-		double speed = 1.2;
-		int bullet = 12;
-		int mybullet = 12;
-		double sp = 0.3;
+		public double speed = 1.2;
+		public int bullet = 12;
+		public int mybullet = 12;
+		public double sp = 0.3;
 		
 		List<c38hajime.Enchent> E = new ArrayList<c38hajime.Enchent>();
 		

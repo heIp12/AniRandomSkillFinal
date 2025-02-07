@@ -247,7 +247,7 @@ public class c144jostar extends c00main{
 	@Override
 	public boolean skill5() {
 		if(lv >=4) {
-			if(!isps) {
+			if(!isps&& skillCooldown(0)) {
 				Rule.playerinfo.get(player).tropy(144, 1);
 				spc = 200;
 				ARSystem.giveBuff(h, new TimeStop(h), 140);
@@ -315,7 +315,7 @@ public class c144jostar extends c00main{
 			}
 		}
 		if(n.equals("2")) {
-			if(Rule.buffmanager.GetBuffTime(target, "stun") >= 24) {
+			if(Rule.buffmanager.GetBuffTime(target, "stun") >= 10) {
 				target.damage(30);
 			} else {
 				target.damage(15);

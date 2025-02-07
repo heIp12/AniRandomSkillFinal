@@ -172,7 +172,7 @@ public class h007anduin extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		if(player.isSneaking()) {
 			db++;
 			if(db > 6) db = 1;

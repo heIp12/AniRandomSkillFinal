@@ -37,6 +37,7 @@ public class c127jack extends c00main{
 	
 	int p = 0;
 	boolean ps = false;
+	Location spl;
 	
 	
 	boolean t = false;
@@ -87,7 +88,7 @@ public class c127jack extends c00main{
 					},4);
 				},4);
 			},2);
-		},8);
+		},4);
 		return true;
 	}
 	void damage(Entity e, double damage){
@@ -132,10 +133,9 @@ public class c127jack extends c00main{
 	
 	@Override
 	public boolean skill4() {
-		player.damage(2,player);
-		target = player.getLocation();
-		targettick = 160;
-		
+		ARSystem.playSound((Entity)player, "0miss", 1.2f);
+		p = 100;
+		ARSystem.potion(player, 14, 100, 1);
 		return true;
 	}
 
@@ -203,40 +203,97 @@ public class c127jack extends c00main{
 				range*=4;
 			}
 			if(p > 0 && range >= 50 && skillCooldown(0)) {
+				sk2 = 0;
+				spl = player.getLocation();
 				ARSystem.giveBuff(player, new TimeStop(player), 200);
 				ARSystem.giveBuff((LivingEntity) e.getEntity(), new TimeStop((LivingEntity) e.getEntity()), 200);
 				spskillon();
 				spskillen();
 				player.teleport(ULocal.lookAt(ULocal.offset(e.getEntity().getLocation(), new Vector(3,0,0)), e.getEntity().getLocation()));
 				ARSystem.playSound((Entity)player, "c127sp");
+				e.getEntity().teleport(e.getEntity().getLocation().add(ULocal.lookAt(player.getLocation().clone(), e.getEntity().getLocation()).getDirection()));
+
+				Location l = e.getEntity().getLocation().clone();
+				for(int i = 0; i < 20; i++) {
+					delay(()->{
+						ARSystem.spellLocCast(player, l, "c127_sp1e1");
+					}, 40+i);
+				}
+				for(int i = 0; i < 40; i++) {
+					delay(()->{
+						ARSystem.spellLocCast(player, l, "c127_sp1e2");
+					}, 60+i);
+				}
+				for(int i = 0; i < 80; i++) {
+					delay(()->{
+						ARSystem.spellLocCast(player, l, "c127_sp1e3");
+					}, 100+i);
+				}
+				
 				delay(()->{
-					player.teleport(ULocal.offset(e.getEntity().getLocation(), new Vector(-2,0,0)));
+					for(int i = 0; i<4 ;i++) {
+						Location lc = e.getEntity().getLocation().clone();
+						lc.setPitch(0);
+						lc.setYaw(e.getEntity().getLocation().getYaw()+ 90*i + 45);
+						ARSystem.spellLocCast(player, lc, "c127_sp1");
+					}
+				}, 80);
+				delay(()->{
+					for(int i = 0; i< 20; i++) {
+						int j = i;
+						delay(()->{
+							Location lc = l.clone();
+							lc.setYaw(AMath.flip(30+j*6, 60)-30);
+							lc.setPitch(-AMath.flip(j*6, 20));
+							lc = ULocal.offset(lc, new Vector(5-(j*0.2),0,0));
+							player.teleport(ULocal.lookAt(lc,e.getEntity().getLocation()));
+						},i);
+					}
+				},180);
+				delay(()->{
+					ARSystem.giveBuff(player, new TimeStop(player), 20);
+					player.setGameMode(GameMode.SPECTATOR);
+					delay(()->{player.teleport(ULocal.lookAt(l.clone().add(0,8,0), l));},2);
 					ARSystem.giveBuff((LivingEntity) e.getEntity(), new Stun((LivingEntity) e.getEntity()), 60);
 					ARSystem.giveBuff((LivingEntity) e.getEntity(), new Silence((LivingEntity) e.getEntity()), 60);
-					ARSystem.giveBuff(player, new Stun(player), 40);
-					ARSystem.giveBuff(player, new Silence(player), 40);
-					ARSystem.giveBuff(player, new Nodamage(player), 40);
 					ps = true;
-					for(int i=0;i<10;i++) {
+					for(int i=0;i<5;i++) {
 						delay(()->{
-							ARSystem.playSound((Entity)player, "0katana3",2f);
-							ARSystem.spellCast(player, e.getEntity(), "c127_sp_e1");
-							damage(e.getEntity(), 0.1);
-						},i*2);
+							Location loc = e.getEntity().getLocation().clone();
+							loc.setYaw(AMath.random(360));
+							ARSystem.spellLocCast(player, loc, "c127_sp2");
+							delay(()->{
+								ARSystem.playSound((Entity)player, "0katana3",2f);
+								damage(e.getEntity(), 0.1);
+								ARSystem.spellLocCast(player, l, "c127_sp_e2");
+								delay(()->{
+									ARSystem.playSound((Entity)player, "0katana3",2f);
+									damage(e.getEntity(), 0.1);
+								},2);
+								delay(()->{
+									ARSystem.playSound((Entity)player, "0katana3",2f);
+									damage(e.getEntity(), 0.1);
+								},2);
+								delay(()->{
+									ARSystem.playSound((Entity)player, "0katana3",2f);
+									damage(e.getEntity(), 0.1);
+								},2);
+							},5);
+						},i*10);
 					}
 					delay(()->{
-						player.teleport(ULocal.lookAt(ULocal.offset(e.getEntity().getLocation(), new Vector(-1,0,0)), e.getEntity().getLocation()));
-					},20);
+						Location loc = e.getEntity().getLocation().clone();
+						loc.setYaw(loc.getYaw()+180);
+						ARSystem.spellLocCast(player, loc, "c127_sp3");
 						delay(()->{
-							ARSystem.playSound((Entity)player, "0katana4",1.4f);
-							ARSystem.spellCast(player, e.getEntity(), "c127_sp_e2");
-							damage(e.getEntity(), 1);
-						},20);
-						delay(()->{
-							ARSystem.playSound((Entity)player, "0katana5",2f);
-							ARSystem.spellCast(player, e.getEntity(), "c127_sp_e2");
+							ARSystem.playSound((Entity)player, "0katana4",2f);
 							damage(e.getEntity(), 6);
-						},25);
+						},5);
+						delay(()->{
+							player.setGameMode(GameMode.ADVENTURE);
+							player.teleport(spl);
+						},40);
+					},60);
 					delay(()->{
 						ps = false;
 					},40);
@@ -250,4 +307,10 @@ public class c127jack extends c00main{
 		return true;
 	}
 
+	@Override
+	public void LocmakerSkill(Location loc, String name) {
+		if(name.equals("jack")){
+			spl = loc;
+		}
+	}
 }

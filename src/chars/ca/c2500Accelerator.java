@@ -217,7 +217,7 @@ public class c2500Accelerator extends c00main{
 				ARSystem.giveBuff(en, new Silence(en), 60);
 				return false;
 			} else {
-				Rule.buffmanager.selectBuffValue(player, "barrier", 5);
+				Rule.buffmanager.selectBuffValue(player, "barrier", 3);
 			}
 		}
 		return true;
@@ -237,7 +237,7 @@ public class c2500Accelerator extends c00main{
 	
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

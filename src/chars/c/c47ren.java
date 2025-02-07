@@ -87,15 +87,15 @@ public class c47ren extends c00main{
 	
 	@Override
 	public boolean skill3() {
-		if(stack < 25) {
-			ARSystem.playSound((Entity)player, "c47s3",(float) 1);
-			skill("c47_s3");
-		} else {
+		if (skillCooldown(0) && stack >= 25) {
 			spskillen();
 			spskillon();
 			skill("c47_sp");
 			stack = 0;
 			sp = 60;
+		} else if(stack < 25) {
+			ARSystem.playSound((Entity)player, "c47s3",(float) 1);
+			skill("c47_s3");
 		}
 		return true;
 	}
@@ -164,12 +164,13 @@ public class c47ren extends c00main{
 	public void makerSkill(LivingEntity target, String n) {
 		if(n.equals("1")) {
 			stack++;
+			target.setNoDamageTicks(0);
 			target.damage(1,player);
 		}
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

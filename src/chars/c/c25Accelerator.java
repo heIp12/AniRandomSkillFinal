@@ -209,7 +209,7 @@ public class c25Accelerator extends c00main{
 			}
 			if(iscc) {
 				cc++;
-				if(!isps && cc+(tcc/20) > 19) {
+				if(!isps && cc+(tcc/20) > 19 && skillCooldown(0)) {
 					if(Rule.buffmanager.selectBuffType(player, BuffType.HEADCC) != null) {
 						for(Buff buff : Rule.buffmanager.selectBuffType(player, BuffType.HEADCC)) {
 							buff.setTime(0);
@@ -263,13 +263,12 @@ public class c25Accelerator extends c00main{
 				}
 				int code = 0;
 				for(int n : chars.keySet()) {
-					if(player.getName().equals("heIp12")) System.out.println(n + " : " +chars.get(n));
 					if(chars.get(n) >= 3) {
 						code = n;
 					}
 				}
 				
-				if(code != 0) {
+				if(code != 0 && skillCooldown(0)) {
 					List<Player> players = new ArrayList<>();
 					for(Player p : Rule.c.keySet()) {
 						if(p != player && Rule.c.get(p).number%1000 == code) {
@@ -328,7 +327,7 @@ public class c25Accelerator extends c00main{
 	
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		for(Entity e : el) {

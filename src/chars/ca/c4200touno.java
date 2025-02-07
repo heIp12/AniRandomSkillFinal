@@ -140,11 +140,11 @@ public class c4200touno extends c00main{
 				player.setSneaking(false);
 				yaw = yw;
 				zero++;
-				if(zero > 7) zero = 0;
 				ARSystem.spellCast(player, target, "c1042_s4_4");
 				remove(target);
 				ARSystem.playSound((Entity)player, "0zero"+zero);
 				ARSystem.playSound(target, "0zero"+zero);
+				if(zero > 7) zero = 0;
 			}
 		}
 		return true;

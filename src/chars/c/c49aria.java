@@ -131,6 +131,7 @@ public class c49aria extends c00main{
 					hit.put(target,1 + hit.get(target));
 					player.sendTitle(target.getName(),hit.get(target)+ " / 30");
 					if(hit.get(target) >= 30) {
+						hit.put(target,25);
 						Skill.remove(target, player);
 						tropy++;
 						if(tropy >= 2) {
@@ -143,7 +144,7 @@ public class c49aria extends c00main{
 				entity.put(target, (float) e.getDamage());
 			} else {
 				entity.put(target, (float) e.getDamage() + entity.get(target));
-				if(!isps &&entity.get(target) >= 12) {
+				if(!isps &&entity.get(target) >= 12 && skillCooldown(0)) {
 					spskillon();
 					spskillen();
 					ARSystem.spellCast(player, target, "c49_sp");

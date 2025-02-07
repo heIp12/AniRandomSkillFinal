@@ -356,7 +356,7 @@ public class c1394matan extends c00main{
 	}
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		ARSystem.playSound((Entity)player, "c1139db");
 		return true;
 	}

@@ -179,7 +179,7 @@ public class c87rou extends c00main{
 		}
 		if(tick > 0) {
 			tick--;
-			if(tick == 0) {
+			if(tick == 0 && skillCooldown(0)) {
 				spskillen();
 				spskillon();
 				ARSystem.giveBuff(heart, new TimeStop(heart), 80);

@@ -23,7 +23,9 @@ public class PowerUp extends Buff{
 		color = "§f";
 		order = 80;
 		isValueP = true;
-		onlyone = true;
+		if(!ARSystem.isGameMode("lobotomy")) {
+			onlyone = true;
+		}
 	}
 
 

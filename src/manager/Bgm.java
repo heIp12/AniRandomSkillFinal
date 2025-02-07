@@ -25,6 +25,7 @@ public class Bgm {
 	private static BossBar bgmbar;
 	private static String bgmName = "";
 	public static String bgmcode = "";
+	public static String bgmNameCode = "";
 	private static int bgmTime = 0;
 	private static int bgmCount = -1;
 	private static int bgmFrstTime = 0;
@@ -55,9 +56,6 @@ public class Bgm {
 			bgmTime--;
 			if(bgmTime%5 == 0) {
 				bgmbar.setProgress((double)bgmTime/(double)bgmFrstTime);
-				if(!bgmbar.getTitle().equals("§a§l~ ♪ "+bgmName+" ♬ ~")) {
-					bgmbar.setTitle("§a§l~ ♪ "+bgmName+" ♬ ~");
-				}
 			}
 		}
 	}
@@ -66,7 +64,7 @@ public class Bgm {
 		if(bgmCount == -1) { bgmCount = Integer.parseInt(Main.GetText("bgm:bgmcount")); };
 		
 		LocalTime now = LocalTime.now();
-		if(now.getHour() == 0 && now.getMinute() >= 0 && now.getMinute() <= 3) {
+		if(now.getHour() == 1 && now.getMinute() >= 1 && now.getMinute() <= 3 && AMath.random(33) == 1) {
 			setForceBgm("yareyare");
 			return;
 		}
@@ -107,6 +105,7 @@ public class Bgm {
 		bgmName = Main.GetText("bgm:"+name);
 		bgmcode = Main.GetText("bgm:"+name+ "n");
 		if(bgmcode == null) bgmcode = name;
+		bgmNameCode = name;
 		bgmTime = Integer.parseInt(Main.GetText("bgm:"+name+ "t"));
 		bgmFrstTime = bgmTime;
 		
@@ -126,6 +125,23 @@ public class Bgm {
 			}
 		}
 	}
+	public static void setBgm(String name, float f) {
+		if(!bgmlock) {
+			float pc = Math.min(Math.max(f,0.5f),2);
+			getBgm(name);
+			bgmTime = (int) (Integer.parseInt(Main.GetText("bgm:"+name+ "t"))/pc);
+			bgmFrstTime = bgmTime;
+			if(f != 1) {
+				bgmbar.setTitle("§a§l~ ♪ "+bgmName+" x"+AMath.round(f,1)+" ♬ ~");
+			}
+			for(Player p :Bukkit.getOnlinePlayers()) {
+				p.stopSound("",SoundCategory.VOICE);
+				p.playSound(p.getLocation(), bgmcode,SoundCategory.VOICE, 10000, f);
+			}
+		}
+		
+	}
+	
 	public static void setlockBgm(String name) {
 		if(!bgmlock) {
 			bgmlock = true;
@@ -218,8 +234,15 @@ public class Bgm {
 				t1 = t1.substring(2);
 			}
 			if(t2.contains("§") || t2.contains("&")) t2 = t2.substring(2);
+			ns = Math.min(ns,t1.length());
+			
+			t1 = "§"+color + t1.substring(0,ns) +"§7"+ t1.substring(ns,t1.length());
+			
+			for(int i = 0; i <100; i++) {
+				if(t2.contains("§"))t2 = t2.substring(0,t2.indexOf("§")) + t2.substring(t2.indexOf("§")+2,t2.length());
+				else break;
+			}
 			t2 = "§7" + t2;
-			t1 = "§"+color + t1.substring(0,ns) +"§7"+ t1.substring(Math.min(ns,t1.length()),t1.length());
 			
 			for(Player p : Bukkit.getOnlinePlayers()) {
 				if(!(Rule.c.get(p) != null && ARSystem.AniRandomSkill != null && p.getGameMode() != GameMode.SPECTATOR)) {

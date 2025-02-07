@@ -133,7 +133,7 @@ public class c140eruna extends c00main{
 	public boolean skill2() {
 		sk2 = 60;
 		if(sk3) {
-			player.setVelocity(player.getLocation().getDirection().multiply(2));
+			player.setVelocity(player.getLocation().getDirection().multiply(2.5));
 		} else {
 			ARSystem.playSound((Entity)player, "c140s2");
 			player.setVelocity(new Vector(0,2,0));
@@ -172,7 +172,7 @@ public class c140eruna extends c00main{
 				player.setFallDistance(-10);
 				sk2 = 0;
 				if(sk3) {
-					player.setVelocity(player.getLocation().getDirection().multiply(2));
+					player.setVelocity(player.getLocation().getDirection().multiply(2.5));
 				} else {
 					ARSystem.giveBuff(player, new Airborne(player), 60);
 				}
@@ -182,7 +182,7 @@ public class c140eruna extends c00main{
 			if(psopen) scoreBoardText.add("&c ["+Main.GetText("c140:ps")+ "] : " + stack);
 			if(sk3) scoreBoardText.add("&c ["+Main.GetText("c140:sk3")+ "]");
 		}
-		if(tk%4 == 0) {
+		if(tk%3 == 0) {
 			for(Entity e : ARSystem.box(player, new Vector(10,8,10), box.TARGET)) {
 				stack += 1;
 			}
@@ -233,7 +233,7 @@ public class c140eruna extends c00main{
 	
 	boolean himin = true;
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		String is = "";
 		Entity himi = null;
@@ -259,13 +259,13 @@ public class c140eruna extends c00main{
 
 		if(is.equals("md")) {
 			ARSystem.playSound((Entity)player, "c140md");
-		} else if(is.equals("himi")) {
+		} else if(is.equals("himi") && ARSystem.E_sterEgg) {
 			ARSystem.playSound((Entity)player, "c140himi");
 			ARSystem.giveBuff(player, new TimeStop(player), 200);
 			ARSystem.giveBuff((LivingEntity)himi, new TimeStop((LivingEntity)himi), 200);
 			ARSystem.giveBuff(player, new Nodamage(player), 80);
 			stack += 100;
-			cooldown[1] = cooldown[2] = cooldown[3] = cooldowns[1] = cooldowns[2] = cooldowns[3] = 0;
+			cooldown[1] = cooldown[2] = cooldown[3] = cooldowns[1] = cooldowns[2] = cooldowns[0] = 0;
 			Location loc = player.getLocation();
 			
 			loc = ULocal.lookAt(ULocal.offset(loc, new Vector(1,0.5f,0)), player.getLocation());

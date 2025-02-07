@@ -85,7 +85,7 @@ public class c35miruk extends c00main{
 	
 	
 	@Override
-	protected boolean skill9() {
+	public boolean skill9(){
 		List<Entity> el = ARSystem.box(player, new Vector(10,10,10),box.ALL);
 		boolean is = false;
 		for(Entity e : el) {
@@ -114,7 +114,7 @@ public class c35miruk extends c00main{
 			if(player.getMaxHealth() > 1 || isps) {
 				if(!isps) {
 					if(player.getHealth() <= 2) {
-						if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time <= 20) {
+						if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time <= 20 && skillCooldown(0)) {
 							spskillen();
 							spskillon();
 							player.setMaxHealth(30);

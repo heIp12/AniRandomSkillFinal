@@ -88,7 +88,7 @@ public class c33meliodace extends c00main{
 			}
 		}
 		
-		if(damage >= 50 && !isps) {
+		if(damage >= 50 && !isps && skillCooldown(0)) {
 			ARSystem.giveBuff(player, new Nodamage(player), 60);
 			
 			spskillen();

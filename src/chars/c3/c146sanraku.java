@@ -129,7 +129,7 @@ public class c146sanraku extends c00main{
 			player.setMaxHealth(1);
 		}
 		
-		if(!isps && stack >= 20) {
+		if(!isps && stack >= 20 && skillCooldown(0)) {
 			ARSystem.giveBuff(player, new Nodie(player), 60);
 			spskillon();
 			spskillen();
@@ -219,6 +219,7 @@ public class c146sanraku extends c00main{
 		}
 		return false;
 	}
+	
 	boolean isSkill() {
 		int count = 0;
 		for(Entity e : ARSystem.box(player, new Vector(8, 6, 8), box.TARGET)) {
@@ -248,10 +249,18 @@ public class c146sanraku extends c00main{
 			Location lc = player.getLocation();
 			Location tpl = Map.randomLoc(player);
 			int rd = 0;
-			while(tpl.distance(lc) > 15+rd*(0.01) || !Map.inMap(tpl.clone().add(0,20 - rd*0.007,0)) || !BlockUtil.isAirbone(tpl.clone().add(0,20- rd*0.007,0), 2)) {
-				tpl = Map.randomLoc(player);
-				rd++;
-				if(rd >= 3000) rd = 0;
+			if(!ARSystem.isGameMode("kagerou") && !ARSystem.isGameMode("teammatch")) {
+				while(tpl.distance(lc) > 15+rd*(0.01) || !Map.inMap(tpl.clone().add(0,20 - rd*0.007,0)) || !BlockUtil.isAirbone(tpl.clone().add(0,20- rd*0.007,0), 2)) {
+					tpl = Map.randomLoc(player);
+					rd++;
+					if(rd >= 500) {
+						if(Rule.team.getTeamLocation(player) != null) {
+							tpl = Rule.team.getTeamLocation(player);
+							break;
+						}
+						rd = 0;
+					}
+				}
 			}
 			tpl.setPitch(80);
 			player.teleport(tpl.clone().add(0,10,0));
@@ -546,10 +555,11 @@ public class c146sanraku extends c00main{
 	
 	@Override
 	public boolean fixeddamage(FixedDealEvent e) {
-		e.setCancelled(true);
-		player.setNoDamageTicks(0);
-		player.damage(e.getDamage(),e.getCaster());
-		
+		if(e.getCaster() != player && e.getTarget() == player) {
+			e.setCancelled(true);
+			player.setNoDamageTicks(0);
+			player.damage(e.getDamage(),e.getCaster());
+		}
 		return false;
 	}
 	
@@ -632,69 +642,82 @@ public class c146sanraku extends c00main{
 				ARSystem.playSound(player, "c146rdoya");
 				ARSystem.playSound((Entity)player, "c146rdoya");
 			}
-		} else {
-			if(sk43 > 0) {
-				sk43 = 14;
-				ARSystem.playSound((Entity)player, "0swordgard", 2f,0.2f);
+		}
+		return true;
+	}
+
+	@Override
+	public void kill(LivingEntity death, LivingEntity killer) {
+		if(killer == player && death == rba && rbt > 0) {
+			rba = null;
+			rbt = 0;
+			ARSystem.playSound(player, "c146rdoya");
+			ARSystem.playSound((Entity)player, "c146rdoya");
+		}
+	}
+
+	public boolean entitylastdamage(EntityDamageByEntityEvent e) {
+		if(sk43 > 0) {
+			sk43 = 14;
+			ARSystem.playSound((Entity)player, "0swordgard", 2f,0.2f);
+			e.setDamage(0);
+			e.setCancelled(true);
+			return false;
+		}
+		if(nodamage > 0) {
+			ARSystem.playSound((Entity)player, "0swordgard", 2f,0.4f);
+			e.setDamage(0);
+			e.setCancelled(true);
+			return false;
+		}
+		else if(sk4 > 0) {
+			ARSystem.playSound((Entity)player, "0swordgard", 0.8f);
+			nodamage = 16;
+			if(isps) nodamage*=0.6;
+			st = 10;
+			sk4 = 0;
+			s = 4;
+			this.target.add((LivingEntity)e.getDamager(), 10);
+			setStack(stack+1);
+			e.setDamage(0);
+			e.setCancelled(true);
+			return false;
+		} else if(sk3 > 0 && e.getDamage() <= 15) {
+			ARSystem.playSound((Entity)player, "0swordgard", 1.4f);
+			if(isps) {
 				e.setDamage(0);
 				e.setCancelled(true);
-				return false;
 			}
-			if(nodamage > 0) {
-				ARSystem.playSound((Entity)player, "0swordgard", 2f,0.4f);
+			else e.setDamage(e.getDamage()*0.05f);
+			nodamage = 8;
+			if(isps) nodamage*=0.6;
+			cooldown[3] = 0;
+			sk3 = 0;
+			if(stack == 19 && !isps) {
 				e.setDamage(0);
 				e.setCancelled(true);
-				return false;
 			}
-			else if(sk4 > 0) {
-				ARSystem.playSound((Entity)player, "0swordgard", 0.8f);
-				nodamage = 16;
-				if(isps) nodamage*=0.6;
-				st = 10;
-				sk4 = 0;
-				s = 4;
-				this.target.add((LivingEntity)e.getDamager(), 10);
-				setStack(stack+1);
-				e.setDamage(0);
-				e.setCancelled(true);
-				return false;
-			} else if(sk3 > 0 && e.getDamage() <= 15) {
-				ARSystem.playSound((Entity)player, "0swordgard", 1.4f);
-				if(isps) {
-					e.setDamage(0);
-					e.setCancelled(true);
-				}
-				else e.setDamage(e.getDamage()*0.05f);
-				nodamage = 8;
-				if(isps) nodamage*=0.6;
-				cooldown[3] = 0;
-				sk3 = 0;
-				if(stack == 19 && !isps) {
-					e.setDamage(0);
-					e.setCancelled(true);
-				}
-				setStack(stack+1);
-				for(int i =0; i<10;i++) if(cooldown[i] > 0) cooldown[i] -=0.2;
-				
-			}
-			if(!isps && p <= 0 && e.getDamage() <= 12 && player.getHealth() - e.getDamage() < 1f) {
-				ARSystem.playSound((Entity)player, "0swordgard", 0.5f);
-				player.setHealth(1.5f);
-				p = 160;
-				nodamage = 10;
-				if(isps) nodamage*=0.6;
-				e.setDamage(0);
-				e.setCancelled(true);
-				return false;
-			}
+			setStack(stack+1);
+			for(int i =0; i<10;i++) if(cooldown[i] > 0) cooldown[i] -=0.2;
 			
-			if(e.getDamage() >= 50 && e.getDamager().getLocation().distance(player.getLocation()) >= 50 && rb <= 0) {
-				rbhp();
-				nodamage = 10;
-				if(isps) nodamage*=0.6;
-				e.setDamage(0);
-				e.setCancelled(true);
-			}
+		}
+		if(!isps && p <= 0 && e.getDamage() <= 12 && player.getHealth() - e.getDamage() < 1f) {
+			ARSystem.playSound((Entity)player, "0swordgard", 0.5f);
+			player.setHealth(1.5f);
+			p = 160;
+			nodamage = 10;
+			if(isps) nodamage*=0.6;
+			e.setDamage(0);
+			e.setCancelled(true);
+			return false;
+		}
+		
+		if(e.getDamage() >= 50 && e.getDamager().getLocation().distance(player.getLocation()) >= 50 && rb <= 0) {
+			rbhp();
+			nodamage = 10;
+			if(isps) nodamage*=0.6;
+			e.setDamage(0);
+			e.setCancelled(true);
 		}
 		return true;
 	}

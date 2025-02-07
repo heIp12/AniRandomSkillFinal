@@ -47,7 +47,7 @@ public class c23madoka extends c00main{
 	
 	@Override
 	public void setStack(float f) {
-		damage = (int) f;
+		damage = (int) f*0.01;
 	}
 	
 	@Override
@@ -119,7 +119,7 @@ public class c23madoka extends c00main{
 		delay(()->{
 			WinEvent event = new WinEvent(player);
 			Bukkit.getPluginManager().callEvent(event);
-			if(!event.isCancelled()) {
+			if(!event.isCancelled() && skillCooldown(0)) {
 				skill("c23_spa");
 				for(Player p : Rule.c.keySet() ) {
 					ARSystem.giveBuff(p, new TimeStop(p), 160);
@@ -132,6 +132,9 @@ public class c23madoka extends c00main{
 	@Override
 	public boolean firsttick() {
 		if(start) {
+			if(ARSystem.AniRandomSkill != null && ARSystem.AniRandomSkill.time < 10 && Rule.buffmanager.GetBuffTime(player, "timestop") > 0) {
+				return false;
+			}
 			if(Rule.buffmanager.selectBuffType(player, BuffType.HEADCC) != null) {
 				for(Buff buff : Rule.buffmanager.selectBuffType(player, BuffType.HEADCC)) {
 					buf(buff);
@@ -218,7 +221,7 @@ public class c23madoka extends c00main{
 	public boolean entitydamage(EntityDamageByEntityEvent e, boolean isAttack) {
 		if(isAttack) {
 			e.setDamage(e.getDamage() * damage);
-			if(Rule.c.get(e.getEntity()) != null) {
+			if(ARSystem.E_sterEgg && Rule.c.get(e.getEntity()) != null) {
 				int n = Rule.c.get(e.getEntity()).number;
 				if(n%1000 == 21 || n%1000 == 46 || n == 1050) {
 					if(majo) {

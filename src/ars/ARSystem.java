@@ -4,15 +4,18 @@ package ars;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
@@ -31,20 +34,26 @@ import com.nisovin.magicspells.spells.TargetedLocationSpell;
 
 import Main.Main;
 import aliveblock.ABlock;
+import ars.gui.G_ModeSeting;
 import buff.Buff;
 import event.FixedDealEvent;
 import event.Skill;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import item.list1.itemBase;
 import manager.Bgm;
 import manager.BuffManager;
 import manager.EntityBuffManager;
+import manager.ItemManager;
+import mode.MEvent;
+import mode.MItem;
 import mode.MNormal;
 import mode.ModeBase;
 import net.minecraft.server.v1_12_R1.PacketPlayOutPosition;
 import net.minecraft.server.v1_12_R1.PacketPlayOutPosition.EnumPlayerTeleportFlags;
 import types.BuffType;
 import types.GameModes;
+import types.ItemList;
 import types.MapType;
 import types.box;
 import util.AMath;
@@ -52,6 +61,8 @@ import util.GetChar;
 import util.Holo;
 import util.MSUtil;
 import util.Map;
+import util.NpcPlayer;
+import util.Text;
 import util.ULocal;
 
 public class ARSystem {
@@ -65,20 +76,81 @@ public class ARSystem {
 	public static List<String> selectGameMode = new ArrayList<>();
 	public static boolean gameMode2 = true;
 	public static int serverOne = 0;
+	public static HashMap<Player,ItemManager> playerItem = new HashMap<>();
+	static Random rand;
+	public static G_ModeSeting modeChat;
+	public static Player modeChatPlayer;
+	public static int winstop = 0;
+	public static boolean E_sterEgg = false;
+	
+	static public void addItem(Player p, int code) {
+		if(playerItem.get(p) == null) return;
+		
+		if(code < 0 || (!ItemList.orignal.keySet().contains(code) && code < 200)) {
+			p.sendMessage("§a§l[ARSystem] §f Item Surch Error");
+			return;
+		}
+		if(playerItem.get(p).items.size() < Rule.playerinfo.get(p).itemcount) {
+			itemBase item = ItemList.getItem(code,p);
+			if(item == null) {
+				p.sendMessage("§a§l[ARSystem] §f Item Surch Error");
+				return;
+			}
+
+			if(code == 100014) {
+				p.sendMessage("§a§l[ARSystem] §f: "+Text.get("item:100014").replace("??", MEvent.name) + Text.get("item:set"));
+			} else {
+				if(code >= 10000 && code < 100000) {
+					p.sendMessage("§a§l[ARSystem] §f: " + Text.get("item2:"+(code%10000)) + Text.get("item:set"));
+				} else {
+					p.sendMessage("§a§l[ARSystem] §f: "+Text.get("item:"+code) + Text.get("item:set"));
+				}
+			}
+			playerItem.get(p).items.add(item);
+			playerItem.get(p).onAddItem(item);
+			ItemList.upgrad(playerItem.get(p).items,p);
+		} else {
+			p.sendMessage("§a§l[ARSystem] §f "+ Text.get("item:setno"));
+		}
+	}
+	
+	static public void removeItem(Player p, int code) {
+		itemBase item = null;
+		for(itemBase it : playerItem.get(p).items) {
+			if(it.getCode() == code) {
+				item = it;
+				break;
+			}
+		}
+		if(item != null) {
+			p.sendMessage("§a§l[ARSystem] §f: "+ item.getItem().getItemMeta().getDisplayName() + Text.get("item:remove"));
+			item.itemRemove();
+			playerItem.get(p).items.remove(item);
+		}
+	}
+	static public void removeItemAll(Player p) {
+		playerItem.get(p).Remove();
+		p.sendMessage("§a§l[ARSystem] §f: " + Text.get("item:removeAll"));
+	}
 	
 	static public void Start(int mapnumer) {
 		int i = 0;
 		int max = GetChar.getCount();
 		Bgm.bgmlock = false;
 		Bgm.rep = true;
+		winstop = 0;
 		
 		Rule.c.clear();
 		Rule.team.reload();
 		killall();
 		gameMode2 = true;
+		remete.clear();
+		Skill.remete.clear();
+		E_sterEgg = true;
 		
 		if(Rule.buffmanager != null) Rule.buffmanager.clear();
 		Rule.buffmanager = new BuffManager();
+		Rule.mobmanager.Reset();
 		
 		if(aliveblock.Main.Aliveblock != null) {
 			for(ABlock block : aliveblock.Main.Aliveblock) {
@@ -86,6 +158,7 @@ public class ARSystem {
 			}
 			aliveblock.Main.Aliveblock.clear();
 		}
+		playerItem.clear();
 		gameMode.clear();
 		
 		
@@ -100,16 +173,38 @@ public class ARSystem {
 			}
 			if(add) gameMode.add(GameModes.getGameModes(str));
 		}
+
+		if(ARSystem.AniRandomSkill != null) {
+			for(ModeBase m : ARSystem.AniRandomSkill.modes) {
+				m.end();
+			}
+		}
 		
         AniRandomSkill = new ARSinfo(time,gameMode);
 
-		Bgm.randomBgm();
+		if(Bgm.nextbgm.size() <= 0) {
+			Bgm.randomBgm();
+		} else {
+			Bgm.setBgm(Bgm.nextbgm.get(0));
+			Bgm.nextbgm.remove(0);
+		}
+		
 		AniRandomSkill.player = 0;
 		float score = 0;
 		for(Player player : RandomPlayers()) {
+			player.setCustomName(player.getName());
+			player.setDisplayName(player.getName());
+			player.setPlayerListName(player.getName());
+			
+			Rule.playerinfo.get(player).gold = 0;
+			if(isGameMode("item") &&(boolean)Rule.Var.Load("System.mode.item."+1)) {
+				Rule.playerinfo.get(player).gold += Rule.Var.Loadint("System.mode.item."+5);
+			}
 			if(Rule.playerinfo.get(player).gamejoin) {
 				AniRandomSkill.player++;
 				score += Rule.playerinfo.get(player).getScore();
+				playerItem.put(player, new ItemManager(player));
+				Rule.playerinfo.get(player).itemcount = 8;
 			}
 		}
 		
@@ -122,7 +217,11 @@ public class ARSystem {
 		}
 		
 		Map.playerTpall();
-		Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), "minecraft:kill @e[type=armor_stand]");
+		for(Entity e : ARSystem.RandomOnlinePlayer().getWorld().getEntities()){
+			if(e instanceof ArmorStand) {
+				e.remove();
+			}
+		}
 		if(score != 0) {
 			score /= AniRandomSkill.player;
 			AniRandomSkill.gamescore = score;
@@ -131,7 +230,7 @@ public class ARSystem {
 		Bukkit.broadcastMessage("§a§l[ARSystem] : §c§l "+Main.GetText("main:info25")+" "+Math.round(score));
 		chars = new boolean[GetChar.getCount()+1];
 		
-		if(AniRandomSkill.player > 1 || (Bukkit.getOnlinePlayers().size() == 1 && AniRandomSkill.player == 1 )) {
+		if(AniRandomSkill.player >= Text.getI("general:start_player") || (Bukkit.getOnlinePlayers().size() == 1 && AniRandomSkill.player == 1 )) {
 			for(Player player : RandomPlayers()) {
 				if(Rule.c.get(player) == null) {
 					if(Rule.playerinfo.get(player).gamejoin) {
@@ -257,6 +356,7 @@ public class ARSystem {
 		} else {
 			n = "Monster";
 		}
+		
 		p.sendTitle("§c§l【Killer】", e.getName() +" §7§l["+n+"]");
 		if(e instanceof Player && ARSystem.AniRandomSkill != null) {
 			if(ARSystem.AniRandomSkill.playerkill.get((Player)e) == null) {
@@ -275,9 +375,42 @@ public class ARSystem {
 		if(Rule.c.get(p) != null) {
 			Rule.c.get(p).info();
 			Rule.removePlayers.add(p);
+			Location loc = p.getLocation();
+			if(isGameMode("item")) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
+					if(Rule.playerinfo.get(p).gold > 0 && Rule.c.size() > 2) {
+						int gold = Rule.playerinfo.get(p).gold + Rule.Var.Loadint("System.mode.item."+7);
+						Rule.playerinfo.get(p).gold = 0;
+						int i = 0;
+						while(gold > 0) {
+							i++;
+							int gd = 0;
+							if(gold > 1000) {
+								gd=1000;
+							} else if(gold > 100) {
+								gd=100;
+							} else if(gold > 10) {
+								gd=10;
+							}
+							gold-=gd;
+							String g = ""+gd;
+							Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
+								ARSystem.spellLocCast(NpcPlayer.npc(loc), loc.clone().add(0,1,0), "coin"+g);
+							},i*2);
+							if(i > 50) {
+								break;
+							}
+						}
+					}
+				
+				},10);
+			}
+			if(Rule.playerinfo.get(e) != null) p.performCommand("c death"+Rule.playerinfo.get(e).kille);
+			
 		}
 		
 		for(Player playr: Rule.c.keySet()) {
+			ARSystem.playerItem.get(playr).onDeath(p,e);
 			Rule.c.get(playr).PlayerDeath(p,e);
 		}
 		if(Map.mapType == MapType.BIG && Boolean.parseBoolean(Main.GetText("general:bigmap_death"))) Map.sizeM(-1);
@@ -298,6 +431,8 @@ public class ARSystem {
 		if(Rule.playerinfo.get(e) != null) {
 			p.performCommand("c death"+Rule.playerinfo.get(e).kille);
 		}
+		
+		if(AniRandomSkill != null) AniRandomSkill.PlayerDeath(p, e);
 	}
 	
 	static public List<Player> getReadyPlayer() {
@@ -309,52 +444,59 @@ public class ARSystem {
 		}
 		return players;
 	}
-	
+	static public List<Player> getPlayers() {
+		List<Player> players = new ArrayList<>();
+		for(Player player : Bukkit.getOnlinePlayers()) {
+			players.add(player);
+		}
+		return players;
+	}
 	static public void Stop() {
-		if(Rule.c.size() == 1 && AniRandomSkill != null && !isGameMode("lobotomy")) {
-			for(Player p : Rule.c.keySet()) {
-				if(Rule.buffmanager.selectBuffType(p, BuffType.HEADCC) != null) {
-					for(Buff buff : Rule.buffmanager.getHashMap().get(p).getBuff()) {
-						buff.stop();
+		if(winstop <= 0) {
+			if(Rule.c.size() == 1 && AniRandomSkill != null) {
+				for(Player p : Rule.c.keySet()) {
+					if(Rule.buffmanager.selectBuffType(p, BuffType.HEADCC) != null) {
+						for(Buff buff : Rule.buffmanager.getHashMap().get(p).getBuff()) {
+							buff.stop();
+						}
 					}
 				}
-			}
-
-			Player win = (Player) Rule.c.keySet().toArray()[0];
-			Rule.c.get(win).info();
-			Rule.playerinfo.get(win).addcradit((AniRandomSkill.player-1)*3,Main.GetText("main:msg103"));
-			
-			int number = Rule.c.get(win).getCode();
-			Rule.Var.addInt(win.getName()+".c"+(number%1000)+"Win",1);
-			Rule.Var.addInt("ARSystem.c"+(number%1000)+"Win",1);
-			win.performCommand("c removeall");
-			String name = "§e§l[No."+(number%1000)+"]§b"+Main.GetText("c"+number+":name1")+" "+Main.GetText("c"+number+":name2");
-			for(Player player : Bukkit.getOnlinePlayers()) {
-				player.sendTitle(name + " Win ", win.getName()+ " | " + (Rule.c.get(win).score%10000) + " Score",40,20,40);
-				MSUtil.resetbuff(player);
-				player.setGameMode(GameMode.ADVENTURE);
-				player.setMaxHealth(20);
-				player.setHealth(20);
-			}
-			Rule.playerinfo.get(win).save();
-			gameEnd();
-		}
-		if(Rule.c.size() == 0) {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
+	
+				Player win = (Player) Rule.c.keySet().toArray()[0];
+				Rule.c.get(win).info();
+				Rule.playerinfo.get(win).addcradit((AniRandomSkill.player-1)*3,Main.GetText("main:msg103"));
+				
+				int number = Rule.c.get(win).getCode();
+				Rule.Var.addInt(win.getName()+".c"+(number%1000)+"Win",1);
+				Rule.Var.addInt("ARSystem.c"+(number%1000)+"Win",1);
+				win.performCommand("c removeall");
+				String name = "§e§l[No."+(number%1000)+"]§b"+Main.GetText("c"+number+":name1")+" "+Main.GetText("c"+number+":name2");
 				for(Player player : Bukkit.getOnlinePlayers()) {
+					player.sendTitle(name + " Win ", win.getName()+ " | " + (Rule.c.get(win).score%10000) + " Score",40,20,40);
 					MSUtil.resetbuff(player);
 					player.setGameMode(GameMode.ADVENTURE);
 					player.setMaxHealth(20);
 					player.setHealth(20);
 				}
-				killall();
-				ARSystem.AniRandomSkill = null;
-				if(Rule.buffmanager != null) Rule.buffmanager.clear();
-				Rule.buffmanager = new BuffManager();
-				Rule.removePlayers.clear();
-				Rule.c.clear();
-				Map.loby();
-			},0);
+				Rule.playerinfo.get(win).save();
+				gameEnd();
+			} else if(Rule.c.size() == 0) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Rule.gamerule, ()->{
+					for(Player player : Bukkit.getOnlinePlayers()) {
+						MSUtil.resetbuff(player);
+						player.setGameMode(GameMode.ADVENTURE);
+						player.setMaxHealth(20);
+						player.setHealth(20);
+					}
+					killall();
+					ARSystem.AniRandomSkill = null;
+					if(Rule.buffmanager != null) Rule.buffmanager.clear();
+					Rule.buffmanager = new BuffManager();
+					Rule.removePlayers.clear();
+					Rule.c.clear();
+					Map.loby();
+				},0);
+			}
 		}
 	}
 	
@@ -397,7 +539,7 @@ public class ARSystem {
 	}
 	
 	static public void GameStop() {
-		RandomPlayer().performCommand("c removeall");
+		NpcPlayer.npc(Map.getCenter()).performCommand("c removeall");
 		if(Rule.buffmanager != null) Rule.buffmanager.clear();
 		Rule.buffmanager = new BuffManager();
 		
@@ -469,37 +611,47 @@ public class ARSystem {
 		double vector2 = 0.55 - (val*0.05);
 		if(vector2 <= 0.01) vector2 = 0.01;
 		e = e.add(new Vector(0.5-AMath.random(100)*0.01,0.2-AMath.random(40)*0.01,0.5-AMath.random(100)*0.01));
-		Holo.create(e,s+" "+ AMath.round(damage,2),2+((int)damage*4),new Vector(vector1,vector2,vector3));
+		Holo.create(e,s+" "+ AMath.round(damage,2),(int)Math.min(2+((long)damage*4),200),new Vector(vector1,vector2,vector3));
 	}
-	
+	static HashMap<Player,Integer> remete = new HashMap<>();
 	static public FixedDealEvent fixedDamage(LivingEntity target,Player caster, double damage) {
+		if(remete.get(caster) == null || remete.get(caster) <= 0) remete.put(caster, 0);
+		boolean ok = false;
+		remete.put(caster, remete.get(caster)+1);
 		if(Rule.c.get(caster) != null) damage *= Rule.c.get(caster).frist_damage;
-		
 		FixedDealEvent e = new FixedDealEvent(caster, target, (float)damage);
+		if(ARSystem.playerItem.get(caster) != null) for(itemBase item : ARSystem.playerItem.get(caster).items) item.fixedDamage(e);
+		if(ARSystem.playerItem.get(target) != null) for(itemBase item : ARSystem.playerItem.get(target).items) item.fixedDamage(e);
+			
 		if(Rule.c.get(caster) != null) {
 			Rule.c.get(caster).fixeddamage(e);
 		}
 		if(Rule.c.get(target) != null) Rule.c.get(target).fixeddamage(e);
 		if(!e.isCancelled()) {
-			if(target.getHealth() - damage >= 1) {
-				target.setHealth(target.getHealth() - damage);
-				damageText(target.getLocation(),"§2§l☣ ",e.getDamage());
-				if(Rule.c.get(caster) != null) {
-					if(target instanceof Player) {
-						Rule.c.get(caster).s_damage += damage;
-					} else {
-						Rule.c.get(caster).s_damage += damage*0.2f;
-					}
-				}
+			if(remete.get(caster) >= 5) {
+				target.damage(e.getDamage(),caster);
 			} else {
-				e.isDeath = true;
-				if(Rule.c.get(caster) != null) Rule.c.get(caster).fixeddamage(e);
-				if(Rule.c.get(target) != null) Rule.c.get(target).fixeddamage(e);
-				if(!e.isCancelled()) {
-					Skill.remove(target, caster);
+				if(target.getHealth() - e.getDamage() >= 1) {
+					target.setHealth(target.getHealth() - e.getDamage());
+					damageText(target.getLocation(),"§2§l☣ ",e.getDamage());
+					if(Rule.c.get(caster) != null) {
+						if(target instanceof Player) {
+							Rule.c.get(caster).s_damage += e.getDamage();
+						} else {
+							Rule.c.get(caster).s_damage += e.getDamage()*0.2f;
+						}
+					}
+				} else {
+					e.isDeath = true;
+					if(Rule.c.get(caster) != null) Rule.c.get(caster).fixeddamage(e);
+					if(Rule.c.get(target) != null) Rule.c.get(target).fixeddamage(e);
+					if(!e.isCancelled()) {
+						Skill.remove(target, caster);
+					}
 				}
 			}
 		}
+		remete.put(caster, remete.get(caster)-1);
 		return e;
 	}
 	
@@ -643,13 +795,10 @@ public class ARSystem {
 	
 	static public List<Player> RandomPlayers(){
 		List<Player> players = new ArrayList<>();
-		while(Bukkit.getOnlinePlayers().size() != players.size()) {
-			Player p = RandomOnlinePlayer();
-			if(!players.contains(p)) {
-				players.add(p);
-			}
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			players.add(p);
 		}
-		
+		Collections.shuffle(players);
 		return players;
 	}
 	
@@ -787,23 +936,27 @@ public class ARSystem {
 	}
 	
 	static public Player RandomPlayer() {
-		return (Player) Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1];
+		if(rand == null) rand = new Random(Rule.openTime);
+		return (Player) Rule.c.keySet().toArray()[rand.nextInt(Rule.c.size())];
 	}
+	
 	static public Player RandomOnlinePlayer() {
-		return (Player) Bukkit.getOnlinePlayers().toArray()[AMath.random(Bukkit.getOnlinePlayers().size())-1];
+		if(rand == null) rand = new Random(Rule.openTime);
+		return (Player) Bukkit.getOnlinePlayers().toArray()[rand.nextInt(Bukkit.getOnlinePlayers().size())];
 	}
 	public static Player RandomPlayer(Player player) {
-		Player p = (Player) Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1];
+		if(rand == null) rand = new Random(Rule.openTime);
+		Player p = (Player) Rule.c.keySet().toArray()[rand.nextInt(Rule.c.size())];
 		for(int i = 0; i <1000; i++) {
 			if(p == player || isTarget(p, player)) {
-				p = (Player) Rule.c.keySet().toArray()[AMath.random(Rule.c.size())-1];
+				p = (Player) Rule.c.keySet().toArray()[rand.nextInt(Rule.c.size())];
 			} else {
 				break;
 			}
 		}
 		return p;
 	}
-	static public List<Entity> PlayerBeamV(Player player,float rangeblock, float size, types.box box){
+	static public List<Entity> PlayerBeamV(Entity player,float rangeblock, float size, types.box box){
 		List<Entity> entity = new ArrayList<Entity>();
 		Location loc = player.getLocation().clone();
 		for(float i=0;i<rangeblock;i++) {
@@ -819,7 +972,7 @@ public class ARSystem {
 		return entity;
 	}
 	
-	static public List<Entity> PlayerBeamBox(Player player,float rangeblock, float size, types.box box){
+	static public List<Entity> PlayerBeamBox(Entity player,float rangeblock, float size, types.box box){
 		List<Entity> entity = new ArrayList<Entity>();
 		Location loc = player.getLocation().clone();
 		for(float i=0;i<rangeblock;i++) {
@@ -838,7 +991,7 @@ public class ARSystem {
 		}
 		return entity;
 	}
-	static public List<Player> PlayerOnlyBeamBox(Player player,float rangeblock, float size, types.box box){
+	static public List<Player> PlayerOnlyBeamBox(Entity player,float rangeblock, float size, types.box box){
 		List<Player> entity = new ArrayList<Player>();
 		Location loc = player.getLocation().clone();
 		for(float i=0;i<rangeblock;i++) {
@@ -875,6 +1028,50 @@ public class ARSystem {
 		}
 		return entity;
 	}
+	static public List<Entity> box(Location loc,Entity caster, Vector vt,types.box box) {
+		List<Entity> entity = new ArrayList<Entity>();
+		for(Entity e : loc.getWorld().getNearbyEntities(loc,vt.getX(),vt.getY(),vt.getZ())) {
+			entity.add(e);
+		}
+
+		if(entity == null || entity.size() <= 0) return entity;
+		
+		List<Entity> en = new ArrayList<Entity>();
+		
+		for(Entity e : entity) {
+			if(!isTarget(e, caster ,box)) {
+				en.add(e);
+			}
+		} 
+		for(Entity e : en) {
+			entity.remove(e);
+		}
+		return entity;
+	}
+	
+	static public List<Entity> boxS(List<Entity> entity,Location loc) {
+		if(entity == null) return new ArrayList<Entity>();
+		if(entity.size() <= 1) return entity;
+		
+		Entity[] p = new Entity[entity.size()];
+		for(int i =0; i < p.length; i++) p[i] = entity.get(i);
+		
+		for(int i = 0; i < entity.size(); i++) {
+			for(int j = 0; j < i; j++) {
+				if(p[i].getLocation().distance(loc) < p[j].getLocation().distance(loc)) {
+					Entity ps;
+					ps = p[i];
+					p[i] = p[j];
+					p[j] = ps;
+				}
+			}
+		}
+		
+		entity.clear();
+		for(Entity e : p) entity.add(e);
+		return entity;
+	}
+	
 	
 	static public Entity boxRandom(Entity et, Vector vt,types.box box) {
 		List<Entity> entity = new ArrayList<Entity>();
@@ -992,7 +1189,7 @@ public class ARSystem {
 		
 		for(int i = 0; i < entity.size(); i++) {
 			for(int j = 0; j < i; j++) {
-				if(p[i].getLocation().distance(et.getLocation()) < p[j].getLocation().distance(et.getLocation())) {
+				if(p[i].getLocation().distance(et.getLocation()) > p[j].getLocation().distance(et.getLocation())) {
 					Entity ps;
 					ps = p[i];
 					p[i] = p[j];
@@ -1015,6 +1212,58 @@ public class ARSystem {
 				p[count++] = e;
 			}
 		} 
+		if(p.length == 0) return null;
+		if(p[0] == null) return null;
+		if(count == 1) return p[0];
+		
+		for(int i = 0; i < count; i++) {
+			for(int j = 0; j < i; j++) {
+				if(p[i].getLocation().distance(et.getLocation()) < p[j].getLocation().distance(et.getLocation())) {
+					Entity ps;
+					ps = p[i];
+					p[i] = p[j];
+					p[j] = ps;
+				}
+			}
+		}
+		return p[0];
+	}
+	
+	static public Entity boxSOne(Entity et, Vector vt,types.box box,String remove) {
+		List<Entity> entity = et.getNearbyEntities(vt.getX(),vt.getY(),vt.getZ());
+		Entity[] p = new Entity[entity.size()];
+		int count = 0;
+		for(Entity e : entity) {
+			if(isTarget(e, et, box) && !e.getName().equals(remove)) {
+				p[count++] = e;
+			}
+		} 
+		if(p.length == 0) return null;
+		if(p[0] == null) return null;
+		if(count == 1) return p[0];
+		
+		for(int i = 0; i < count; i++) {
+			for(int j = 0; j < i; j++) {
+				if(p[i].getLocation().distance(et.getLocation()) < p[j].getLocation().distance(et.getLocation())) {
+					Entity ps;
+					ps = p[i];
+					p[i] = p[j];
+					p[j] = ps;
+				}
+			}
+		}
+		return p[0];
+	}
+	
+	static public Entity boxSPlayerOne(Entity et, Vector vt,types.box box) {
+		List<Entity> entity = et.getNearbyEntities(vt.getX(),vt.getY(),vt.getZ());
+		Entity[] p = new Entity[entity.size()];
+		int count = 0;
+		for(Entity e : entity) {
+			if(isTarget(e, et, box) && (e instanceof Player)) {
+				p[count++] = e;
+			}
+		}
 		if(p.length == 0) return null;
 		if(p[0] == null) return null;
 		if(count == 1) return p[0];

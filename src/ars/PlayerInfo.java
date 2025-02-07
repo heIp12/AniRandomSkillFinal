@@ -38,6 +38,7 @@ public class PlayerInfo {
 	int page = 0;
 	int invtype = 0;
 	int charban = 1;
+	public int gold = 0;
 	public String name;
 	public boolean gamejoin = true;
 	public boolean abchar = false;
@@ -58,6 +59,7 @@ public class PlayerInfo {
 	public int playerc;
 	public int kille;
 	public int playchar = 0;
+	public int itemcount = 8;
 	Inventory spinv;
 	
 	PlayerInfo(Player p){

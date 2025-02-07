@@ -43,6 +43,7 @@ public class c98kanna extends c00main{
 			player.setVelocity(player.getLocation().getDirection().multiply(0.5 + (getlv()*0.15)));
 			skill("c98_s1");
 			sk1 = 200;
+			if(ARSystem.isGameMode("kagerou")) sk1 = 100;
 		} else {
 			cooldown[1] = 0;
 		}
