@@ -27,6 +27,7 @@ import mob.M_LBDefence2;
 import mob.M_ROCKREE;
 import mode.lobobuff.LoboBuffBase;
 import mode.lobobuff.RB_b047;
+import types.GameModes;
 import types.LoboBuffs;
 import types.MapType;
 import types.MobBuffs;
@@ -908,7 +909,10 @@ public class MLoboTomy extends ModeBase{
 	}
 	
 	public void endGame() {
-		Rule.Var.Save("System.info.mode.loboclear",true);
+		if(!(boolean)Rule.Var.Load("System.info.mode.loboclear")) {
+			Rule.Var.Save("System.info.mode.loboclear",true);
+			GameModes.set();
+		}
 		text(394,Text.get("lobo:end"));
 		boolean win = true;
 		for(LoboBuffBase b : buff) if(b instanceof RB_b047) win = false;

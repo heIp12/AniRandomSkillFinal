@@ -418,7 +418,7 @@ public class MKagerou extends ModeBase{
 		TeamInfo team2 = Rule.team.getTeam(Text.get("kage:team2"));
 		if(getBool("9")) {
 			if(time > 10 && npcid == -1 && Bgm.getTime() <= 1 && Bgm.nextbgm.size() <= 0) {
-				if(npcSpawn.size() != 6) {
+				if(npcSpawn.size() != 5) {
 					int code = AMath.random(10)-1;
 					while(npcSpawn.contains(code)) code = AMath.random(10)-1;
 					npcid = code;

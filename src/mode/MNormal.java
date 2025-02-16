@@ -15,6 +15,7 @@ import buff.Silence;
 import event.Skill;
 import manager.AdvManager;
 import manager.Bgm;
+import types.GameModes;
 import types.MapType;
 import types.box;
 import util.AMath;
@@ -54,7 +55,9 @@ public class MNormal extends ModeBase{
 					}
 				}
 				if(azami == false) {
+					
 					Rule.Var.Save("System.info.mode.kagerou",true);
+					GameModes.set();
 					ARSystem.GameStop();
 				}
 			}
