@@ -103,6 +103,7 @@ public class MKagerou extends ModeBase{
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			Map.playeTp(p);
 		}
+		ARSystem.gameMode2 = false;
 		playerLife.clear();
 		playerCode.clear();
 		spBan = getBool("10");

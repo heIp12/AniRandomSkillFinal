@@ -202,7 +202,7 @@ public class MTeam extends ModeBase{
 				Map.sizeM(-1);
 			}
 		}
-		
+		end();
 	}
 	
 	@Override

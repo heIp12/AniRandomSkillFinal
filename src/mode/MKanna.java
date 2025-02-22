@@ -25,6 +25,7 @@ public class MKanna extends ModeBase{
 	@Override
 	public void option() {
 		Map.mapType = MapType.NORMAL;
+		ARSystem.gameMode2 = false;
 		Map.getMapinfo(1005);
 		Rule.team.teamCreate("K");
 		Rule.team.getTeam("K").setTeamColor("7");

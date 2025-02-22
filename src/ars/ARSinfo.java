@@ -117,16 +117,17 @@ public class ARSinfo {
 		for(Player p : Rule.c.keySet()) {
 			players.add(p);
 		}
-		if(ARSystem.winstop <= 0 && Rule.c.size() > 1 && Rule.team.allTeam(players) && Map.mapid != 1011) {
-			allTeam++;
-			if(allTeam>=10) {
-				allTeam = 0;
-				Rule.team.reload();
-				ARSystem.playSoundAll("0click2",0.2f);
-				Bukkit.broadcastMessage("§a§l[ARSystem] : §c§lTeam Remove");
+		if(time >= 0) {
+			if(ARSystem.winstop <= 0 && Rule.c.size() > 1 && ARSystem.gameMode2 && Rule.team.allTeam(players) && Map.mapid != 1011) {
+				allTeam++;
+				if(allTeam>=10) {
+					allTeam = 0;
+					Rule.team.reload();
+					ARSystem.playSoundAll("0click2",0.2f);
+					Bukkit.broadcastMessage("§a§l[ARSystem] : §c§lTeam Remove");
+				}
 			}
-		}
-		if(time >= 0) {	
+			
 			if(!isstart) {
 				isstart = true;
 				first();

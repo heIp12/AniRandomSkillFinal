@@ -32,6 +32,7 @@ public class MZombie extends ModeBase{
 		Rule.team.teamCreate("buri");
 		Rule.team.getTeam("buri").setTeamColor("6");
 		Rule.team.getTeam("buri").setTeamName("buris");
+		ARSystem.gameMode2 = false;
 	}
 	
 	

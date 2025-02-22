@@ -119,6 +119,7 @@ public class MTeamMatch extends ModeBase{
 				Map.sizeM(-1);
 			}
 		}
+		end();
 	}
 	@Override
 	public void end() {
